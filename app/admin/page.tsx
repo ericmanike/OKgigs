@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, XCircle, Clock, Shield, AlertCircle } from "lucide-react";
+import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, XCircle, Clock, Shield, AlertCircle, X } from "lucide-react";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/Card";
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0 });
@@ -13,6 +14,16 @@ export default function AdminDashboard() {
     const [users, setUsers] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
     const [bundles, setBundles] = useState<any[]>([]);
+
+    // Modal & Form State
+    const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
+    const [newBundle, setNewBundle] = useState({
+        network: 'MTN',
+        name: '',
+        price: '',
+        isActive: true
+    });
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -64,37 +75,148 @@ export default function AdminDashboard() {
         // if (activeTab === 'orders' && orders.length === 0) loadTabSpecificData('orders');
     }, [activeTab]);
 
+    const handleAddBundle = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const res = await fetch('/api/bundles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...newBundle,
+                    price: parseFloat(newBundle.price)
+                })
+            });
+
+            if (res.ok) {
+                const addedBundle = await res.json();
+                setBundles([...bundles, addedBundle]);
+                setIsBundleModalOpen(false);
+                setNewBundle({ network: 'MTN', name: '', price: '', isActive: true }); // Reset form
+            } else {
+                alert('Failed to add bundle');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error adding bundle');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
 
     if (loading && !stats.users) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center text-blue-500">
+            <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-blue-600">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 pt-24 pb-24 md:pb-8">
+        <div className="min-h-screen bg-zinc-50 text-zinc-900 p-4 md:p-8 pt-24 pb-24 md:pb-8 relative">
+
+            {/* Modal Overlay */}
+            {isBundleModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center p-4 border-b border-zinc-100">
+                            <h3 className="text-lg font-bold text-zinc-900">Add New Bundle</h3>
+                            <button
+                                onClick={() => setIsBundleModalOpen(false)}
+                                className="p-2 hover:bg-zinc-100 rounded-full text-zinc-500 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleAddBundle} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-zinc-700 mb-1">Network</label>
+                                <select
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    value={newBundle.network}
+                                    onChange={(e) => setNewBundle({ ...newBundle, network: e.target.value })}
+                                >
+                                    <option value="MTN">MTN</option>
+                                    <option value="Telecel">Telecel</option>
+                                    <option value="AirtelTigo">AirtelTigo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-zinc-700 mb-1">Bundle Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. 1GB"
+                                    required
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    value={newBundle.name}
+                                    onChange={(e) => setNewBundle({ ...newBundle, name: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-zinc-700 mb-1">Price (GHS)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    required
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    value={newBundle.price}
+                                    onChange={(e) => setNewBundle({ ...newBundle, price: e.target.value })}
+                                />
+                            </div>
+                            <div className="flex items-center gap-2 pt-2">
+                                <input
+                                    type="checkbox"
+                                    id="isActive"
+                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                    checked={newBundle.isActive}
+                                    onChange={(e) => setNewBundle({ ...newBundle, isActive: e.target.checked })}
+                                />
+                                <label htmlFor="isActive" className="text-sm font-medium text-zinc-700">Active Status</label>
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBundleModalOpen(false)}
+                                    className="flex-1 px-4 py-2 border border-zinc-300 text-zinc-700 rounded-lg hover:bg-zinc-50 font-medium transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {submitting ? 'Adding...' : 'Add Bundle'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto space-y-8">
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent">Admin Dashboard</h1>
-                        <p className="text-slate-400 mt-1">Manage users, orders, and system settings.</p>
+                        <h1 className="text-3xl font-bold text-zinc-900">Admin Dashboard</h1>
+                        <p className="text-zinc-500 mt-1">Manage users, orders, and system settings.</p>
                     </div>
                     <div className="flex gap-2">
-                        <div className="px-4 py-2 bg-blue-900/30 border border-blue-500/30 rounded-lg flex items-center gap-2 text-sm text-blue-200">
+                        <div className="px-4 py-2 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-sm text-blue-700 font-medium">
                             <Shield size={16} /> Admin Access
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="border-b border-white/10">
+                <div className="border-b border-zinc-200">
                     <div className="flex gap-6 overflow-x-auto pb-1">
                         {[
-                            { id: 'overview', label: 'Overview', icon: CheckCircle2 }, // Using dummy icon
+                            { id: 'overview', label: 'Overview', icon: CheckCircle2 },
                             { id: 'orders', label: 'Orders', icon: ShoppingBag },
                             { id: 'users', label: 'Users', icon: Users },
                             { id: 'bundles', label: 'Bundles', icon: Package },
@@ -103,13 +225,13 @@ export default function AdminDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex items-center gap-2 pb-3 px-1 text-sm font-medium transition-all relative
-                                    ${activeTab === tab.id ? 'text-blue-400' : 'text-slate-400 hover:text-white'}
+                                    ${activeTab === tab.id ? 'text-blue-600' : 'text-zinc-500 hover:text-zinc-900'}
                                 `}
                             >
                                 <tab.icon size={16} />
                                 {tab.label}
                                 {activeTab === tab.id && (
-                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 rounded-t-full" />
+                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />
                                 )}
                             </button>
                         ))}
@@ -124,67 +246,71 @@ export default function AdminDashboard() {
                         <>
                             {/* Stats Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="p-3 bg-blue-500/20 text-blue-400 rounded-xl">
-                                            <Users size={24} />
+                                <Card className="border-zinc-200 hover:border-blue-400 transition-colors bg-white">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                                                <Users size={24} />
+                                            </div>
+                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
+                                                +4% <span className="opacity-50 text-green-800">vs last week</span>
+                                            </span>
                                         </div>
-                                        <span className="text-xs font-medium px-2 py-1 bg-green-500/10 text-green-400 rounded-lg flex items-center gap-1">
-                                            +4% <span className="opacity-50">vs last week</span>
-                                        </span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm font-medium">Total Users</p>
-                                    <h3 className="text-3xl font-bold mt-1">{stats.users}</h3>
-                                </div>
+                                        <p className="text-zinc-500 text-sm font-medium">Total Users</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.users}</h3>
+                                    </CardContent>
+                                </Card>
 
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="p-3 bg-purple-500/20 text-purple-400 rounded-xl">
-                                            <ShoppingBag size={24} />
+                                <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                                                <ShoppingBag size={24} />
+                                            </div>
+                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
+                                                +12% <span className="opacity-50 text-green-800">vs last week</span>
+                                            </span>
                                         </div>
-                                        <span className="text-xs font-medium px-2 py-1 bg-green-500/10 text-green-400 rounded-lg flex items-center gap-1">
-                                            +12% <span className="opacity-50">vs last week</span>
-                                        </span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm font-medium">Total Orders</p>
-                                    <h3 className="text-3xl font-bold mt-1">{stats.orders}</h3>
-                                </div>
+                                        <p className="text-zinc-500 text-sm font-medium">Total Orders</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.orders}</h3>
+                                    </CardContent>
+                                </Card>
 
-                                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="p-3 bg-green-500/20 text-green-400 rounded-xl">
-                                            <CreditCard size={24} />
+                                <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-green-100 text-green-600 rounded-xl">
+                                                <CreditCard size={24} />
+                                            </div>
+                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
+                                                +8% <span className="opacity-50 text-green-800">vs last week</span>
+                                            </span>
                                         </div>
-                                        <span className="text-xs font-medium px-2 py-1 bg-green-500/10 text-green-400 rounded-lg flex items-center gap-1">
-                                            +8% <span className="opacity-50">vs last week</span>
-                                        </span>
-                                    </div>
-                                    <p className="text-slate-400 text-sm font-medium">Total Sales</p>
-                                    <h3 className="text-3xl font-bold mt-1">GHS {stats.sales.toLocaleString()}</h3>
-                                </div>
+                                        <p className="text-zinc-500 text-sm font-medium">Total Sales</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">GHS {stats.sales.toLocaleString()}</h3>
+                                    </CardContent>
+                                </Card>
                             </div>
-
-                            {/* Recent Activity Section could go here */}
                         </>
                     )}
 
                     {/* ORDERS TAB */}
                     {activeTab === 'orders' && (
-                        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-                            <div className="p-6 border-b border-white/10 flex justify-between items-center">
-                                <h3 className="text-lg font-semibold">Recent Orders</h3>
+                        <Card className="border-zinc-200 bg-white overflow-hidden">
+                            <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
+                                <h3 className="text-lg font-semibold text-zinc-900">Recent Orders</h3>
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Search orders..."
-                                        className="bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors w-64"
+                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-64 placeholder-zinc-400"
                                     />
                                 </div>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-white/5 text-slate-300 font-medium">
+                                    <thead className="bg-zinc-50 text-zinc-500 font-medium">
                                         <tr>
                                             <th className="px-6 py-4">Order ID</th>
                                             <th className="px-6 py-4">User</th>
@@ -194,30 +320,30 @@ export default function AdminDashboard() {
                                             <th className="px-6 py-4">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-zinc-100">
                                         {orders.map((order) => (
-                                            <tr key={order._id} className="hover:bg-white/5 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-xs text-slate-400">#{order._id.slice(-6)}</td>
+                                            <tr key={order._id} className="hover:bg-zinc-50 transition-colors">
+                                                <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order._id.slice(-6)}</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="font-medium text-white">{order.user?.name || 'Unknown'}</span>
-                                                        <span className="text-xs text-slate-500">{order.phoneNumber}</span>
+                                                        <span className="font-medium text-zinc-900">{order.user?.name || 'Unknown'}</span>
+                                                        <span className="text-xs text-zinc-500">{order.phoneNumber}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium 
-                                                        ${order.network === 'MTN' ? 'bg-yellow-500/10 text-yellow-400' :
-                                                            order.network === 'Telecel' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                                        ${order.network === 'MTN' ? 'bg-yellow-100 text-yellow-800' :
+                                                            order.network === 'Telecel' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
                                                         {order.network} {order.bundleName}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 font-medium text-slate-200">GHS {order.price.toFixed(2)}</td>
-                                                <td className="px-6 py-4 text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 font-medium text-zinc-700">GHS {order.price.toFixed(2)}</td>
+                                                <td className="px-6 py-4 text-zinc-500">{new Date(order.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                                                        ${order.status === 'completed' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                            order.status === 'failed' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                                'bg-orange-500/10 text-orange-400 border-orange-500/20'}`}>
+                                                        ${order.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' :
+                                                            order.status === 'failed' ? 'bg-red-100 text-red-700 border-red-200' :
+                                                                'bg-orange-100 text-orange-700 border-orange-200'}`}>
                                                         {order.status === 'completed' && <CheckCircle2 size={12} />}
                                                         {order.status === 'failed' && <XCircle size={12} />}
                                                         {order.status === 'pending' && <Clock size={12} />}
@@ -229,26 +355,26 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </Card>
                     )}
 
                     {/* USERS TAB */}
                     {activeTab === 'users' && (
-                        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-                            <div className="p-6 border-b border-white/10 flex justify-between items-center">
-                                <h3 className="text-lg font-semibold">Registered Users</h3>
+                        <Card className="border-zinc-200 bg-white overflow-hidden">
+                            <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
+                                <h3 className="text-lg font-semibold text-zinc-900">Registered Users</h3>
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Search users..."
-                                        className="bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors placeholder-zinc-400"
                                     />
                                 </div>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-white/5 text-slate-300 font-medium">
+                                    <thead className="bg-zinc-50 text-zinc-500 font-medium">
                                         <tr>
                                             <th className="px-6 py-4">Name</th>
                                             <th className="px-6 py-4">Email</th>
@@ -257,26 +383,26 @@ export default function AdminDashboard() {
                                             <th className="px-6 py-4 text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-zinc-100">
                                         {users.map((user) => (
-                                            <tr key={user._id} className="hover:bg-white/5 transition-colors">
-                                                <td className="px-6 py-4 font-medium text-white">
+                                            <tr key={user._id} className="hover:bg-zinc-50 transition-colors">
+                                                <td className="px-6 py-4 font-medium text-zinc-900">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">
+                                                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold border border-blue-200">
                                                             {user.name.charAt(0)}
                                                         </div>
                                                         {user.name}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-slate-400">{user.email}</td>
+                                                <td className="px-6 py-4 text-zinc-500">{user.email}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-2 py-1 rounded text-xs font-medium uppercase
-                                                        ${user.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-slate-700 text-slate-300'}
+                                                        ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-zinc-100 text-zinc-600'}
                                                     `}>{user.role}</span>
                                                 </td>
-                                                <td className="px-6 py-4 text-slate-400">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 text-zinc-500">{new Date(user.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <button className="text-slate-400 hover:text-white transition-colors">
+                                                    <button className="text-zinc-400 hover:text-zinc-600 transition-colors">
                                                         <Edit size={16} />
                                                     </button>
                                                 </td>
@@ -285,22 +411,25 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </Card>
                     )}
 
                     {/* BUNDLES TAB */}
                     {activeTab === 'bundles' && (
                         <div className="space-y-6">
                             <div className="flex justify-between items-center">
-                                <h2 className="text-xl font-semibold">Data Bundles</h2>
-                                <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20">
+                                <h2 className="text-xl font-semibold text-zinc-900">Data Bundles</h2>
+                                <button
+                                    onClick={() => setIsBundleModalOpen(true)}
+                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20"
+                                >
                                     <Plus size={16} /> Add Bundle
                                 </button>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+                            <Card className="border-zinc-200 bg-white overflow-hidden">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-blue-900/20 text-blue-100">
+                                    <thead className="bg-blue-50 text-blue-800">
                                         <tr>
                                             <th className="px-6 py-4 font-medium">Network</th>
                                             <th className="px-6 py-4 font-medium">Bundle Name</th>
@@ -309,29 +438,29 @@ export default function AdminDashboard() {
                                             <th className="px-6 py-4 font-medium text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-zinc-100">
                                         {bundles.map((bundle) => (
-                                            <tr key={bundle._id} className="hover:bg-white/5 transition-colors">
+                                            <tr key={bundle._id} className="hover:bg-zinc-50 transition-colors">
                                                 <td className="px-6 py-4 font-medium">
                                                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase w-16 text-center
-                                                        ${bundle.network === 'MTN' ? 'bg-yellow-400 text-yellow-900' :
-                                                            bundle.network === 'Telecel' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                        ${bundle.network === 'MTN' ? 'bg-yellow-100 text-yellow-800' :
+                                                            bundle.network === 'Telecel' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
                                                         {bundle.network}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-white font-medium">{bundle.name}</td>
-                                                <td className="px-6 py-4 text-slate-300">{bundle.price.toFixed(2)}</td>
+                                                <td className="px-6 py-4 text-zinc-900 font-medium">{bundle.name}</td>
+                                                <td className="px-6 py-4 text-zinc-600">{bundle.price.toFixed(2)}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-2 py-1 rounded-full text-xs font-medium 
-                                                        ${bundle.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                                        ${bundle.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                         {bundle.isActive ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 flex gap-2 justify-end">
-                                                    <button className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all">
+                                                    <button className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-all">
                                                         <Edit size={16} />
                                                     </button>
-                                                    <button className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+                                                    <button className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </td>
@@ -339,15 +468,15 @@ export default function AdminDashboard() {
                                         ))}
                                         {bundles.length === 0 && (
                                             <tr>
-                                                <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
-                                                    <Package size={32} className="mx-auto mb-2 opacity-50" />
+                                                <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                                                    <Package size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
                                                     <p>No bundles found</p>
                                                 </td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </table>
-                            </div>
+                            </Card>
                         </div>
                     )}
                 </div>
