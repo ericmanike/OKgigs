@@ -43,7 +43,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center h-screen overflow-y-auto  px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                   
+
                     <CardTitle className="text-2xl text-slate-950 font-bold">Welcome Back</CardTitle>
                     <p className="text-slate-500 text-sm mt-2">Sign in to your account to continue</p>
                 </CardHeader>
@@ -77,6 +77,12 @@ export default function LoginPage() {
                                 className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400     focus:outline-none focus:ring-2 focus:ring-white transition-all"
                                 placeholder="Enter your password"
                             />
+                        </div>
+
+                        <div className="text-right">
+                            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+                                Forgot Password?
+                            </Link>
                         </div>
 
                         <button

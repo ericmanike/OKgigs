@@ -17,7 +17,8 @@ export default function AdminDashboard() {
 
     // Modal & Form State
     const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
-    const [newBundle, setNewBundle] = useState({
+    const [editingBundle, setEditingBundle] = useState<any>(null);
+    const [bundleForm, setBundleForm] = useState({
         network: 'MTN',
         name: '',
         price: '',
@@ -75,32 +76,108 @@ export default function AdminDashboard() {
         // if (activeTab === 'orders' && orders.length === 0) loadTabSpecificData('orders');
     }, [activeTab]);
 
-    const handleAddBundle = async (e: React.FormEvent) => {
+    const handleSaveBundle = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            const res = await fetch('/api/bundles', {
-                method: 'POST',
+            const url = editingBundle ? `/api/bundles/${editingBundle._id}` : '/api/bundles';
+            const method = editingBundle ? 'PATCH' : 'POST';
+
+            const res = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...newBundle,
-                    price: parseFloat(newBundle.price)
+                    ...bundleForm,
+                    price: parseFloat(bundleForm.price)
                 })
             });
 
             if (res.ok) {
-                const addedBundle = await res.json();
-                setBundles([...bundles, addedBundle]);
-                setIsBundleModalOpen(false);
-                setNewBundle({ network: 'MTN', name: '', price: '', isActive: true }); // Reset form
+                const savedBundle = await res.json();
+                if (editingBundle) {
+                    // Update existing bundle
+                    setBundles(bundles.map(b => b._id === savedBundle._id ? savedBundle : b));
+                } else {
+                    // Add new bundle
+                    setBundles([...bundles, savedBundle]);
+                }
+                closeModal();
             } else {
-                alert('Failed to add bundle');
+                alert(editingBundle ? 'Failed to update bundle' : 'Failed to add bundle');
             }
         } catch (error) {
             console.error(error);
-            alert('Error adding bundle');
+            alert('Error saving bundle');
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleDeleteBundle = async (bundleId: string) => {
+        if (!confirm('Are you sure you want to delete this bundle?')) return;
+
+        try {
+            const res = await fetch(`/api/bundles/${bundleId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                setBundles(bundles.filter(b => b._id !== bundleId));
+            } else {
+                alert('Failed to delete bundle');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting bundle');
+        }
+    };
+
+    const openEditModal = (bundle: any) => {
+        setEditingBundle(bundle);
+        setBundleForm({
+            network: bundle.network,
+            name: bundle.name,
+            price: bundle.price.toString(),
+            isActive: bundle.isActive
+        });
+        setIsBundleModalOpen(true);
+    };
+
+    const openAddModal = () => {
+        setEditingBundle(null);
+        setBundleForm({ network: 'MTN', name: '', price: '', isActive: true });
+        setIsBundleModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsBundleModalOpen(false);
+        setEditingBundle(null);
+        setBundleForm({ network: 'MTN', name: '', price: '', isActive: true });
+    };
+
+    const handleStatusChange = async (orderId: string, newStatus: string) => {
+        try {
+            // Optimistic update
+            const updatedOrders = orders.map(order =>
+                order._id === orderId ? { ...order, status: newStatus } : order
+            );
+            setOrders(updatedOrders);
+
+            const res = await fetch(`/api/admin/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!res.ok) {
+                // Revert on failure
+                fetchData();
+                alert('Failed to update status');
+            }
+        } catch (error) {
+            console.error(error);
+            fetchData();
+            alert('Error updating status');
         }
     };
 
@@ -121,21 +198,23 @@ export default function AdminDashboard() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="flex justify-between items-center p-4 border-b border-zinc-100">
-                            <h3 className="text-lg font-bold text-zinc-900">Add New Bundle</h3>
+                            <h3 className="text-lg font-bold text-zinc-900">
+                                {editingBundle ? 'Edit Bundle' : 'Add New Bundle'}
+                            </h3>
                             <button
-                                onClick={() => setIsBundleModalOpen(false)}
+                                onClick={closeModal}
                                 className="p-2 hover:bg-zinc-100 rounded-full text-zinc-500 transition-colors"
                             >
                                 <X size={20} />
                             </button>
                         </div>
-                        <form onSubmit={handleAddBundle} className="p-6 space-y-4">
+                        <form onSubmit={handleSaveBundle} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-zinc-700 mb-1">Network</label>
                                 <select
                                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                    value={newBundle.network}
-                                    onChange={(e) => setNewBundle({ ...newBundle, network: e.target.value })}
+                                    value={bundleForm.network}
+                                    onChange={(e) => setBundleForm({ ...bundleForm, network: e.target.value })}
                                 >
                                     <option value="MTN">MTN</option>
                                     <option value="Telecel">Telecel</option>
@@ -149,8 +228,8 @@ export default function AdminDashboard() {
                                     placeholder="e.g. 1GB"
                                     required
                                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                    value={newBundle.name}
-                                    onChange={(e) => setNewBundle({ ...newBundle, name: e.target.value })}
+                                    value={bundleForm.name}
+                                    onChange={(e) => setBundleForm({ ...bundleForm, name: e.target.value })}
                                 />
                             </div>
                             <div>
@@ -161,8 +240,8 @@ export default function AdminDashboard() {
                                     placeholder="0.00"
                                     required
                                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                    value={newBundle.price}
-                                    onChange={(e) => setNewBundle({ ...newBundle, price: e.target.value })}
+                                    value={bundleForm.price}
+                                    onChange={(e) => setBundleForm({ ...bundleForm, price: e.target.value })}
                                 />
                             </div>
                             <div className="flex items-center gap-2 pt-2">
@@ -170,8 +249,8 @@ export default function AdminDashboard() {
                                     type="checkbox"
                                     id="isActive"
                                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-                                    checked={newBundle.isActive}
-                                    onChange={(e) => setNewBundle({ ...newBundle, isActive: e.target.checked })}
+                                    checked={bundleForm.isActive}
+                                    onChange={(e) => setBundleForm({ ...bundleForm, isActive: e.target.checked })}
                                 />
                                 <label htmlFor="isActive" className="text-sm font-medium text-zinc-700">Active Status</label>
                             </div>
@@ -179,7 +258,7 @@ export default function AdminDashboard() {
                             <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
-                                    onClick={() => setIsBundleModalOpen(false)}
+                                    onClick={closeModal}
                                     className="flex-1 px-4 py-2 border border-zinc-300 text-zinc-700 rounded-lg hover:bg-zinc-50 font-medium transition-colors"
                                 >
                                     Cancel
@@ -189,7 +268,7 @@ export default function AdminDashboard() {
                                     disabled={submitting}
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {submitting ? 'Adding...' : 'Add Bundle'}
+                                    {submitting ? (editingBundle ? 'Updating...' : 'Adding...') : (editingBundle ? 'Update Bundle' : 'Add Bundle')}
                                 </button>
                             </div>
                         </form>
@@ -340,15 +419,27 @@ export default function AdminDashboard() {
                                                 <td className="px-6 py-4 font-medium text-zinc-700">GHS {order.price.toFixed(2)}</td>
                                                 <td className="px-6 py-4 text-zinc-500">{new Date(order.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                                                        ${order.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' :
-                                                            order.status === 'failed' ? 'bg-red-100 text-red-700 border-red-200' :
-                                                                'bg-orange-100 text-orange-700 border-orange-200'}`}>
+                                                    {/* <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
+                                                        ${order.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' : 
+                                                          order.status === 'failed' ? 'bg-red-100 text-red-700 border-red-200' : 
+                                                          'bg-orange-100 text-orange-700 border-orange-200'}`}>
                                                         {order.status === 'completed' && <CheckCircle2 size={12} />}
                                                         {order.status === 'failed' && <XCircle size={12} />}
                                                         {order.status === 'pending' && <Clock size={12} />}
                                                         <span className="capitalize">{order.status}</span>
-                                                    </span>
+                                                    </span> */}
+                                                    <select
+                                                        value={order.status}
+                                                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                                        className={`text-xs font-medium px-2 py-1 rounded-full border outline-none cursor-pointer transition-all appearance-none
+                                                            ${order.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200 focus:border-green-400' :
+                                                                order.status === 'failed' ? 'bg-red-50 text-red-700 border-red-200 focus:border-red-400' :
+                                                                    'bg-orange-50 text-orange-700 border-orange-200 focus:border-orange-400'}`}
+                                                    >
+                                                        <option value="pending">Pending</option>
+                                                        <option value="completed">Completed</option>
+                                                        <option value="failed">Failed</option>
+                                                    </select>
                                                 </td>
                                             </tr>
                                         ))}
@@ -420,7 +511,7 @@ export default function AdminDashboard() {
                             <div className="flex justify-between items-center">
                                 <h2 className="text-xl font-semibold text-zinc-900">Data Bundles</h2>
                                 <button
-                                    onClick={() => setIsBundleModalOpen(true)}
+                                    onClick={openAddModal}
                                     className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20"
                                 >
                                     <Plus size={16} /> Add Bundle
@@ -457,10 +548,18 @@ export default function AdminDashboard() {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 flex gap-2 justify-end">
-                                                    <button className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-all">
+                                                    <button
+                                                        onClick={() => openEditModal(bundle)}
+                                                        className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                        title="Edit bundle"
+                                                    >
                                                         <Edit size={16} />
                                                     </button>
-                                                    <button className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                                                    <button
+                                                        onClick={() => handleDeleteBundle(bundle._id)}
+                                                        className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                        title="Delete bundle"
+                                                    >
                                                         <Trash2 size={16} />
                                                     </button>
                                                 </td>

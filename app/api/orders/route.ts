@@ -30,21 +30,19 @@ export async function POST(req: Request) {
             bundleName,
             price,
             phoneNumber,
-            status: 'pending', // Pending until processed
+            status: 'pending', // Pending until admin manually updates it
         });
 
-        // Simulate processing
-        setTimeout(async () => {
-            try {
-                await Order.findByIdAndUpdate(order._id, { status: 'completed' });
-            } catch (e) {
-                console.error("Error updating order status", e);
-            }
-        }, 5000); // 5 seconds processing
+        console.log('📦 New order created:', {
+            orderId: order._id,
+            user: session.user.email,
+            bundle: `${network} ${bundleName}`,
+            status: 'pending'
+        });
 
         return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });
     } catch (error) {
         console.error("Order creation error:", error);
-        return NextResponse.json({ message: "Error simulating purchase" }, { status: 500 });
+        return NextResponse.json({ message: "Error creating order" }, { status: 500 });
     }
 }

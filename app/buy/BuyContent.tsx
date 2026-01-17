@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ChevronRight, Loader2 } from "lucide-react";
@@ -10,13 +10,6 @@ const NETWORKS = [
     { id: "MTN", name: "MTN", color: "bg-yellow-400", textColor: "text-yellow-900" },
     { id: "Telecel", name: "Telecel", color: "bg-red-500", textColor: "text-white" },
     { id: "AirtelTigo", name: "AirtelTigo", color: "bg-blue-600", textColor: "text-white" },
-];
-
-const MOCK_BUNDLES = [
-    { id: "1", name: "1GB", price: 10 },
-    { id: "2", name: "2GB", price: 18 },
-    { id: "3", name: "5GB", price: 40 },
-    { id: "4", name: "10GB", price: 75 },
 ];
 
 export default function BuyContent() {
@@ -29,6 +22,34 @@ export default function BuyContent() {
     const [selectedBundle, setSelectedBundle] = useState<any>(null);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
+    const [bundles, setBundles] = useState<any[]>([]);
+    const [loadingBundles, setLoadingBundles] = useState(false);
+
+    // Fetch bundles when network is selected
+    useEffect(() => {
+        if (selectedNetwork) {
+            fetchBundles();
+        }
+    }, [selectedNetwork]);
+
+    const fetchBundles = async () => {
+        setLoadingBundles(true);
+        try {
+            const res = await fetch('/api/bundles');
+            if (res.ok) {
+                const data = await res.json();
+                // Filter bundles by selected network and only active ones
+                const filtered = data.filter((b: any) =>
+                    b.network === selectedNetwork && b.isActive
+                );
+                setBundles(filtered);
+            }
+        } catch (error) {
+            console.error('Failed to fetch bundles:', error);
+        } finally {
+            setLoadingBundles(false);
+        }
+    };
 
     const handlePurchase = async () => {
         setLoading(true);
@@ -105,25 +126,42 @@ export default function BuyContent() {
                     </div>
 
                     <p className="text-sm font-medium text-zinc-500">Select Bundle Size</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        {MOCK_BUNDLES.map((bundle) => (
+
+                    {loadingBundles ? (
+                        <div className="flex items-center justify-center py-12">
+                            <Loader2 className="animate-spin text-blue-600" size={32} />
+                        </div>
+                    ) : bundles.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
                             <button
-                                key={bundle.id}
-                                onClick={() => {
-                                    setSelectedBundle(bundle);
-                                    setStep(3);
-                                }}
-                                className={clsx(
-                                    "p-4 rounded-xl border transition-all text-left",
-                                    "hover:shadow-md",
-                                    "bg-white border-zinc-200 hover:border-blue-500"
-                                )}
+                                onClick={() => setStep(1)}
+                                className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium"
                             >
-                                <h3 className="text-lg font-bold mb-1 text-zinc-900">{bundle.name}</h3>
-                                <p className="text-blue-600 font-medium">GHS {bundle.price.toFixed(2)}</p>
+                                Choose another network
                             </button>
-                        ))}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-3">
+                            {bundles.map((bundle: any) => (
+                                <button
+                                    key={bundle._id}
+                                    onClick={() => {
+                                        setSelectedBundle(bundle);
+                                        setStep(3);
+                                    }}
+                                    className={clsx(
+                                        "p-4 rounded-xl border transition-all text-left",
+                                        "hover:shadow-md",
+                                        "bg-white border-zinc-200 hover:border-blue-500"
+                                    )}
+                                >
+                                    <h3 className="text-lg font-bold mb-1 text-zinc-900">{bundle.name}</h3>
+                                    <p className="text-blue-600 font-medium">GHS {bundle.price.toFixed(2)}</p>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 

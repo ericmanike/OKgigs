@@ -5,6 +5,7 @@ import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 import Order from "@/models/Order";
 
+
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
@@ -23,7 +24,7 @@ export async function GET() {
             { $group: { _id: null, total: { $sum: "$price" } } }
         ]);
         const totalSales = salesResult.length > 0 ? salesResult[0].total : 0;
-
+        
         return NextResponse.json({
             users: userCount,
             orders: orderCount,
