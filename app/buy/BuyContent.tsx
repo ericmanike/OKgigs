@@ -1,12 +1,37 @@
 "use client";
 
+
+
+
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ChevronRight, Loader2 } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
+import {useSession} from "next-auth/react"
 
+
+
+
+
+declare global {
+  interface Window {
+    PaystackPop: {
+      setup: (options: {
+        key: string
+        email: string
+        currency: string
+        amount: number
+        ref: string
+        onClose: () => void
+        callback: (response: { reference: string }) => void
+      }) => {
+        openIframe: () => void
+      }
+    }
+  }
+}
 const NETWORKS = [
     { id: "MTN", name: "MTN", color: "bg-yellow-400", textColor: "text-yellow-900" },
     { id: "Telecel", name: "Telecel", color: "bg-red-500", textColor: "text-white" },
@@ -25,6 +50,15 @@ export default function BuyContent() {
     const [loading, setLoading] = useState(false);
     const [bundles, setBundles] = useState<any[]>([]);
     const [loadingBundles, setLoadingBundles] = useState(false);
+    const {data: session} = useSession()
+
+
+  const loadPaystackScript = () => {
+    const script = document.createElement('script')
+    script.src = 'https://js.paystack.co/v1/inline.js'
+    script.async = true
+    document.body.appendChild(script)
+  }
 
     // Fetch bundles when network is selected
     useEffect(() => {
@@ -34,6 +68,7 @@ export default function BuyContent() {
     }, [selectedNetwork]);
 
     const fetchBundles = async () => {
+      
         setLoadingBundles(true);
         try {
             const res = await fetch('/api/bundles');
@@ -55,22 +90,71 @@ export default function BuyContent() {
     const handlePurchase = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    network: selectedNetwork,
+             loadPaystackScript();
+
+
+  const reference = Date.now().toString()
+
+ const  paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+  if (!paystackKey) {
+    console.log('   Paystack public key not found', paystackKey)
+    throw new Error('Paystack public key not found');
+
+  }
+        if(!window.PaystackPop){
+            console.log('Paystack script not loaded');
+            return;
+        }
+
+        
+
+      const handler = window.PaystackPop.setup({
+        key: paystackKey!,
+        email:session?.user?.email!,
+        currency: 'GHS',
+        amount: parseFloat(selectedBundle.price.toString()) * 100, // Convert to kobo
+        
+        ref: reference,
+        onClose: () => {
+      
+        },
+        callback: function (response) {
+  (async () => {
+    try {
+      const verifyResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+             network: selectedNetwork,
                     bundleName: selectedBundle.name,
                     price: selectedBundle.price,
                     phoneNumber,
-                }),
-            });
+                    reference,
+         }),
+      });
 
-            if (!res.ok) throw new Error("Purchase failed");
+      if (verifyResponse.ok) {
+        console.log('Payment verified');
+        setTimeout(() => router.push('/dashboard'), 2000);
+      } else {
+        console.log('Payment verification failed');
+      }
+    } catch (err) {
+      console.error('Error verifying payment', err);
+    } finally {
+  
+    }
+  })();
+},
 
-            router.push("/history");
-            router.refresh();
+      })
+
+
+
+      handler.openIframe()
         } catch (error) {
+
+            console.log(error)
             console.error(error);
             alert("Something went wrong with the purchase.");
         } finally {

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
-import User from "@/models/User";
+
 
 export async function POST(req: Request) {
     try {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const { network, bundleName, price, phoneNumber } = await req.json();
+        const { network, bundleName, price, phoneNumber, reference } = await req.json();
 
         if (!network || !bundleName || !price || !phoneNumber) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -20,11 +20,45 @@ export async function POST(req: Request) {
 
         await dbConnect();
 
-        // In a real app, you would verify wallet balance here and deduct it
-        // const user = await User.findById(session.user.id);
-        // if (user.walletBalance < price) { ... }
+       
 
-        const order = await Order.create({
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY 
+
+    if(!PAYSTACK_SECRET_KEY){
+        console.log('Paystack secret key not found')
+      return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
+    }
+    const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      },
+    })
+
+    const paystackData = await verifyResponse.json()
+
+    console.log('Payment verification response:', paystackData)
+    if (!paystackData.data) {
+      return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
+    }
+
+    const { amount, currency, metadata } = paystackData.data
+
+    if (amount / 100 !== price) {
+      return NextResponse.json({ message: "Payment amount does not match" }, { status: 400 });
+    }
+
+    if (currency !== "GHS") {
+      return NextResponse.json({ message: "Payment currency is not GHS" }, { status: 400 });
+    }
+
+
+
+if( paystackData.data.status !== 'success'){
+  return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
+}
+
+
+    const order = await Order.create({
             user: session.user.id,
             network,
             bundleName,
@@ -33,12 +67,7 @@ export async function POST(req: Request) {
             status: 'pending', // Pending until admin manually updates it
         });
 
-        console.log('📦 New order created:', {
-            orderId: order._id,
-            user: session.user.email,
-            bundle: `${network} ${bundleName}`,
-            status: 'pending'
-        });
+        console.log('📦 New order created:', order);
 
         return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });
     } catch (error) {
