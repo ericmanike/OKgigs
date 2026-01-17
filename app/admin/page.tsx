@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, XCircle, Clock, Shield, AlertCircle, X } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/Card";
+import { formatCurrency } from "@/lib/utils";
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0 });
@@ -110,6 +111,25 @@ export default function AdminDashboard() {
             alert('Error saving bundle');
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleDeleteOrder = async (orderId: string) => {
+        if (!confirm('Are you sure you want to delete this order?')) return;
+
+        try {
+            const res = await fetch(`/api/admin/orders/${orderId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                setOrders(orders.filter(o => o._id !== orderId));
+            } else {
+                alert('Failed to delete order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting order');
         }
     };
 
@@ -331,9 +351,7 @@ export default function AdminDashboard() {
                                             <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
                                                 <Users size={24} />
                                             </div>
-                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
-                                                +4% <span className="opacity-50 text-green-800">vs last week</span>
-                                            </span>
+
                                         </div>
                                         <p className="text-zinc-500 text-sm font-medium">Total Users</p>
                                         <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.users}</h3>
@@ -346,9 +364,8 @@ export default function AdminDashboard() {
                                             <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
                                                 <ShoppingBag size={24} />
                                             </div>
-                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
-                                                +12% <span className="opacity-50 text-green-800">vs last week</span>
-                                            </span>
+
+
                                         </div>
                                         <p className="text-zinc-500 text-sm font-medium">Total Orders</p>
                                         <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.orders}</h3>
@@ -361,12 +378,10 @@ export default function AdminDashboard() {
                                             <div className="p-3 bg-green-100 text-green-600 rounded-xl">
                                                 <CreditCard size={24} />
                                             </div>
-                                            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg flex items-center gap-1">
-                                                +8% <span className="opacity-50 text-green-800">vs last week</span>
-                                            </span>
+
                                         </div>
                                         <p className="text-zinc-500 text-sm font-medium">Total Sales</p>
-                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">GHS {stats.sales.toLocaleString()}</h3>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{formatCurrency(stats.sales)}</h3>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -397,6 +412,7 @@ export default function AdminDashboard() {
                                             <th className="px-6 py-4">Amount</th>
                                             <th className="px-6 py-4">Date</th>
                                             <th className="px-6 py-4">Status</th>
+                                            <th className="px-6 py-4 text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100">
@@ -416,7 +432,7 @@ export default function AdminDashboard() {
                                                         {order.network} {order.bundleName}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 font-medium text-zinc-700">GHS {order.price.toFixed(2)}</td>
+                                                <td className="px-6 py-4 font-medium text-zinc-700">{formatCurrency(order.price)}</td>
                                                 <td className="px-6 py-4 text-zinc-500">{new Date(order.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4">
                                                     {/* <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
@@ -441,8 +457,25 @@ export default function AdminDashboard() {
                                                         <option value="failed">Failed</option>
                                                     </select>
                                                 </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        onClick={() => handleDeleteOrder(order._id)}
+                                                        className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                        title="Delete order"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
+                                        {orders.length === 0 && (
+                                            <tr>
+                                                <td colSpan={7} className="px-6 py-12 text-center text-zinc-500">
+                                                    <ShoppingBag size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
+                                                    <p>No orders found</p>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -499,6 +532,14 @@ export default function AdminDashboard() {
                                                 </td>
                                             </tr>
                                         ))}
+                                        {users.length === 0 && (
+                                            <tr>
+                                                <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                                                    <Users size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
+                                                    <p>No users found</p>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -540,7 +581,7 @@ export default function AdminDashboard() {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-zinc-900 font-medium">{bundle.name}</td>
-                                                <td className="px-6 py-4 text-zinc-600">{bundle.price.toFixed(2)}</td>
+                                                <td className="px-6 py-4 text-zinc-600">{formatCurrency(bundle.price)}</td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-2 py-1 rounded-full text-xs font-medium 
                                                         ${bundle.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>

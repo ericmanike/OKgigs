@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ChevronRight, Loader2 } from "lucide-react";
 import clsx from "clsx";
+import { formatCurrency } from "@/lib/utils";
 
 const NETWORKS = [
     { id: "MTN", name: "MTN", color: "bg-yellow-400", textColor: "text-yellow-900" },
@@ -157,7 +158,7 @@ export default function BuyContent() {
                                     )}
                                 >
                                     <h3 className="text-lg font-bold mb-1 text-zinc-900">{bundle.name}</h3>
-                                    <p className="text-blue-600 font-medium">GHS {bundle.price.toFixed(2)}</p>
+                                    <p className="text-blue-600 font-medium">{formatCurrency(bundle.price)}</p>
                                 </button>
                             ))}
                         </div>
@@ -203,7 +204,7 @@ export default function BuyContent() {
                                 </div>
                                 <div className="border-t border-blue-500 my-2 pt-2 flex justify-between items-center">
                                     <span className="text-white">Total Price</span>
-                                    <span className="text-xl font-bold text-white">GHS {selectedBundle.price.toFixed(2)}</span>
+                                    <span className="text-xl font-bold text-white">{formatCurrency(selectedBundle.price)}</span>
                                 </div>
                             </div>
 

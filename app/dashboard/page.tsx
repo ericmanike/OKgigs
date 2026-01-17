@@ -6,6 +6,7 @@ import { History, CreditCard, ChevronRight, Wifi, CheckCircle2, XCircle, Clock }
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import { redirect } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
@@ -92,7 +93,7 @@ export default async function DashboardPage() {
                 <Card>
                     <CardContent className="divide-y divide-zinc-100 dark:divide-zinc-800 p-0">
                         {recentOrders.length === 0 ? (
-                            <div className="p-8 text-center text-blue-200">
+                            <div className="p-8 text-center text-slate-950">
                                 <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <CreditCard size={20} className="text-white" />
                                 </div>
@@ -114,7 +115,7 @@ export default async function DashboardPage() {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-semibold text-sm">GHS {order.price.toFixed(2)}</p>
+                                        <p className="font-semibold text-sm">{formatCurrency(order.price)}</p>
                                         <div className="flex items-center justify-end gap-1 mt-0.5">
                                             {order.status === 'completed' && <CheckCircle2 size={12} className="text-green-500" />}
                                             {order.status === 'failed' && <XCircle size={12} className="text-red-500" />}

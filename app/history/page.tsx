@@ -5,6 +5,7 @@ import Order from "@/models/Order";
 import { Card, CardContent } from "@/components/ui/Card";
 import { CheckCircle2, XCircle, Clock, Wifi } from "lucide-react";
 import { redirect } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
 export default async function HistoryPage() {
     const session = await getServerSession(authOptions);
@@ -50,7 +51,7 @@ export default async function HistoryPage() {
                                 </div>
 
                                 <div className="text-right">
-                                    <p className="font-bold text-white">GHS {order.price.toFixed(2)}</p>
+                                    <p className="font-bold text-white">{formatCurrency(order.price)}</p>
                                     <div className="flex items-center justify-end gap-1 mt-1">
                                         {order.status === 'completed' && <CheckCircle2 size={14} className="text-green-600" />}
                                         {order.status === 'failed' && <XCircle size={14} className="text-red-600" />}
