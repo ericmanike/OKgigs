@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, XCircle, Clock, Shield, AlertCircle, X } from "lucide-react";
-import Link from "next/link";
+import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, Shield, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
 
@@ -25,6 +24,18 @@ export default function AdminDashboard() {
         price: '',
         isActive: true
     });
+
+    //dakazi states
+    const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { 'Wallet Balance': 0 }, mtndata: [], teleceldata: [], airteltigodata: [] });
+
+
+
+
+
+
+
+
+
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -39,6 +50,13 @@ export default function AdminDashboard() {
             if (statsRes.ok) {
                 const data = await statsRes.json();
                 setStats(data);
+            }
+
+
+            const dakaziRes = await fetch('/api/testingDakazi');
+            if (dakaziRes.ok) {
+                const data = await dakaziRes.json();
+                setDakaziStats(data);
             }
 
             // Fetch Bundles
@@ -73,9 +91,10 @@ export default function AdminDashboard() {
 
     // Effect to lazy load data when tab changes if needed (already preloaded above for simplicity)
     useEffect(() => {
-        // if (activeTab === 'users' && users.length === 0) loadTabSpecificData('users');
-        // if (activeTab === 'orders' && orders.length === 0) loadTabSpecificData('orders');
-    }, [activeTab]);
+
+        console.log(dakaziStats);
+
+    }, [dakaziStats]);
 
     const handleSaveBundle = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -211,7 +230,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-zinc-50 text-zinc-900 p-4 md:p-8 pt-24 pb-24 md:pb-8 relative">
+        <div className="min-h-screen bg-zinc-50 text-zinc-900 p-2 sm:p-4 md:p-8 pt-24 pb-24 md:pb-8 relative overflow-y-auto">
 
             {/* Modal Overlay */}
             {isBundleModalOpen && (
@@ -259,7 +278,8 @@ export default function AdminDashboard() {
                                     step="0.01"
                                     placeholder="0.00"
                                     required
-                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 
+                                    focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                     value={bundleForm.price}
                                     onChange={(e) => setBundleForm({ ...bundleForm, price: e.target.value })}
                                 />
@@ -299,14 +319,14 @@ export default function AdminDashboard() {
             <div className="max-w-7xl mx-auto space-y-8">
 
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-zinc-900">Admin Dashboard</h1>
-                        <p className="text-zinc-500 mt-1">Manage users, orders, and system settings.</p>
+                        <h1 className="text-2xl md:text-3xl font-bold text-zinc-900">Admin Dashboard</h1>
+                        <p className="text-zinc-500 text-sm mt-1">Manage users, orders, and system settings.</p>
                     </div>
-                    <div className="flex gap-2">
-                        <div className="px-4 py-2 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-sm text-blue-700 font-medium">
-                            <Shield size={16} /> Admin Access
+                    <div className="flex items-center">
+                        <div className="px-3 py-1.5 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-xs md:text-sm text-blue-700 font-medium">
+                            <Shield size={14} className="md:size-4" /> Admin Access
                         </div>
                     </div>
                 </div>
@@ -315,7 +335,7 @@ export default function AdminDashboard() {
                 <div className="border-b border-zinc-200">
                     <div className="flex gap-6 overflow-x-auto pb-1">
                         {[
-                            { id: 'overview', label: 'Overview', icon: CheckCircle2 },
+                            { id: 'overview', label: 'Stats', icon: CheckCircle2 },
                             { id: 'orders', label: 'Orders', icon: ShoppingBag },
                             { id: 'users', label: 'Users', icon: Users },
                             { id: 'bundles', label: 'Bundles', icon: Package },
@@ -344,33 +364,28 @@ export default function AdminDashboard() {
                     {activeTab === 'overview' && (
                         <>
                             {/* Stats Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <Card className="border-zinc-200 hover:border-blue-400 transition-colors bg-white">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+
+
+                                 <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
                                     <CardContent className="p-6">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-                                                <Users size={24} />
+                                            <div className="p-3 bg-green-100 text-green-600 rounded-xl">
+                                                <CreditCard size={24} />
                                             </div>
 
                                         </div>
-                                        <p className="text-zinc-500 text-sm font-medium">Total Users</p>
-                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.users}</h3>
+                                        <p className="text-zinc-500 text-sm font-medium">Account Balance</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{formatCurrency(dakaziStats.AccountBalance['Wallet Balance'])}</h3>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white">
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
-                                                <ShoppingBag size={24} />
-                                            </div>
+                             
 
+                       
 
-                                        </div>
-                                        <p className="text-zinc-500 text-sm font-medium">Total Orders</p>
-                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.orders}</h3>
-                                    </CardContent>
-                                </Card>
+                        
 
                                 <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
                                     <CardContent className="p-6">
@@ -384,6 +399,35 @@ export default function AdminDashboard() {
                                         <h3 className="text-3xl font-bold mt-1 text-zinc-900">{formatCurrency(stats.sales)}</h3>
                                     </CardContent>
                                 </Card>
+                                             <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white">
+                                    <CardContent className="p-3">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                                                <ShoppingBag size={24} />
+                                            </div>
+
+
+                                        </div>
+                                        <p className="text-zinc-500 text-sm font-medium">Total Orders</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.orders}</h3>
+                                    </CardContent>
+                                </Card>
+
+
+                                      <Card className=" bg-black border-zinc-200 hover:border-blue-400 transition-colors bg-white">
+                                    <CardContent className="p-3">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                                                <Users size={24} />
+                                            </div>
+
+                                        </div>
+                                        <p className="text-zinc-500 text-sm font-medium">Total Users</p>
+                                        <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.users}</h3>
+                                    </CardContent>
+                                </Card>
+
+                 
                             </div>
                         </>
                     )}
@@ -391,14 +435,14 @@ export default function AdminDashboard() {
                     {/* ORDERS TAB */}
                     {activeTab === 'orders' && (
                         <Card className="border-zinc-200 bg-white overflow-hidden">
-                            <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
+                            <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white">
                                 <h3 className="text-lg font-semibold text-zinc-900">Recent Orders</h3>
-                                <div className="relative">
+                                <div className="relative w-full sm:w-64">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Search orders..."
-                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-64 placeholder-zinc-400"
+                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
                                     />
                                 </div>
                             </div>
@@ -485,14 +529,14 @@ export default function AdminDashboard() {
                     {/* USERS TAB */}
                     {activeTab === 'users' && (
                         <Card className="border-zinc-200 bg-white overflow-hidden">
-                            <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
+                            <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white">
                                 <h3 className="text-lg font-semibold text-zinc-900">Registered Users</h3>
-                                <div className="relative">
+                                <div className="relative w-full sm:w-64">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Search users..."
-                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors placeholder-zinc-400"
+                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
                                     />
                                 </div>
                             </div>
@@ -548,74 +592,78 @@ export default function AdminDashboard() {
 
                     {/* BUNDLES TAB */}
                     {activeTab === 'bundles' && (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center">
+                        <div className="space-y-6 px-2 sm:px-0">
+                            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                                 <h2 className="text-xl font-semibold text-zinc-900">Data Bundles</h2>
                                 <button
                                     onClick={openAddModal}
-                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20"
+                                    className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 w-full sm:w-auto"
                                 >
                                     <Plus size={16} /> Add Bundle
                                 </button>
                             </div>
 
                             <Card className="border-zinc-200 bg-white overflow-hidden">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="bg-blue-50 text-blue-800">
-                                        <tr>
-                                            <th className="px-6 py-4 font-medium">Network</th>
-                                            <th className="px-6 py-4 font-medium">Bundle Name</th>
-                                            <th className="px-6 py-4 font-medium">Price (GHS)</th>
-                                            <th className="px-6 py-4 font-medium">Status</th>
-                                            <th className="px-6 py-4 font-medium text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-zinc-100">
-                                        {bundles.map((bundle) => (
-                                            <tr key={bundle._id} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="px-6 py-4 font-medium">
-                                                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase w-16 text-center
-                                                        ${bundle.network === 'MTN' ? 'bg-yellow-100 text-yellow-800' :
-                                                            bundle.network === 'Telecel' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
-                                                        {bundle.network}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-zinc-900 font-medium">{bundle.name}</td>
-                                                <td className="px-6 py-4 text-zinc-600">{formatCurrency(bundle.price)}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium 
-                                                        ${bundle.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                        {bundle.isActive ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 flex gap-2 justify-end">
-                                                    <button
-                                                        onClick={() => openEditModal(bundle)}
-                                                        className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                                        title="Edit bundle"
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteBundle(bundle._id)}
-                                                        className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                        title="Delete bundle"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {bundles.length === 0 && (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-blue-50 text-blue-800">
                                             <tr>
-                                                <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
-                                                    <Package size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
-                                                    <p>No bundles found</p>
-                                                </td>
+                                                <th className="px-6 py-4 font-medium">Network</th>
+                                                <th className="px-6 py-4 font-medium">Bundle Name</th>
+                                                <th className="px-6 py-4 font-medium">Price (GHS)</th>
+                                                <th className="px-6 py-4 font-medium">Status</th>
+                                                <th className="px-6 py-4 font-medium text-right">Actions</th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className="divide-y divide-zinc-100">
+                                            {bundles.map((bundle) => (
+                                                <tr key={bundle._id} className="hover:bg-zinc-50 transition-colors">
+                                                    <td className="px-6 py-4 font-medium">
+                                                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase w-16 text-center
+                                                            ${bundle.network === 'MTN' ? 'bg-yellow-100 text-yellow-800' :
+                                                                bundle.network === 'Telecel' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+                                                            {bundle.network}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-zinc-900 font-medium">{bundle.name}</td>
+                                                    <td className="px-6 py-4 text-zinc-600">{formatCurrency(bundle.price)}</td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium 
+                                                            ${bundle.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                            {bundle.isActive ? 'Active' : 'Inactive'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex gap-2 justify-end">
+                                                            <button
+                                                                onClick={() => openEditModal(bundle)}
+                                                                className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                                title="Edit bundle"
+                                                            >
+                                                                <Edit size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteBundle(bundle._id)}
+                                                                className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                                title="Delete bundle"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {bundles.length === 0 && (
+                                                <tr>
+                                                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                                                        <Package size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
+                                                        <p>No bundles found</p>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </Card>
                         </div>
                     )}

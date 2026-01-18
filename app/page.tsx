@@ -25,9 +25,16 @@ export default function Home() {
           RiskWhiz provides affordable data bundle delivery across Ghana.
         </p>
 
-        <div className="mb-4 mt-4 p-4 bg-yellow-500 text-brown-900 rounded-2xl animate-bounce hover:animate-none">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.6 }}    
+          className="mb-4 mt-4 p-4 bg-yellow-500 text-brown-900 rounded-2xl "
+        >
           <Wifi size={40} />
-        </div>
+        </motion.div>
 
         {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 w-[70vw] text-left">
@@ -71,9 +78,16 @@ export default function Home() {
         </div>
 
         {/* CTA */}
-        <div className="w-[70vw] mt-10">
+       
+       <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0  }}
+          whileHover={{ scale: 1.005 }}
+          whileTap={{ scale: 0.99 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}   className="w-[70vw] mt-10">
           <Link href="/buy">
-            <div className="rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer">
+            <div className="rounded-xl bg-blue-600 text-white hover:bg-blue-700 
+            transition cursor-pointer">
               <div className="flex items-center justify-between p-5">
                 <div className="text-left">
                   <h4 className="font-semibold text-base">
@@ -87,34 +101,58 @@ export default function Home() {
               </div>
             </div>
           </Link>
-        </div>
+        </motion.div>
       </main>
 
       {/* Footer Actions */}
-      <div className="w-full px-5 py-10 bg-black/5 grid grid-cols-1 gap-4 md:flex md:justify-around text-sm text-slate-600 text-center mt-10">
+      <div className="w-full px-5 py-10 
+      bg-black/5 grid grid-cols-1 gap-4 md:flex md:justify-around
+       text-sm text-slate-600 text-center mt-10">
 
-        <a
+        <motion.a
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.1 }}    
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           href="https://wa.me/233543442518"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 bg-[#0e0947] text-white rounded-lg p-3 hover:font-bold transition duration-300"
+          className="flex items-center justify-center
+           gap-2 bg-[#0e0947] text-white rounded-lg p-3 
+           transition duration-300"
         >
           Join us on WhatsApp <FaWhatsapp />
-        </a>
+        </motion.a>
 
-        <a
+          
+        <motion.a
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.05 }}    
           href="/contact"
-          className="flex items-center justify-center gap-2 bg-[#0e0947] text-white rounded-lg p-3 hover:font-bold     transition duration-300"
+          className="flex items-center justify-center gap-2 bg-[#0e0947]
+           text-white rounded-lg p-3    
+           transition duration-300"
         >
           Contact Support <FaPhone />
-        </a>
+        </motion.a>
 
-        <a
+        <motion.a
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.6 }}    
           href="/terms"
-          className="flex items-center justify-center bg-[#0e0947] text-white rounded-lg p-3 hover:font-bold transition duration-300"
+          className="flex items-center justify-center
+           bg-[#0e0947] text-white rounded-lg p-3 
+           transition duration-300"
         >
           Terms of Service
-        </a>
+        </motion.a>
       </div>
     </div>
   );
