@@ -40,6 +40,16 @@ export default function Navbar() {
                 >
                     Buy Data
                 </Link>
+                
+                {/* <Link
+                    href="/agents"
+                    className={clsx(
+                        " text-sm md:text-[16px] font-medium hover:text-blue-700 transition-colors",
+                        pathname === '/agents' ? "text-blue-600 font-bold" : "text-slate-950"
+                    )}
+                >
+                    Become an Agent
+                </Link> */}
 
                 {session ? (
                     <div className="flex items-center gap-4 pl-6 border-l border-blue-500">

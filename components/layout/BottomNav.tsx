@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wifi, User ,LayoutDashboard } from 'lucide-react';
+import { Home, Wifi, User ,LayoutDashboard, Handshake } from 'lucide-react';
 import clsx from 'clsx';
 import { useSession } from 'next-auth/react';
 
@@ -16,6 +16,7 @@ export default function BottomNav() {
     const navItems = [
         { icon: Home, label: 'Home', href: '/' },
         { icon: Wifi, label: 'Buy Data', href: '/buy' },
+        // { icon: Handshake, label: 'Agents', href: '/agents' },
         { icon: User, label: 'Profile', href: '/profile' },
         { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
     ];
