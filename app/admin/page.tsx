@@ -438,7 +438,7 @@ export default function AdminDashboard() {
                                     <tbody className="divide-y divide-zinc-100">
                                         {orders.map((order) => (
                                             <tr key={order._id} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order._id.slice(-6)}</td>
+                                                <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order.transaction_id}</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-zinc-900">{order.user?.name || 'Unknown'}</span>

@@ -31,10 +31,6 @@ export default async function DashboardPage() {
         .sort({ createdAt: -1 })
         .limit(3);
 
-
-
-        
-
     return (
         <div className="p-4 space-y-6 max-w-4xl mx-auto md:pt-28 pt-24 z-0">
             <div className="flex justify-between items-center">
@@ -125,7 +121,7 @@ export default async function DashboardPage() {
                                             <Wifi size={18} />
                                         </div>
                                         <div>
-                                            <p className="font-medium text-sm text-white">{order.network} {order.bundleName}</p>
+                                            <p className="font-medium text-sm text-zinc-900">{order.network} {order.bundleName}</p>
                                             <p className="text-xs text-slate-950">{new Date(order.createdAt).toLocaleDateString()}</p>
                                         </div>
                                     </div>

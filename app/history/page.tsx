@@ -44,7 +44,7 @@ export default async function HistoryPage() {
                                         <Wifi size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-white">{order.network} {order.bundleName}</h3>
+                                        <h3 className="font-semibold text-zinc-900">{order.network} {order.bundleName}</h3>
                                         <p className="text-sm text-slate-950">{new Date(order.createdAt).toLocaleString()}</p>
                                         <p className="text-xs text-slate-950">{order.phoneNumber}</p>
                                     </div>
