@@ -74,12 +74,31 @@ export async function POST(req: Request) {
 
     //  console.log('Payment verification response:', paystackData)
     if (!paystackData.data) {
+      console.log('Payment verification failed no data')
       return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
     }
 
     const { amount, currency } = paystackData.data
-    if (amount / 100 !== price) {
+    
+  
+            const tax = 0.02 * price
+            let total = price + tax
+            console.log('Total before rounding:', total)
+            total = Math.round(total * 100)/100
+            console.log('Total after rounding:', total)
+ 
+         
+       console.log('Expected price:')
+       console.log('Payment amount:', amount / 100)
+
+    if (amount / 100 !== Number(total)) {
+      console.log('Payment amount does not match')
       return NextResponse.json({ message: "Payment amount does not match" }, { status: 400 });
+    }
+
+     if (paystackData.data.status !== 'success') {
+      console.log('Payment verification failed')
+      return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
     }
 
     //place order
@@ -120,15 +139,11 @@ export async function POST(req: Request) {
 
 
 
-    if (currency !== "GHS") {
-      return NextResponse.json({ message: "Payment currency is not GHS" }, { status: 400 });
-    }
+   
 
 
 
-    if (paystackData.data.status !== 'success') {
-      return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
-    }
+   
 
 
     const order = await Order.create({

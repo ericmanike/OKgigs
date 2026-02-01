@@ -2,42 +2,50 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/Card";
-import { History, CreditCard, ChevronRight, Wifi, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { DollarSign, CreditCard, ChevronRight, Wifi, CheckCircle2, XCircle, Clock, Handshake } from "lucide-react";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
+import User from "@/models/User";
 import { redirect } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
+import BecomeAgent from '@/components/ui/becomeAgent'
+import TopUpwallet from '@/components/ui/topUpwallet'
+
 
 export default async function DashboardPage() {
 
-
-
-    
     const session = await getServerSession(authOptions);
 
+  
 
     if (!session) {
         redirect("/auth/login");
     }
 
-    const getStatus = async (transactionId: string) => {
-        const res = await fetch('api/getstatus?transactionId=' + transactionId);
-        const data = await res.json();
-        return (data.status).toString();
-    }
+
 
     await dbConnect();
     const recentOrders = await Order.find({ user: session.user.id })
         .sort({ createdAt: -1 })
         .limit(3);
 
+    const balance = await User.findById(session.user.id ).select("walletBalance");
+
     return (
         <div className="p-4 space-y-6 max-w-4xl mx-auto md:pt-28 pt-24 z-0">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-zinc-900">Hello, {session?.user?.name?.split(" ")[0]} 👋</h1>
-                    <p className="text-zinc-500">Welcome back to RiskWhiz</p>
+                    <p className="text-zinc-500">Welcome back</p>
                 </div>
+                {session?.user?.role !== 'admin' && (
+                   
+                   <div className=" flex items-center gap-5">
+                     <strong>Balance {formatCurrency(balance?.walletBalance || 0 )}</strong>
+                     <TopUpwallet />
+                  
+                    </div>
+                )}
             </div>
 
             {/* Quick Actions / Shortcuts */}
@@ -45,9 +53,9 @@ export default async function DashboardPage() {
                 <h3 className="text-lg font-bold mb-3">Quick Actions</h3>
                 <div className="grid grid-cols-2 gap-3">
                     <Link href="/buy?network=MTN">
-                        <Card className="hover:border-blue-500 hover:shadow-md cursor-pointer transition-all">
+                        <Card className="hover:border-yellow-700  hover:shadow-md cursor-pointer transition-all">
                             <CardContent className="flex items-center gap-3 p-4">
-                                <div className="w-10 h-10 rounded-full bg-yellow-400/20 text-yellow-600 flex items-center justify-center font-bold">M</div>
+                                <div className="w-10 h-10 rounded-full bg-yellow-500 text-brown-500 flex items-center justify-center font-bold">M</div>
                                 <div>
                                     <p className="font-semibold text-sm">MTN</p>
                                     <p className="text-xs text-slate-950">Buy Data</p>
@@ -56,9 +64,9 @@ export default async function DashboardPage() {
                         </Card>
                     </Link>
                     <Link href="/buy?network=Telecel">
-                        <Card className="hover:border-red-500 hover:shadow-md cursor-pointer transition-all">
+                        <Card className="hover:border-red-600  hover:shadow-md cursor-pointer transition-all">
                             <CardContent className="flex items-center gap-3 p-4">
-                                <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold">T</div>
+                                <div className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold">T</div>
                                 <div>
                                     <p className="font-semibold text-sm">Telecel</p>
                                     <p className="text-xs text-slate-950">Buy Data</p>
@@ -67,9 +75,9 @@ export default async function DashboardPage() {
                         </Card>
                     </Link>
                     <Link href="/buy?network=AT">
-                        <Card className="hover:border-blue-400 hover:shadow-md cursor-pointer transition-all">
+                        <Card className="hover:border-blue-700  hover:shadow-md cursor-pointer transition-all">
                             <CardContent className="flex items-center gap-3 p-4">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">A</div>
+                                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">A</div>
                                 <div>
                                     <p className="font-semibold text-sm">AT</p>
                                     <p className="text-xs text-slate-950">Buy Data</p>
@@ -77,19 +85,21 @@ export default async function DashboardPage() {
                             </CardContent>
                         </Card>
                     </Link>
-                    <Link href="/history">
+                   
                         <Card className="hover:border-zinc-400 hover:shadow-md cursor-pointer transition-all">
                             <CardContent className="flex items-center gap-3 p-4">
-                                <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center">
-                                    <History size={18} />
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-sm">History</p>
-                                    <p className="text-xs text-slate-950">Transactions</p>
+                               
+
+                                <div className="grid grid-cols-1  md:grid-cols-2 gap-2   taxt-[14px]">
+                                    <Link href="/agents"> <button className="bg-yellow-500 text-brown-500 px-4 py-2 rounded-lg"> 
+                                    AFA Registration</button></Link>
+                                        
+                                        <BecomeAgent />
+
                                 </div>
                             </CardContent>
                         </Card>
-                    </Link>
+                 
                 </div>
             </div>
 
@@ -126,9 +136,9 @@ export default async function DashboardPage() {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-semibold text-sm">{formatCurrency(order.price)}</p>
+                                        <p className="font-semibold text-black  text-sm">{formatCurrency(order.price)}</p>
                                         <div className="flex items-center justify-end gap-1 mt-0.5">
-                                            
+
                                             {order.status === 'delivered' && <CheckCircle2 size={12} className="text-green-500" />}
                                             {order.status === 'failed' && <XCircle size={12} className="text-red-500" />}
                                             {order.status === 'pending' && <Clock size={12} className="text-orange-500" />}
@@ -136,10 +146,10 @@ export default async function DashboardPage() {
                                                 ${order.status === 'delivered' ? 'text-green-600' :
                                                     order.status === 'failed' ? 'text-red-500' :
                                                         'text-orange-600'}`}>
-                                              {order.status === 'delivered' ? 'Delivered' : order.status}
-                                            
+                                                {order.status === 'delivered' ? 'Delivered' : order.status}
+
                                             </span>
-                                    
+
                                         </div>
                                         <span className="text-xs text-slate-950"> <strong>Order ID:</strong> {order.transaction_id}</span>
                                     </div>

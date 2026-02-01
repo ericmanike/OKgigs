@@ -3,10 +3,18 @@
 import { useSession, signOut } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { User, Mail, Phone, LogOut, Shield } from "lucide-react";
+import { useEffect } from "react";
 import clsx from "clsx";
 
 export default function ProfilePage() {
-    const { data: session } = useSession();
+    const { data: session, update } = useSession();
+
+    useEffect(() => {
+          (async () => {
+            await update();
+          });
+    
+    }, []);
 
     return (
         <div className="p-4 max-w-md mx-auto space-y-6 md:pt-25 pt-24 z-0">
@@ -19,7 +27,7 @@ export default function ProfilePage() {
                 <h2 className="text-xl font-bold text-slate-600">{session?.user?.name}</h2>
                 <p className="text-slate-900 text-sm">{session?.user?.email}</p>
                 <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-blue-700 rounded-full text-xs font-medium uppercase tracking-wider text-blue-100 border border-blue-400">
-                    {session?.user?.role === 'admin' && <Shield size={12} />} {session?.user?.role || 'User'}
+                    {session?.user?.role === 'admin' && <Shield size={12} />} {session?.user?.role || 'Undefined'}
                 </div>
             </Card>
 

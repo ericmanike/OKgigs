@@ -38,9 +38,9 @@ export default async function HistoryPage() {
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center 
-                    ${order.network === 'MTN' ? 'bg-yellow-100 text-yellow-700' :
-                                            order.network === 'Telecel' ? 'bg-red-100 text-red-700' :
-                                                'bg-blue-100 text-blue-700'}`}>
+                    ${order.network === 'MTN' ? 'bg-yellow-500 text-brown-500' :
+                                            order.network === 'Telecel' ? 'bg-red-500 text-white' :
+                                                'bg-blue-500 text-white'}`}>
                                         <Wifi size={20} />
                                     </div>
                                     <div>

@@ -5,28 +5,29 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { ChevronRight, Loader2 } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
-import {useSession} from "next-auth/react"
+import { useSession } from "next-auth/react"
+import BuyingModal from "@/components/ui/buyingModal"
 
 
 
 
 
 declare global {
-  interface Window {
-    PaystackPop: {
-      setup: (options: {
-        key: string
-        email: string
-        currency: string
-        amount: number
-        ref: string
-        onClose: () => void
-        callback: (response: { reference: string }) => void
-      }) => {
-        openIframe: () => void
-      }
+    interface Window {
+        PaystackPop: {
+            setup: (options: {
+                key: string
+                email: string
+                currency: string
+                amount: number
+                ref: string
+                onClose: () => void
+                callback: (response: { reference: string }) => void
+            }) => {
+                openIframe: () => void
+            }
+        }
     }
-  }
 }
 const NETWORKS = [
     { id: "MTN", name: "MTN", color: "bg-yellow-400", textColor: "text-yellow-900" },
@@ -46,15 +47,17 @@ export default function BuyContent() {
     const [loading, setLoading] = useState(false);
     const [bundles, setBundles] = useState<any[]>([]);
     const [loadingBundles, setLoadingBundles] = useState(false);
-    const {data: session} = useSession()
+    const { data: session } = useSession()
 
+    const [buyModalOpen, setBuyModalOpen] = useState(true);
+    const [message, setMessage] = useState("")
 
-  const loadPaystackScript = () => {
-    const script = document.createElement('script')
-    script.src = 'https://js.paystack.co/v1/inline.js'
-    script.async = true
-    document.body.appendChild(script)
-  }
+    const loadPaystackScript = () => {
+        const script = document.createElement('script')
+        script.src = 'https://js.paystack.co/v1/inline.js'
+        script.async = true
+        document.body.appendChild(script)
+    }
 
     // Fetch bundles when network is selected
     useEffect(() => {
@@ -62,19 +65,32 @@ export default function BuyContent() {
             fetchBundles();
             loadPaystackScript();
         }
-    }, [selectedNetwork]);
+    }, [selectedNetwork, session]);
 
     const fetchBundles = async () => {
-      
         setLoadingBundles(true);
         try {
             const res = await fetch('/api/bundles');
             if (res.ok) {
                 const data = await res.json();
-                // Filter bundles by selected network and only active ones
-                const filtered = data.filter((b: any) =>
-                    b.network === selectedNetwork && b.isActive
-                );
+                const userRole = session?.user?.role;
+
+                // Filter bundles by selected network, active status, and audience
+                const filtered = data.filter((b: any) => {
+                    // Basic filters
+                    if (b.network !== selectedNetwork || !b.isActive) return false;
+
+                    // Audience filter
+                    // If bundle is for agents, only agents (or admins) can see it
+                    if (b.audience === 'agent') {
+                        return userRole === 'agent' || userRole === 'admin';
+                    }
+
+                    // If bundle is for users (default), everyone can see it
+                    // Optional: You could hide user bundles from agents if you wanted strict separation
+                    return b.audience === 'user' || b.audience === 'admin';
+                });
+
                 setBundles(filtered);
             }
         } catch (error) {
@@ -86,73 +102,84 @@ export default function BuyContent() {
 
     const handlePurchase = async () => {
 
-    if(phoneNumber.length   <10){
-        alert("Valid Phone number is required")
-        return
-    }
-
- setLoading(true);
-        try {
-         
-  const reference = Date.now().toString()
-
- const  paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
-  if (!paystackKey) {
-    console.log('   Paystack public key not found', paystackKey)
-    throw new Error('Paystack public key not found');
-
-  }
-        if(!window.PaystackPop){
-            console.log('Paystack script not loaded');
-            return;
+        if (phoneNumber.length < 10) {
+            alert("Valid Phone number is required")
+            return
         }
 
-        
+        setLoading(true);
+        try {
 
-      const handler = window.PaystackPop.setup({
-        key: paystackKey!,
-        email:session?.user?.email!,
-        currency: 'GHS',
-        amount: Math.round(Number(selectedBundle.price) * 100), // Convert to kobo
-        
-        ref: reference,
-        onClose: () => {
-      
-        },
-        callback: function (response) {
-  (async () => {
-    try {
-      const verifyResponse = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-             network: selectedNetwork,
-                    bundleName: selectedBundle.name.slice(0,-2),
-                    price: selectedBundle.price,
-                    phoneNumber,
-                    reference,
-         }),
-      });
+            const reference = Date.now().toString()
 
-      if (verifyResponse.ok) {
-        console.log('Payment verified');
-        setTimeout(() => router.push('/dashboard'), 2000);
-      } else {
-        console.log('Payment verification failed');
-      }
-    } catch (err) {
-      console.error('Error verifying payment', err);
-    } finally {
-  
-    }
-  })();
-},
+            const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+            if (!paystackKey) {
+                console.log('   Paystack public key not found', paystackKey)
+                throw new Error('Paystack public key not found');
 
-      })
+            }
+            if (!window.PaystackPop) {
+                console.log('Paystack script not loaded');
+                return;
+            }
+
+
+            const price = selectedBundle.price
+            const tax = 0.02 * price
+            let total = price + tax
 
 
 
-      handler.openIframe()
+
+
+
+            const handler = window.PaystackPop.setup({
+                key: paystackKey!,
+                email: session?.user?.email!,
+                currency: 'GHS',
+                amount: Math.round(total * 100), // Convert to kobo
+
+                ref: reference,
+                onClose: () => {
+
+                },
+                callback: function (response) {
+                    (async () => {
+                        try {
+                            const verifyResponse = await fetch('/api/orders', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    network: selectedNetwork,
+                                    bundleName: selectedBundle.name.slice(0, -2),
+                                    price: selectedBundle.price,
+                                    phoneNumber,
+                                    reference,
+                                }),
+                            });
+
+                            if (verifyResponse.ok) {
+                                console.log('Payment verified');
+                                setTimeout(() => router.push('/dashboard'), 2000);
+                                setMessage("Payment successful");
+                            } else {
+                                console.log('Payment verification failed');
+
+                            }
+                        } catch (err: any) {
+                            console.error('Error verifying payment', err);
+                            setMessage(err.message);
+                        } finally {
+
+                        }
+                    })();
+                },
+
+            })
+
+
+
+            handler.openIframe()
         } catch (error) {
 
             console.log(error)
@@ -163,13 +190,50 @@ export default function BuyContent() {
         }
     };
 
+    const handleWalletPurchase = async () => {
+        if (phoneNumber.length < 10) {
+            alert("Valid Phone number is required")
+            return
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch('/api/walletPurchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    network: selectedNetwork,
+                    bundleName: selectedBundle.name.slice(0, -2),
+                    price: selectedBundle.price,
+                    phoneNumber,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setMessage("Purchase successful! Redirecting...");
+                setTimeout(() => router.push('/dashboard'), 2000);
+            } else {
+                alert(data.message || "Wallet purchase failed");
+                setMessage(data.message || "Purchase failed");
+            }
+        } catch (error: any) {
+            console.error('Wallet purchase error:', error);
+            alert("Something went wrong with the wallet purchase.");
+            setMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="p-4 max-w-md mx-auto min-h-screen md:pt-35 pt-24 z-0">
+        <div className="p-4 md:max-w-[60%] mx-auto min-h-screen md:pt-35 pt-24 z-0">
             <h1 className="text-2xl font-bold mb-6">Buy Data Bundle</h1>
 
             {/* Step 1: Select Network */}
             {step === 1 && (
-                <div className="space-y-4">
+                <div className="space-y-4 w-[80%] mx-auto">
                     <p className="text-sm font-medium text-zinc-500 mb-2">Select Network</p>
                     <div className="grid grid-cols-1 gap-3">
                         {NETWORKS.map((net) => (
@@ -202,7 +266,7 @@ export default function BuyContent() {
 
             {/* Step 2: Select Bundle */}
             {step === 2 && (
-                <div className="space-y-4">
+                <div className="space-y-4 ">
                     <div className="flex items-center gap-2 mb-4">
                         <button onClick={() => setStep(1)} className="text-sm text-zinc-500 hover:text-zinc-900">
                             Change Network
@@ -238,8 +302,8 @@ export default function BuyContent() {
                                     }}
                                     className={clsx(
                                         "p-4 rounded-xl border transition-all text-left",
-                                        "hover:shadow-md",
-                                        "bg-white border-zinc-200 hover:border-blue-500"
+                                        "hover:shadow-lg",
+                                        "bg-white border-zinc-300 "
                                     )}
                                 >
                                     <h3 className="text-lg font-bold mb-1 text-zinc-900">{bundle.name}</h3>
@@ -253,7 +317,8 @@ export default function BuyContent() {
 
             {/* Step 3: Enter Number & Confirm */}
             {step === 3 && (
-                <div className="space-y-6">
+                <div className="space-y-6 w-[80%] mx-auto">
+                    <BuyingModal isOpen={buyModalOpen} onClose={() => setBuyModalOpen(false)} />
                     <div className="flex items-center gap-2 mb-4">
                         <button onClick={() => setStep(2)} className="text-sm text-zinc-500 hover:text-zinc-900">
                             Change Package
@@ -287,21 +352,42 @@ export default function BuyContent() {
                                     <span className="text-white">Package</span>
                                     <span className="font-semibold text-white">{selectedBundle.name}</span>
                                 </div>
-                                <div className="border-t border-blue-500 my-2 pt-2 flex justify-between items-center">
-                                    <span className="text-white">Total Price</span>
-                                    <span className="text-xl font-bold text-white">{formatCurrency(selectedBundle.price)}</span>
-                                </div>
-                            </div>
 
-                            <button
-                                onClick={handlePurchase}
-                                disabled={loading || phoneNumber.length < 10}
-                                className="w-full py-3.5 text-white hover:bg-blue-700 bg-blue-600 rounded-xl font-semibold transition-all flex items-center justify-center
-                                 gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
-                                 cursor-pointer"
-                            >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : "Confirm Purchase"}
-                            </button>
+
+                                <div className="border-t border-blue-500 my-2 pt-2 flex justify-between items-center">
+                                    <span className="text-white">Transaction Fee</span>
+                                    <span className="text-xl font-bold text-white">{formatCurrency(0.02 * selectedBundle.price)}</span>
+                                </div>
+
+                                <div className="border-t border-blue-500 my-2 pt-2 flex justify-between items-center">
+                                    <span className="text-white">   Total Price</span>
+                                    <span className="text-xl font-bold text-white">{formatCurrency(selectedBundle.price + 0.02 * selectedBundle.price)}</span>
+                                </div>
+
+                            </div>
+                            {message && <p className="text-center text-green-600 font-semibold">{message}</p>}
+
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handlePurchase}
+                                    disabled={loading || phoneNumber.length < 10}
+                                    className="w-full py-3.5 text-white hover:bg-blue-700 bg-blue-600 rounded-xl font-semibold transition-all flex items-center justify-center
+                                     gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
+                                     cursor-pointer"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with Paystack"}
+                                </button>
+
+                                <button
+                                    onClick={handleWalletPurchase}
+                                    disabled={loading || phoneNumber.length < 10}
+                                    className="w-full py-3.5 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center
+                                     gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
+                                     cursor-pointer"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Buy with Wallet"}
+                                </button>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>

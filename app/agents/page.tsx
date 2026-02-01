@@ -19,6 +19,7 @@ type FormState = {
   phone: string;
   businessName: string;
   monthlyVolume: string;
+  ghanaCard: string;
   message: string;
 };
 
@@ -67,6 +68,7 @@ export default function AgentsPage() {
     phone: '',
     businessName: '',
     monthlyVolume: '',
+    ghanaCard: '',
     message: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -118,6 +120,7 @@ export default function AgentsPage() {
       phone: '',
       businessName: '',
       monthlyVolume: '',
+      ghanaCard: '',
       message: '',
     });
     setTimeout(() => setStatus('idle'), 3000);
@@ -125,83 +128,7 @@ export default function AgentsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:pt-28 pt-24 pb-16 space-y-10">
-      <section className="grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold">
-            <Handshake size={16} />
-            Become an Agent / Reseller
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
-            Grow your earnings with RiskWhiz data reselling
-          </h1>
-          <p className="text-slate-600">
-            Join our network of partners and start selling affordable data
-            bundles with instant delivery, transparent pricing, and responsive
-            support. We help you launch fast and scale with confidence.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="#apply"
-              className="px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold inline-flex items-center gap-2 transition"
-            >
-              Apply now
-              <Rocket size={18} />
-            </Link>
-            <Link
-              href="/contact"
-              className="px-5 py-3 rounded-lg bg-white border border-slate-200 text-slate-900 font-semibold inline-flex items-center gap-2 hover:border-blue-300 transition"
-            >
-              Talk to us
-              <MessageCircle size={18} />
-            </Link>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            <ShieldCheck size={16} className="text-green-600" />
-            No setup fees · Pay-as-you-sell · Support in minutes
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {perks.map((perk) => (
-            <motion.div
-              key={perk.title}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="p-4 rounded-xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center mb-3">
-                <perk.icon size={20} />
-              </div>
-              <h3 className="font-semibold text-slate-900 mb-1">{perk.title}</h3>
-              <p className="text-sm text-slate-600">{perk.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-4">
-          How it works
-        </h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {steps.map((step, index) => (
-            <div key={step.title} className="relative">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-semibold">
-                  {index + 1}
-                </div>
-                <h3 className="font-semibold text-slate-900">{step.title}</h3>
-              </div>
-              <p className="text-sm text-slate-600">{step.description}</p>
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute -right-3 top-5 h-px w-8 bg-slate-200" />
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
+  
       <section
         id="apply"
         className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm"
@@ -209,11 +136,13 @@ export default function AgentsPage() {
         <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
           <div>
             <h2 className="text-xl font-bold text-slate-900">
-              Tell us about you
+          AFA Registration
             </h2>
             <p className="text-sm text-slate-600">
-              Share a few details and we will follow up with pricing and
-              onboarding within a few minutes.
+            Fill out the form below to register for AFA Package   
+            <br/>
+            <h2>Registration Fee is 50 GHS </h2>
+        
             </p>
           </div>
           {status === 'sent' && (

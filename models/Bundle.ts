@@ -6,6 +6,7 @@ export interface IBundle extends Document {
     sizeValue: number; // Value in MB for sorting/calc if needed, e.g. 1024
     price: number;
     isActive: boolean;
+    audience: 'user' | 'agent';
     createdAt: Date;
     updatedAt: Date;
 }
@@ -17,6 +18,7 @@ const BundleSchema = new Schema<IBundle>(
         sizeValue: { type: Number, default: 0 },
         price: { type: Number, required: true },
         isActive: { type: Boolean, default: true },
+        audience: { type: String, enum: ['user', 'agent'], default: 'user' },
     },
     { timestamps: true }
 );

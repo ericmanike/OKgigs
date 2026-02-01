@@ -45,8 +45,6 @@
 
 
 
-
-
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 export async function GET() {

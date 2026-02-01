@@ -4,11 +4,12 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password?: string;
-    role: 'user' | 'admin';
+    role: 'user' | 'agent' | 'admin' ;
     walletBalance: number;
     phone?: string;
     createdAt: Date;
     updatedAt: Date;
+    
 }
 
 const UserSchema = new Schema<IUser>(
@@ -18,6 +19,8 @@ const UserSchema = new Schema<IUser>(
         password: { type: String, select: false },
         role: { type: String, enum: ['user','agent', 'admin'], default: 'user' },
         walletBalance: { type: Number, default: 0.00 },
+   
+
         phone: { type: String },
     },
     { timestamps: true }
