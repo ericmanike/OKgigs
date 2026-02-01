@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useForm, ValidationError } from '@formspree/react';
 import {
-  PhoneCall,
+
   CheckCircle2,
 } from 'lucide-react';
 
@@ -49,6 +49,7 @@ export default function AgentsPage() {
     if (!formData.get('region')) nextErrors.region = 'Region is required';
     if (!formData.get('dateOfBirth')) nextErrors.dateOfBirth = 'Date of birth is required';
     if (!formData.get('occupation')) nextErrors.occupation = 'Occupation is required';
+    if (!formData.get('agentContact')) nextErrors.agentContact = 'Agent Contact is required';
 
     setErrors(nextErrors);
 
@@ -71,7 +72,7 @@ export default function AgentsPage() {
             <div className="text-sm text-slate-600">
               Fill out the form below to register for AFA Package
               <br />
-              <h2 className="text-lg font-bold text-blue-600 mt-2">Registration Fee is 50 GHS</h2>
+              <h2 className="text-lg font-bold text-blue-600 mt-2">Registration Fee is 15 GHS</h2>
             </div>
           </div>
         </div>
@@ -207,10 +208,25 @@ export default function AgentsPage() {
             <ValidationError prefix="Occupation" field="occupation" errors={state.errors} />
           </div>
 
+
+            <div className="space-y-1">
+            <label htmlFor="agentContact" className="text-sm font-medium text-slate-700">Agent Contact</label>
+            <input
+              id="agentContact"
+              name="agentContact"
+              className="w-full col-span-2 px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              placeholder="Agent Contact"
+            />
+            {errors.agentContact && <p className="text-xs text-red-500 font-medium">{errors.agentContact}</p>}
+            <ValidationError prefix="Agent Contact" field="agentContact" errors={state.errors} />
+          </div>
+
+
+
           <button
             type="submit"
             disabled={state.submitting}
-            className="md:col-span-2 w-full md:w-auto px-6 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-md hover:shadow-lg active:scale-[0.98]"
+            className=" md:col-span-2 w-full px-6 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-md hover:shadow-lg active:scale-[0.98]"
           >
             {state.submitting ? 'Submitting...' : 'Submit Registration'}
             <CheckCircle2 size={18} />
