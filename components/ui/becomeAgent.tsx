@@ -127,7 +127,7 @@ function becomeAgent() {
             disabled={session?.user?.role === 'agent'}
             style={{ cursor: session?.user?.role === 'agent' ? 'not-allowed' : 'pointer' }}
         >
-            {session?.user?.role === 'agent' ? 'You are now an Agent ' : `Become an Agent ${formatCurrency(30)}`}
+            {session?.user?.role === 'agent' ? 'You are now an Agent ' : `Upgrade to an Agent ${formatCurrency(30)}`}
         </button>
 
     )
