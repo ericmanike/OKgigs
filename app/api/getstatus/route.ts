@@ -53,7 +53,7 @@ export async function GET() {
     
   await dbConnect();
 
-  const pendingOrders = await Order.find({});
+  const pendingOrders = await Order.find({ status: { $nin: ["delivered", "cancelled", "DELIVERED"] } });
 console.log(pendingOrders);
   for (const order of pendingOrders) {
     const res = await fetch(
@@ -78,6 +78,7 @@ console.log(pendingOrders);
     }
   }
 
+  
   return Response.json({ success: true });
 } catch (error: any) {
   console.log("Error updating order statuses: ", error);
