@@ -44,6 +44,10 @@ export default function AdminDashboard() {
     const [selectedUser, setSelectedUser] = useState<any>(null);
     const [topUpAmount, setTopUpAmount] = useState('');
 
+    const [orderSearchQuery, setOrderSearchQuery] = useState('');
+    const [userSearchQuery, setUserSearchQuery] = useState('');
+
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -277,8 +281,30 @@ export default function AdminDashboard() {
 
 
 
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-blue-600">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
+            </div>
+        );
+    }
 
-    if (loading && !stats.users) {
+    const filteredOrders = orders.filter(order =>
+        (order.transaction_id?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase()) ||
+        (order.user?.name?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase()) ||
+        (order.phoneNumber?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase()) ||
+        (order.network?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase()) ||
+        (order.bundleName?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase()) ||
+        (order.status?.toLowerCase() || '').includes(orderSearchQuery.toLowerCase())
+    );
+
+    const filteredUsers = users.filter(user =>
+        (user.name?.toLowerCase() || '').includes(userSearchQuery.toLowerCase()) ||
+        (user.email?.toLowerCase() || '').includes(userSearchQuery.toLowerCase()) ||
+        (user.role?.toLowerCase() || '').includes(userSearchQuery.toLowerCase())
+    );
+
+    if (!stats.users) {
         return (
             <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-blue-600">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
@@ -510,6 +536,8 @@ export default function AdminDashboard() {
                                     <input
                                         type="text"
                                         placeholder="Search orders..."
+                                        value={orderSearchQuery}
+                                        onChange={(e) => setOrderSearchQuery(e.target.value)}
                                         className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
                                     />
                                 </div>
@@ -528,7 +556,7 @@ export default function AdminDashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100 whitespace-nowrap">
-                                        {orders.map((order) => (
+                                        {filteredOrders.map((order) => (
                                             <tr key={order._id} className="hover:bg-zinc-50 transition-colors">
                                                 <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order.transaction_id}</td>
                                                 <td className="px-6 py-4">
@@ -577,7 +605,7 @@ export default function AdminDashboard() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {orders.length === 0 && (
+                                        {filteredOrders.length === 0 && (
                                             <tr>
                                                 <td colSpan={7} className="px-6 py-12 text-center text-zinc-500">
                                                     <ShoppingBag size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
@@ -601,6 +629,8 @@ export default function AdminDashboard() {
                                     <input
                                         type="text"
                                         placeholder="Search users..."
+                                        value={userSearchQuery}
+                                        onChange={(e) => setUserSearchQuery(e.target.value)}
                                         className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
                                     />
                                 </div>
@@ -620,7 +650,7 @@ export default function AdminDashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100">
-                                        {users.map((user) => (
+                                        {filteredUsers.map((user) => (
                                             <tr key={user._id} className="hover:bg-zinc-50 transition-colors">
                                                 <td className="px-6 py-4 font-medium text-zinc-900">
                                                     <div className="flex items-center gap-3">
@@ -666,7 +696,7 @@ export default function AdminDashboard() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {users.length === 0 && (
+                                        {filteredUsers.length === 0 && (
                                             <tr>
                                                 <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
                                                     <Users size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
@@ -680,7 +710,7 @@ export default function AdminDashboard() {
 
                             {/* Mobile Card View */}
                             <div className="md:hidden space-y-4 p-4">
-                                {users.map((user) => (
+                                {filteredUsers.map((user) => (
                                     <div key={user._id} className="bg-white border border-zinc-200 rounded-lg p-4 shadow-sm">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-3">
@@ -730,7 +760,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 ))}
-                                {users.length === 0 && (
+                                {filteredUsers.length === 0 && (
                                     <div className="py-12 text-center text-zinc-500">
                                         <Users size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
                                         <p>No users found</p>
