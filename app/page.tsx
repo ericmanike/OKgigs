@@ -115,7 +115,7 @@ export default function Home() {
           transition={{ duration: 0.1 }}    
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          href="https://chat.whatsapp.com/EVjIw5FQtuSIkbYRketxmn"
+          href="https://chat.whatsapp.com/C2Wvnmsovln4s3PmzvyuQc"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center
@@ -132,7 +132,7 @@ export default function Home() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           transition={{ duration: 0.05 }}    
-          href="/contact"
+          href="https://wa.me/233551043686"
           className="flex items-center justify-center gap-2 bg-[#0e0947]
            text-white rounded-lg p-3    
            transition duration-300"
