@@ -115,7 +115,7 @@ export default function Home() {
           transition={{ duration: 0.1 }}    
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          href="https://chat.whatsapp.com/C2Wvnmsovln4s3PmzvyuQc"
+          href="https://chat.whatsapp.com/JxpJjBisX0BGOO5BY8yWJJ?mode=gi_t"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center
