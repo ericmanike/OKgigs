@@ -114,14 +114,13 @@ useEffect(() => {
   return (
     <>
     <RechargeModal isOpen={isOpen} handleTopUp={handleTopUp} setIsOpen={setIsOpen}   setAmount ={setAmount} amount={amount}/>
-   <button   
-
-   onClick={() => setIsOpen(true)}           
-className="flex items-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg"
->   
- <DollarSign size={18} />
- Top up your wallet
-</button>
+   <button
+   onClick={() => setIsOpen(true)}
+   className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
+   >
+     <DollarSign size={18} />
+     Top up your wallet
+   </button>
 </>
 
   )

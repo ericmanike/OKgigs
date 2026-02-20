@@ -2,31 +2,55 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, ArrowUpRight, Menu } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import clsx from 'clsx';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import MobileNavSidebar from './MobileNavSidebar';
 
 export default function Navbar() {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [pathname]);
+
+    useEffect(() => {
+        if (sidebarOpen) document.body.style.overflow = 'hidden';
+        else document.body.style.overflow = '';
+        return () => { document.body.style.overflow = ''; };
+    }, [sidebarOpen]);
 
     const isAuthPage = pathname?.startsWith('/auth');
     if (isAuthPage) return null;
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-10 bg-[#0e0947] text-white md:flex items-center justify-between px-6 py-4  text-black shadow-lg shadow-black/10">
-
-            <Link href="/" className="flex items-center gap-2">
-                <Image src="/logo.png" alt="RiskWhiz Logo" width={60} height={60} className='text-white' />
-                <span className="text-xl font-bold text-blue-600">RiskWhiz</span>
+        <>
+            <MobileNavSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <nav className="fixed top-0 left-0 right-0 z-10 bg-[#0e0947] text-white flex items-center justify-between px-6 py-4  shadow-lg shadow-black/10">
+                <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 group-hover:bg-white/15 transition-colors border border-white/10">
+                    <ArrowUpRight className="text-white" size={22} strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col leading-tight">
+                    <span className="font-logo text-lg sm:text-xl font-bold text-white tracking-tight">
+                        Eric&apos;s Gigs
+                    </span>
+                    <span className="text-[10px] sm:text-xs font-medium text-white/70 tracking-widest uppercase">
+                        Data & more
+                    </span>
+                </div>
             </Link>
+                </div>
 
-            <div className="hidden md:flex items-center gap-6">
+            <div className="flex items-center gap-4">
                 <Link
                     href="/dashboard"
                     className={clsx(
-                        " text-sm md:text-[16px] font-medium text-white hover:text-blue-700 transition-colors",
+                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-blue-700 transition-colors",
                         pathname === '/dashboard' ? "text-gray-600 font-bold" : "text-slate-950"
                     )}
                 >
@@ -35,8 +59,9 @@ export default function Navbar() {
                 <Link
                     href="/buy"
                     className={clsx(
-                        " text-sm md:text-[16px] font-medium text-white hover:text-blue-700  transition-colors",
-                        pathname === '/buy' ? "text-blue-600 font-bold" : "text-slate-950"                )}
+                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-blue-700 transition-colors",
+                        pathname === '/buy' ? "text-blue-600 font-bold" : "text-slate-950"
+                    )}
                 >
                     Buy Data
                 </Link>
@@ -52,7 +77,7 @@ export default function Navbar() {
                 </Link> */}
 
                 {session ? (
-                    <div className="flex items-center gap-4 pl-6 border-l border-blue-500">
+                    <div className="hidden md:flex items-center gap-4 pl-6 border-l border-blue-500">
                         <Link href="/profile" className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
                             
@@ -73,12 +98,21 @@ export default function Navbar() {
                 ) : (
                     <Link
                         href="/auth/login"
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="hidden md:block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                     >
                         Login
                     </Link>
                 )}
+                <button
+                    type="button"
+                    onClick={() => setSidebarOpen(true)}
+                    className="md:hidden p-2 rounded-lg hover:bg-white/10 text-white transition-colors"
+                    aria-label="Open menu"
+                >
+                    <Menu size={24} />
+                </button>
             </div>
         </nav>
+        </>
     );
 }
