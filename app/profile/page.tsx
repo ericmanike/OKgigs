@@ -182,7 +182,7 @@ export default function ProfilePage() {
             </button>
 
             <p className="text-center text-xs text-zinc-400 pt-4">
-                RiskWhiz v1.0.0
+                OKGigs v1.0.0
             </p>
         </div>
     );

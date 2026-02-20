@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Contact- NyameKye Loans',
-  description: 'Contact page for NyameKye Loans, providing support and customer service.',
-  keywords: 'contact, support, help, customer service',
+  title: 'Contact - OKGigs',
+  description: 'Get in touch with OKGigs support for any inquiries about our data bundle services in Ghana.',
+  keywords: 'contact, support, help, customer service, OKGigs data',
 }
 
 export default function ContactLayout({

@@ -209,7 +209,7 @@ export default function AgentsPage() {
           </div>
 
 
-            <div className="space-y-1">
+          <div className="space-y-1">
             <label htmlFor="agentContact" className="text-sm font-medium text-slate-700">Agent Contact</label>
             <input
               id="agentContact"
@@ -237,7 +237,7 @@ export default function AgentsPage() {
           Need help? Reach us at{' '}
           <a
             className="text-blue-600 font-bold hover:underline"
-            href="mailto:support@riskwhiz.com"
+            href="mailto:support@okgigs.com"
           >
             euginesogtinye@gmail.com
           </a>

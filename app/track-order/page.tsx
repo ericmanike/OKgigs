@@ -82,7 +82,7 @@ export default function TrackOrderPage() {
                   type="text"
                   value={trackId}
                   onChange={(e) => setTrackId(e.target.value)}
-                  placeholder="e.g. RWHZ-123456"
+                  placeholder="e.g. OKGS-123456"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0e0947]/25 focus:border-[#0e0947] transition-shadow"
                   disabled={trackLoading}
                 />

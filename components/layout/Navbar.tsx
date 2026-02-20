@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, User, ArrowUpRight, Menu, ChevronDown } from 'lucide-react';
+import { LogOut, User,HouseWifi, Menu, ChevronDown } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import clsx from 'clsx';
 import { useState, useEffect, useRef } from 'react';
@@ -62,14 +62,14 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 group">
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 group-hover:bg-white/15 transition-colors border border-white/10">
-                    <ArrowUpRight className="text-white" size={22} strokeWidth={2.5} />
+                    <HouseWifi className="text-white" size={22} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col leading-tight">
                     <span className="font-logo text-lg sm:text-xl font-bold text-white tracking-tight">
-                        Eric&apos;s Gigs
+                        OK GIGS
                     </span>
-                    <span className="text-[10px] sm:text-xs font-medium text-white/70 tracking-widest uppercase">
-                        Data & more
+                    <span className="text-[9px] md:text-[9px]  text-[gold]">
+                        Data & Digital Services
                     </span>
                 </div>
             </Link>

@@ -95,7 +95,7 @@ export default function BuyContent() {
             const res = await fetch('/api/bundles');
             if (res.ok) {
                 const data = await res.json();
-                const userRole = session?.user?.role;
+                const userRole = session?.user?.role || 'user'; // Default to user for visibility
 
                 // Filter bundles by selected network, active status, and audience
                 const filtered = data.filter((b: any) => {
@@ -109,8 +109,7 @@ export default function BuyContent() {
                     }
 
                     // If bundle is for users (default), everyone can see it
-                    // Optional: You could hide user bundles from agents if you wanted strict separation
-                    return userRole === 'user' || userRole === 'admin';
+                    return true;
                 });
 
                 setBundles(filtered);
@@ -157,7 +156,7 @@ export default function BuyContent() {
 
             const handler = window.PaystackPop.setup({
                 key: paystackKey!,
-                email: session?.user?.email!,
+                email: session?.user?.email || 'guest@okgigs.online',
                 currency: 'GHS',
                 amount: Math.round(total * 100), // Convert to kobo
 
@@ -182,7 +181,13 @@ export default function BuyContent() {
 
                             if (verifyResponse.ok) {
                                 console.log('Payment verified');
-                                setTimeout(() => router.push('/dashboard'), 2000);
+                                setTimeout(() => {
+                                    if (session) {
+                                        router.push('/dashboard');
+                                    } else {
+                                        router.push('/');
+                                    }
+                                }, 2000);
                                 setMessage("Payment successful");
                             } else {
                                 console.log('Payment verification failed');
@@ -235,7 +240,13 @@ export default function BuyContent() {
 
             if (response.ok) {
                 setMessage("Purchase successful! Redirecting...");
-                setTimeout(() => router.push('/dashboard'), 2000);
+                setTimeout(() => {
+                    if (session) {
+                        router.push('/dashboard');
+                    } else {
+                        router.push('/');
+                    }
+                }, 2000);
             } else {
                 alert(data.message || "Wallet purchase failed");
                 setMessage(data.message || "Purchase failed");

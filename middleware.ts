@@ -70,7 +70,6 @@ export default withAuth(
 export const config = {
     matcher: [
         "/dashboard/:path*",
-        "/buy/:path*",
         "/admin/:path*",
         "/profile/:path*",
         "/history/:path*"
