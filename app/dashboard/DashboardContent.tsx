@@ -17,12 +17,14 @@ import {
   ArrowRight,
   Menu,
   X,
+  Shield,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import BecomeAgent from "@/components/ui/becomeAgent";
 import TopUpwallet from "@/components/ui/topUpwallet";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 type DashboardSection = "overview" | "quick-actions" | "orders";
 
@@ -59,6 +61,7 @@ function getTimeOfDayGreeting(): string {
 export default function DashboardContent({ userName, balance, recentOrders, isAdmin }: Props) {
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleSectionClick = (id: DashboardSection) => {
     setActiveSection(id);
@@ -111,7 +114,56 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
           </button>
         </div>
         <div className="flex flex-col gap-1.5 pt-2 md:pt-0">
-          {sidebarItems.map((item) => (
+          {/* Overview */}
+          {sidebarItems.slice(0, 1).map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleSectionClick(item.id)}
+              className={clsx(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap text-left",
+                activeSection === item.id
+                  ? "bg-[#0e0947] text-white shadow-lg shadow-[#0e0947]/20 md:shadow-md"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+              )}
+            >
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0",
+                  activeSection === item.id ? "bg-white/15" : "bg-zinc-100"
+                )}
+              >
+                <item.icon size={18} strokeWidth={2} />
+              </span>
+              {item.label}
+            </button>
+          ))}
+          
+          {/* Admin - only for admins, below Overview */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setSidebarOpen(false)}
+              className={clsx(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap text-left",
+                pathname?.startsWith("/admin")
+                  ? "bg-[#0e0947] text-white shadow-lg shadow-[#0e0947]/20 md:shadow-md"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+              )}
+            >
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0",
+                  pathname?.startsWith("/admin") ? "bg-white/15" : "bg-zinc-100"
+                )}
+              >
+                <Shield size={18} strokeWidth={2} />
+              </span>
+              Admin
+            </Link>
+          )}
+          
+          {/* Rest of sidebar items */}
+          {sidebarItems.slice(1).map((item) => (
             <button
               key={item.id}
               onClick={() => handleSectionClick(item.id)}

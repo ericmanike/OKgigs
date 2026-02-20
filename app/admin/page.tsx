@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, Shield, X, XCircle, Clock, UserPlus, Wallet } from "lucide-react";
+import { Users, ShoppingBag, CreditCard, Plus, Trash2, Edit, Package, Search, ChevronRight, CheckCircle2, Shield, X, XCircle, Clock, UserPlus, Wallet, Copy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
 
@@ -46,6 +46,10 @@ export default function AdminDashboard() {
 
     const [orderSearchQuery, setOrderSearchQuery] = useState('');
     const [userSearchQuery, setUserSearchQuery] = useState('');
+    const [userSortByAgentsFirst, setUserSortByAgentsFirst] = useState(false);
+
+    const [ordersClosed, setOrdersClosed] = useState(false);
+    const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
 
 
     useEffect(() => {
@@ -73,6 +77,13 @@ export default function AdminDashboard() {
             const bundlesRes = await fetch('/api/bundles');
             if (bundlesRes.ok) setBundles(await bundlesRes.json());
 
+            // Fetch Orders Closed setting
+            const ordersClosedRes = await fetch('/api/admin/settings/orders-closed');
+            if (ordersClosedRes.ok) {
+                const data = await ordersClosedRes.json();
+                setOrdersClosed(Boolean(data?.ordersClosed));
+            }
+
             // Load extra data if authenticated
             loadTabSpecificData('orders'); // Preload or load lazy
             loadTabSpecificData('users');
@@ -81,6 +92,31 @@ export default function AdminDashboard() {
             console.error("Failed to fetch admin data", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleOrdersClosed = async () => {
+        const nextValue = !ordersClosed;
+        setOrdersClosedUpdating(true);
+        try {
+            const res = await fetch('/api/admin/settings/orders-closed', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ordersClosed: nextValue })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setOrdersClosed(Boolean(data?.ordersClosed));
+            } else {
+                const data = await res.json().catch(() => ({}));
+                alert(data.message || 'Failed to update setting');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error updating setting');
+        } finally {
+            setOrdersClosedUpdating(false);
         }
     };
 
@@ -159,6 +195,27 @@ export default function AdminDashboard() {
         } catch (error) {
             console.error(error);
             alert('Error deleting order');
+        }
+    };
+
+    const handleMarkOrderDelivered = async (orderId: string) => {
+        try {
+            const res = await fetch(`/api/admin/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'delivered' })
+            });
+
+            if (res.ok) {
+                const updatedOrder = await res.json();
+                setOrders(orders.map(o => o._id === orderId ? updatedOrder : o));
+            } else {
+                const data = await res.json().catch(() => ({}));
+                alert(data.error || 'Failed to update order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error updating order');
         }
     };
 
@@ -304,6 +361,17 @@ export default function AdminDashboard() {
         (user.role?.toLowerCase() || '').includes(userSearchQuery.toLowerCase())
     );
 
+    const agentCount = users.filter(user => user.role === 'agent').length;
+
+    const displayedUsers = userSortByAgentsFirst
+        ? [...filteredUsers].sort((a, b) => {
+            const aIsAgent = a.role === 'agent';
+            const bIsAgent = b.role === 'agent';
+            if (aIsAgent === bIsAgent) return 0;
+            return aIsAgent ? -1 : 1;
+        })
+        : filteredUsers;
+
     if (!stats.users) {
         return (
             <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-blue-600">
@@ -313,7 +381,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-zinc-50 text-zinc-900 p-2 sm:p-4 md:p-8 pt-24 pb-24 md:pb-8 relative overflow-y-auto">
+        <div className="min-h-screen bg-zinc-50 text-zinc-900 p-2 sm:p-4 md:p-8 pt-24 md:pt-32 pb-24 md:pb-8 relative overflow-y-auto">
 
             {/* Modal Overlay */}
             {isBundleModalOpen && (
@@ -419,8 +487,24 @@ export default function AdminDashboard() {
                         <p className="text-zinc-500 text-sm mt-1">Manage users, orders, and system settings.</p>
                     </div>
                     <div className="flex items-center">
-                        <div className="px-3 py-1.5 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-xs md:text-sm text-blue-700 font-medium">
-                            <Shield size={14} className="md:size-4" /> Admin Access
+                        <div className="flex flex-col items-end gap-2">
+                            <div className="px-3 py-1.5 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-xs md:text-sm text-blue-700 font-medium">
+                                <Shield size={14} className="md:size-4" /> Admin Access
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleToggleOrdersClosed}
+                                disabled={ordersClosedUpdating}
+                                className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 text-xs md:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                                    ${ordersClosed
+                                        ? 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100'
+                                        : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
+                                    }`}
+                                title={ordersClosed ? 'Orders are closed. Click to open.' : 'Orders are open. Click to close.'}
+                            >
+                                <ShoppingBag size={14} className="md:size-4" />
+                                {ordersClosed ? 'Open Orders' : 'Close Orders'}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -508,7 +592,7 @@ export default function AdminDashboard() {
                                 </Card>
 
 
-                                <Card className=" bg-black border-zinc-200 hover:border-blue-400 transition-colors bg-white">
+                                <Card className="  border-zinc-200 hover:border-blue-400 transition-colors bg-white">
                                     <CardContent className="p-3">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
@@ -542,7 +626,8 @@ export default function AdminDashboard() {
                                     />
                                 </div>
                             </div>
-                            <div className="overflow-x-auto">
+                            {/* Desktop Table View */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-zinc-50 text-zinc-500 font-medium whitespace-nowrap">
                                         <tr>
@@ -558,7 +643,28 @@ export default function AdminDashboard() {
                                     <tbody className="divide-y divide-zinc-100 whitespace-nowrap">
                                         {filteredOrders.map((order) => (
                                             <tr key={order._id} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order.transaction_id}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-mono text-xs text-zinc-500 max-w-35 truncate">
+                                                            #{order.transaction_id}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (!order.transaction_id) return;
+                                                                navigator.clipboard?.writeText(order.transaction_id).then(() => {
+                                                                    // Optional: could show a toast later
+                                                                }).catch(() => {
+                                                                    alert('Failed to copy ID');
+                                                                });
+                                                            }}
+                                                            className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors"
+                                                            title="Copy transaction ID"
+                                                        >
+                                                            <Copy size={14} />
+                                                        </button>
+                                                    </div>
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-zinc-900">{order.user?.name || 'Unknown'}</span>
@@ -575,7 +681,14 @@ export default function AdminDashboard() {
                                                 <td className="px-6 py-4 font-medium text-zinc-700">{formatCurrency(order.price)}</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="text-zinc-600">{new Date(order.createdAt).toLocaleDateString()}</span>
+                                                        <span className="text-zinc-600">
+                                                            {new Date(order.createdAt).toLocaleDateString(undefined, {
+                                                                weekday: 'short',
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                            })}
+                                                        </span>
                                                         <span className="text-[10px] text-zinc-400 font-medium">
                                                             {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
@@ -595,13 +708,24 @@ export default function AdminDashboard() {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <button
-                                                        onClick={() => handleDeleteOrder(order._id)}
-                                                        className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                        title="Delete order"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        {order.status !== 'delivered' && (
+                                                            <button
+                                                                onClick={() => handleMarkOrderDelivered(order._id)}
+                                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-green-600 text-green-700 hover:bg-green-600 hover:text-white transition-all"
+                                                            >
+                                                                <CheckCircle2 size={14} />
+                                                                Mark delivered
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => handleDeleteOrder(order._id)}
+                                                            className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                            title="Delete order"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -616,6 +740,105 @@ export default function AdminDashboard() {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Mobile Card View */}
+                            <div className="md:hidden space-y-4 p-4">
+                                {filteredOrders.map((order) => (
+                                    <div key={order._id} className="bg-white border border-zinc-200 rounded-lg p-4 shadow-sm">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-mono text-zinc-500 max-w-40 truncate">
+                                                        #{order.transaction_id}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (!order.transaction_id) return;
+                                                            navigator.clipboard?.writeText(order.transaction_id).then(() => {
+                                                                // Optional: toast
+                                                            }).catch(() => {
+                                                                alert('Failed to copy ID');
+                                                            });
+                                                        }}
+                                                        className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors"
+                                                        title="Copy transaction ID"
+                                                    >
+                                                        <Copy size={12} />
+                                                    </button>
+                                                </div>
+                                                <span className="font-semibold text-zinc-900 mt-1">{order.user?.name || 'Unknown'}</span>
+                                                <span className="text-xs text-zinc-500">{order.phoneNumber}</span>
+                                            </div>
+                                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium 
+                                                ${order.network === 'MTN' ? 'bg-yellow-500 text-brown-500' :
+                                                    order.network === 'Telecel' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                {order.network} {order.bundleName}
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                                            <div>
+                                                <p className="text-zinc-500 text-xs">Amount</p>
+                                                <p className="font-semibold text-zinc-900">{formatCurrency(order.price)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-zinc-500 text-xs">Date</p>
+                                                <p className="text-[11px] text-zinc-700">
+                                                    {new Date(order.createdAt).toLocaleDateString(undefined, {
+                                                        weekday: 'short',
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    })}
+                                                </p>
+                                                <p className="text-[11px] text-zinc-400">
+                                                    {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border
+                                                ${order.status === 'delivered' ? 'bg-green-600 text-white border-green-700' :
+                                                    order.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' :
+                                                        order.status === 'failed' ? 'bg-red-100 text-red-700 border-red-200' :
+                                                            'bg-orange-100 text-orange-700 border-orange-200'}`}>
+                                                {order.status === 'delivered' && <CheckCircle2 size={11} />}
+                                                {order.status === 'completed' && <CheckCircle2 size={11} />}
+                                                {order.status === 'failed' && <XCircle size={11} />}
+                                                {order.status === 'pending' && <Clock size={11} />}
+                                                <span className="capitalize">{order.status}</span>
+                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 pt-3 border-t border-zinc-100">
+                                            {order.status !== 'delivered' && (
+                                                <button
+                                                    onClick={() => handleMarkOrderDelivered(order._id)}
+                                                    className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all text-sm font-medium"
+                                                >
+                                                    <CheckCircle2 size={16} />
+                                                    Mark delivered
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => handleDeleteOrder(order._id)}
+                                                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg transition-all text-sm font-medium"
+                                            >
+                                                <Trash2 size={16} />
+                                                Delete order
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                {filteredOrders.length === 0 && (
+                                    <div className="py-12 text-center text-zinc-500">
+                                        <ShoppingBag size={32} className="mx-auto mb-2 opacity-30 text-zinc-400" />
+                                        <p>No orders found</p>
+                                    </div>
+                                )}
+                            </div>
                         </Card>
                     )}
 
@@ -623,16 +846,30 @@ export default function AdminDashboard() {
                     {activeTab === 'users' && (
                         <Card className="border-zinc-200 bg-white overflow-hidden">
                             <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white">
-                                <h3 className="text-lg font-semibold text-zinc-900">Registered Users</h3>
-                                <div className="relative w-full sm:w-64">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-                                    <input
-                                        type="text"
-                                        placeholder="Search users..."
-                                        value={userSearchQuery}
-                                        onChange={(e) => setUserSearchQuery(e.target.value)}
-                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
-                                    />
+                                <div>
+                                    <h3 className="text-lg font-semibold text-zinc-900">Registered Users</h3>
+                                    <p className="text-xs text-zinc-500 mt-1">
+                                        Agents: <span className="font-semibold text-green-600">{agentCount}</span>
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <div className="relative flex-1 sm:w-64">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
+                                        <input
+                                            type="text"
+                                            placeholder="Search users..."
+                                            value={userSearchQuery}
+                                            onChange={(e) => setUserSearchQuery(e.target.value)}
+                                            className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => setUserSortByAgentsFirst((prev) => !prev)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100 transition-colors whitespace-nowrap"
+                                    >
+                                        <Users size={14} />
+                                        {userSortByAgentsFirst ? 'Default order' : 'Agents first'}
+                                    </button>
                                 </div>
                             </div>
 
@@ -650,7 +887,7 @@ export default function AdminDashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100">
-                                        {filteredUsers.map((user) => (
+                                        {displayedUsers.map((user) => (
                                             <tr key={user._id} className="hover:bg-zinc-50 transition-colors">
                                                 <td className="px-6 py-4 font-medium text-zinc-900">
                                                     <div className="flex items-center gap-3">
@@ -710,7 +947,7 @@ export default function AdminDashboard() {
 
                             {/* Mobile Card View */}
                             <div className="md:hidden space-y-4 p-4">
-                                {filteredUsers.map((user) => (
+                                {displayedUsers.map((user) => (
                                     <div key={user._id} className="bg-white border border-zinc-200 rounded-lg p-4 shadow-sm">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-3">
@@ -836,7 +1073,7 @@ export default function AdminDashboard() {
                                                 .map((bundle) => (
                                                     <tr key={bundle._id} className="hover:bg-zinc-50 transition-colors">
                                                         <td className="px-6 py-4 font-medium">
-                                                            <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-bold uppercase min-w-[70px] text-center
+                                                            <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-bold uppercase min-w-17.5 text-center
                                                             ${bundle.network === 'MTN' ? 'bg-yellow-500 text-brown-500' :
                                                                     bundle.network === 'Telecel' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
                                                                 {bundle.network}

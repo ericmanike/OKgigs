@@ -69,6 +69,26 @@ export default function BuyContent() {
         }
     }, [selectedNetwork, session]);
 
+    // Auto-fill phone number from profile
+    useEffect(() => {
+        const fetchUserPhone = async () => {
+            if (session?.user && !phoneNumber) {
+                try {
+                    const res = await fetch('/api/profile/phone');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.phone && data.phone.trim()) {
+                            setPhoneNumber(data.phone.trim());
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching phone:', error);
+                }
+            }
+        };
+        fetchUserPhone();
+    }, [session]);
+
     const fetchBundles = async () => {
         setLoadingBundles(true);
         try {

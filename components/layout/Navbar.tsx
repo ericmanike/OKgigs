@@ -2,16 +2,18 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, User, ArrowUpRight, Menu } from 'lucide-react';
+import { LogOut, User, ArrowUpRight, Menu, ChevronDown } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import clsx from 'clsx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MobileNavSidebar from './MobileNavSidebar';
 
 export default function Navbar() {
     const pathname = usePathname();
     const { data: session } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setSidebarOpen(false);
@@ -23,8 +25,35 @@ export default function Navbar() {
         return () => { document.body.style.overflow = ''; };
     }, [sidebarOpen]);
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setProfileDropdownOpen(false);
+            }
+        }
+
+        if (profileDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [profileDropdownOpen]);
+
     const isAuthPage = pathname?.startsWith('/auth');
     if (isAuthPage) return null;
+
+    // Get user initials
+    const getUserInitials = (name: string | undefined | null): string => {
+        if (!name) return 'U';
+        const parts = name.trim().split(' ');
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return name[0].toUpperCase();
+    };
 
     return (
         <>
@@ -46,11 +75,11 @@ export default function Navbar() {
             </Link>
                 </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
                 <Link
                     href="/dashboard"
                     className={clsx(
-                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-blue-700 transition-colors",
+                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-yellow-500 transition-colors",
                         pathname === '/dashboard' ? "text-gray-600 font-bold" : "text-slate-950"
                     )}
                 >
@@ -59,7 +88,7 @@ export default function Navbar() {
                 <Link
                     href="/buy"
                     className={clsx(
-                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-blue-700 transition-colors",
+                        "hidden md:block text-sm md:text-[16px] font-medium text-white hover:text-yellow-500 transition-colors",
                         pathname === '/buy' ? "text-blue-600 font-bold" : "text-slate-950"
                     )}
                 >
@@ -77,23 +106,50 @@ export default function Navbar() {
                 </Link> */}
 
                 {session ? (
-                    <div className="hidden md:flex items-center gap-4 pl-6 border-l border-blue-500">
-                        <Link href="/profile" className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            
-                            <div className="w-8 h-8 rounded-full  flex items-center justify-center text-white bg-blue-600">
-                                <User size={16} />
-                            </div>
-                           
-                            <span className="text-sm font-medium">{session.user?.name}</span>
-                        </div>
-                         </Link>
+                    <div className="hidden md:flex items-center gap-2 pl-8 ml-2 border-l border-blue-500 relative" ref={dropdownRef}>
                         <button
-                            onClick={() => signOut()}
-                            className="p-2 hover:bg-white/10 rounded-full text-slate-600 transition-colors"
+                            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                         >
-                            <LogOut size={18} />
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-yellow-500 font-semibold text-xs">
+                                {getUserInitials(session.user?.name)}
+                            </div>
+                            <ChevronDown 
+                                size={16} 
+                                className={clsx(
+                                    "transition-transform",
+                                    profileDropdownOpen && "rotate-180"
+                                )}
+                            />
                         </button>
+                        
+                        {profileDropdownOpen && (
+                            <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-zinc-200 overflow-hidden z-50">
+                                <Link
+                                    href="/profile"
+                                    onClick={() => setProfileDropdownOpen(false)}
+                                    className={clsx(
+                                        "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors",
+                                        pathname === '/profile'
+                                            ? "bg-[#0e0947] text-white"
+                                            : "text-zinc-700 hover:bg-zinc-100"
+                                    )}
+                                >
+                                    <User size={16} />
+                                    Profile
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        setProfileDropdownOpen(false);
+                                        signOut();
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                                >
+                                    <LogOut size={16} />
+                                    Logout
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <Link

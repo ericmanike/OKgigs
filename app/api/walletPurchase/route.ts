@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Setting from "@/models/Setting";
 
 import Bundle from "@/models/Bundle";
 import { p } from "motion/react-client";
@@ -26,6 +27,11 @@ export async function POST(req: Request) {
 
 
         await dbConnect();
+
+        const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
+        if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
+            return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
+        }
 
         const dbPrice = await Bundle.findOne({ name:bundleName+"GB", network:network,  audience: session.user.role, isActive:true }).select('price');   
        const realPrice = dbPrice ? dbPrice.price : null;

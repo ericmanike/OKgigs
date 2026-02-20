@@ -2,19 +2,88 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/Card";
-import { User, Mail, Phone, LogOut, Shield } from "lucide-react";
-import { useEffect } from "react";
+import { User, Mail, Phone, LogOut, Shield, Edit2, Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 
 export default function ProfilePage() {
     const { data: session, update } = useSession();
+    const [phone, setPhone] = useState<string | null>(null);
+    const [editingPhone, setEditingPhone] = useState(false);
+    const [phoneInput, setPhoneInput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
     useEffect(() => {
-          (async () => {
+        (async () => {
             await update();
-          });
-    
+        });
     }, []);
+
+    useEffect(() => {
+        fetchPhone();
+    }, []);
+
+    const fetchPhone = async () => {
+        try {
+            setFetching(true);
+            const res = await fetch('/api/profile/phone');
+            if (res.ok) {
+                const data = await res.json();
+                setPhone(data.phone);
+                setPhoneInput(data.phone || "");
+            }
+        } catch (error) {
+            console.error('Error fetching phone:', error);
+        } finally {
+            setFetching(false);
+        }
+    };
+
+    const handleSavePhone = async () => {
+        const trimmedPhone = phoneInput.trim();
+        if (trimmedPhone === (phone || "")) {
+            setEditingPhone(false);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch('/api/profile/phone', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: trimmedPhone || null })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setPhone(data.phone);
+                setPhoneInput(data.phone || "");
+                setEditingPhone(false);
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Failed to update phone number');
+            }
+        } catch (error) {
+            console.error('Error updating phone:', error);
+            alert('Error updating phone number');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSavePhone();
+        } else if (e.key === 'Escape') {
+            handleCancelEdit();
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setPhoneInput(phone || "");
+        setEditingPhone(false);
+    };
 
     return (
         <div className="p-4 max-w-md mx-auto space-y-6 md:pt-25 pt-24 z-0">
@@ -51,9 +120,54 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex items-center gap-4 p-4">
                             <Phone size={20} className="text-slate-600" />
-                            <div>
-                                <p className="text-xs text-slate-600">Phone Number</p>
-                                <p className="font-medium text-sm text-slate-600">Not set</p>
+                            <div className="flex-1">
+                                <p className="text-xs text-slate-600 mb-1">Phone Number</p>
+                                {editingPhone ? (
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="tel"
+                                            value={phoneInput}
+                                            onChange={(e) => setPhoneInput(e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder="024 XXX XXXX"
+                                            className="flex-1 px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900"
+                                            autoFocus
+                                            disabled={loading}
+                                        />
+                                        <button
+                                            onClick={handleSavePhone}
+                                            disabled={loading}
+                                            className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title="Save (Enter)"
+                                        >
+                                            <Check size={18} />
+                                        </button>
+                                        <button
+                                            onClick={handleCancelEdit}
+                                            disabled={loading}
+                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title="Cancel (Esc)"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-between">
+                                        <p className="font-medium text-sm text-slate-600">
+                                            {fetching ? "Loading..." : (phone || "Not set")}
+                                        </p>
+                                        <button
+                                            onClick={() => {
+                                                setPhoneInput(phone || "");
+                                                setEditingPhone(true);
+                                            }}
+                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Edit phone number"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CardContent>

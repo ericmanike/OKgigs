@@ -21,7 +21,7 @@ export default function Home() {
             sizes="100vw"
             quality={95}
           />
-          <div className="absolute inset-0 bg-[#0e0947]/60" />
+          <div className="absolute inset-0 bg-[#0e0947]/10" />
         </div>
         <div className="relative h-full min-h-[calc(100vh-6rem)] flex flex-col justify-center max-w-6xl mx-auto px-6 py-12 md:py-16 text-white">
           <motion.div

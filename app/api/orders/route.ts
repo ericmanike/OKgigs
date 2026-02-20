@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
+import Setting from "@/models/Setting";
 
 
 
@@ -30,6 +31,11 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
+
+    const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
+    if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
+      return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
+    }
 
     // prevent replay attack
     const existingOrder = await Order.findOne({ transaction_id: reference });
