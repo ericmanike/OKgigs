@@ -2,16 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Loader = () => {
-  return (
-    <StyledWrapper>
-      <div className="loading-wave">
-        <div className="loading-bar" />
-        <div className="loading-bar" />
-        <div className="loading-bar" />
-        <div className="loading-bar" />
-      </div>
-    </StyledWrapper>
-  );
+    return (
+        <StyledWrapper>
+            <div className="loading-wave">
+                <div className="loading-bar" />
+                <div className="loading-bar" />
+                <div className="loading-bar" />
+                <div className="loading-bar" />
+            </div>
+        </StyledWrapper>
+    );
 }
 
 const StyledWrapper = styled.div`
