@@ -34,7 +34,7 @@ export default async function HistoryPage() {
                     </Card>
                 ) : (
                     orders.map((order) => (
-                        <Card key={order._id.toString()} className="hover:border-blue-400 transition-colors">
+                        <Card key={order._id.toString()} className="hover:border-slate-300 transition-colors">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center 
@@ -56,7 +56,7 @@ export default async function HistoryPage() {
                                 </div>
 
                                 <div className="text-right">
-                                    <p className="font-bold text-white">{formatCurrency(order.price)}</p>
+                                    <p className="font-bold text-zinc-900">{formatCurrency(order.price)}</p>
                                     <div className="flex items-center justify-end gap-1 mt-1">
                                         {order.status === 'delivered' && <CheckCircle2 size={14} className="text-green-600" />}
                                         {order.status === 'failed' && <XCircle size={14} className="text-red-600" />}

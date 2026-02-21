@@ -1,43 +1,43 @@
 'use client'
 import React from 'react'
 import { DollarSign } from 'lucide-react'
-import {useSession, } from 'next-auth/react'
-import {useEffect, useState} from 'react'
+import { useSession, } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import RechargeModal from './rechargeModal'
 
 function topUpwallet() {
 
-const {data: session} = useSession()
+    const { data: session } = useSession()
 
-const [amount, setAmount] = useState<number | null>(null)
-const [isOpen, setIsOpen] = useState(false)
-const loadPaystackScript = () => {
+    const [amount, setAmount] = useState<number | null>(null)
+    const [isOpen, setIsOpen] = useState(false)
+    const loadPaystackScript = () => {
         const script = document.createElement('script')
         script.src = 'https://js.paystack.co/v1/inline.js'
         script.async = true
         document.body.appendChild(script)
     }
 
-useEffect(() => {
+    useEffect(() => {
 
-    loadPaystackScript()
-}, [])
+        loadPaystackScript()
+    }, [])
 
-  const handleTopUp = () => {
+    const handleTopUp = () => {
 
-    console.log(session)
-    console.log(session?.user?.email)
-    console.log(session?.user?.name)
-       if (!session) {
-        alert('Please login to continue')
-        return;
-       }
+        console.log(session)
+        console.log(session?.user?.email)
+        console.log(session?.user?.name)
+        if (!session) {
+            alert('Please login to continue')
+            return;
+        }
 
-       if (!amount) {
-        alert('Please enter an amount')
-        return;
-       }
-       
+        if (!amount) {
+            alert('Please enter an amount')
+            return;
+        }
+
         try {
 
             const reference = Date.now().toString()
@@ -79,7 +79,7 @@ useEffect(() => {
 
                             if (verifyResponse.ok) {
                                 console.log('Payment verified');
-                                   window.location.reload();
+                                window.location.reload();
                             } else {
                                 console.log('Payment verification failed');
                             }
@@ -102,28 +102,28 @@ useEffect(() => {
             console.error(error);
             alert("Something went wrong with the purchase.");
         } finally {
-        
+
         }
-    
+
     }
 
 
 
 
 
-  return (
-    <>
-    <RechargeModal isOpen={isOpen} handleTopUp={handleTopUp} setIsOpen={setIsOpen}   setAmount ={setAmount} amount={amount}/>
-   <button
-   onClick={() => setIsOpen(true)}
-   className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
-   >
-     <DollarSign size={18} />
-     Top up your wallet
-   </button>
-</>
+    return (
+        <>
+            <RechargeModal isOpen={isOpen} handleTopUp={handleTopUp} setIsOpen={setIsOpen} setAmount={setAmount} amount={amount} />
+            <button
+                onClick={() => setIsOpen(true)}
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
+            >
+                <DollarSign size={18} />
+                Top up your wallet
+            </button>
+        </>
 
-  )
+    )
 }
 
 export default topUpwallet

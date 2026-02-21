@@ -32,7 +32,7 @@ declare global {
 const NETWORKS = [
     { id: "MTN", name: "MTN", color: "bg-[#FFCC00]", textColor: "text-[#51291e]" },
     { id: "Telecel", name: "Telecel", color: "bg-[#E60000]", textColor: "text-white" },
-    { id: "AirtelTigo", name: "AirtelTigo", color: "bg-[#003399]", textColor: "text-white" },
+    { id: "AirtelTigo", name: "AirtelTigo", color: "bg-blue-600", textColor: "text-white" },
 ];
 
 export default function BuyContent() {
@@ -280,8 +280,8 @@ export default function BuyContent() {
                                     "flex items-center justify-between p-4 rounded-xl border transition-all",
                                     "hover:shadow-md",
                                     selectedNetwork === net.id
-                                        ? "bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-600/20"
-                                        : "bg-white text-zinc-900 border-zinc-200 hover:border-blue-300"
+                                        ? "bg-slate-600 text-white border-slate-500 shadow-lg shadow-slate-600/20"
+                                        : "bg-white text-zinc-900 border-zinc-200 hover:border-slate-400"
                                 )}
                             >
                                 <div className="flex items-center gap-3">
@@ -312,14 +312,14 @@ export default function BuyContent() {
 
                     {loadingBundles ? (
                         <div className="flex items-center justify-center py-12">
-                            <Loader2 className="animate-spin text-blue-600" size={32} />
+                            <Loader2 className="animate-spin text-slate-700" size={32} />
                         </div>
                     ) : bundles.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
                             <button
                                 onClick={() => setStep(1)}
-                                className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                className="mt-4 text-slate-700 hover:text-slate-900 text-sm font-medium"
                             >
                                 Choose another network
                             </button>
@@ -370,7 +370,7 @@ export default function BuyContent() {
                                     type="tel"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white text-lg tracking-wide"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
                                     placeholder="024 XXX XXXX"
                                     autoFocus
                                 />
@@ -378,7 +378,7 @@ export default function BuyContent() {
 
                             <div className={clsx(
                                 "p-4 rounded-xl space-y-2 mb-6 border",
-                                networkConfig ? `${networkConfig.color} ${networkConfig.textColor} border-transparent` : "bg-blue-700 text-white border-blue-500"
+                                networkConfig ? `${networkConfig.color} ${networkConfig.textColor} border-transparent` : "bg-slate-600 text-white border-slate-500"
                             )}>
                                 <div className="flex justify-between text-sm">
                                     <span className="opacity-80">Network</span>
@@ -407,7 +407,7 @@ export default function BuyContent() {
                                 <button
                                     onClick={handlePurchase}
                                     disabled={loading || phoneNumber.length < 10}
-                                    className="w-full py-3.5 text-white hover:bg-blue-700 bg-blue-600 rounded-xl font-semibold transition-all flex items-center justify-center
+                                    className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center
                                      gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
                                      cursor-pointer"
                                 >

@@ -11,7 +11,7 @@ export function Card({ children, className }: CardProps) {
         <div
             className={twMerge(
                 clsx(
-                    'bg-black/ text-white rounded-2xl shadow-lg  border border-blue-500  md:p-4 p-2 transition-all duration-200',
+                    'bg-white text-zinc-900 rounded-2xl shadow-lg border-l-4 border-l-[#E42320] border-y border-r border-zinc-100 md:p-4 p-2 transition-all duration-200',
                     className
                 )
             )}
@@ -27,7 +27,7 @@ export function CardHeader({ children, className }: CardProps) {
 
 export function CardTitle({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
-        <h3 className={twMerge(clsx('text-lg font-semibold text-white', className))}>
+        <h3 className={twMerge(clsx('text-lg font-semibold text-zinc-900', className))}>
             {children}
         </h3>
     );

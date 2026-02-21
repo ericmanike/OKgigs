@@ -65,11 +65,10 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
                 className={clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
                   isActive
-                    ? "bg-[#0e0947] text-white"
+                    ? "bg-[#E42320] text-white"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                 )}
               >
-                <item.icon size={20} strokeWidth={2} />
                 {item.label}
               </Link>
             );

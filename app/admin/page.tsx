@@ -374,7 +374,7 @@ export default function AdminDashboard() {
 
     if (!stats.users) {
         return (
-            <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-blue-600">
+            <div className="min-h-screen bg-zinc-50 flex items-center justify-center text-slate-800">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
             </div>
         );
@@ -402,7 +402,7 @@ export default function AdminDashboard() {
                             <div>
                                 <label className="block text-sm font-medium text-zinc-700 mb-1">Network</label>
                                 <select
-                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 outline-none transition-all"
                                     value={bundleForm.network}
                                     onChange={(e) => setBundleForm({ ...bundleForm, network: e.target.value })}
                                 >
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                             <div>
                                 <label className="block text-sm font-medium text-zinc-700 mb-1">Target Audience</label>
                                 <select
-                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 outline-none transition-all"
                                     value={bundleForm.audience}
                                     onChange={(e) => setBundleForm({ ...bundleForm, audience: e.target.value })}
                                 >
@@ -428,7 +428,7 @@ export default function AdminDashboard() {
                                     type="text"
                                     placeholder="e.g. 1GB"
                                     required
-                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 outline-none transition-all"
                                     value={bundleForm.name}
                                     onChange={(e) => setBundleForm({ ...bundleForm, name: e.target.value })}
                                 />
@@ -441,7 +441,7 @@ export default function AdminDashboard() {
                                     placeholder="0.00"
                                     required
                                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 
-                                    focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                    focus:ring-slate-200 focus:border-slate-400 outline-none transition-all"
                                     value={bundleForm.price}
                                     onChange={(e) => setBundleForm({ ...bundleForm, price: e.target.value })}
                                 />
@@ -450,7 +450,7 @@ export default function AdminDashboard() {
                                 <input
                                     type="checkbox"
                                     id="isActive"
-                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                    className="w-4 h-4 text-slate-600 rounded focus:ring-slate-400 border-gray-300"
                                     checked={bundleForm.isActive}
                                     onChange={(e) => setBundleForm({ ...bundleForm, isActive: e.target.checked })}
                                 />
@@ -468,7 +468,7 @@ export default function AdminDashboard() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {submitting ? (editingBundle ? 'Updating...' : 'Adding...') : (editingBundle ? 'Update Bundle' : 'Add Bundle')}
                                 </button>
@@ -488,7 +488,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex items-center">
                         <div className="flex flex-col items-end gap-2">
-                            <div className="px-3 py-1.5 bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-2 text-xs md:text-sm text-blue-700 font-medium">
+                            <div className="px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg flex items-center gap-2 text-xs md:text-sm text-slate-700 font-medium">
                                 <Shield size={14} className="md:size-4" /> Admin Access
                             </div>
                             <button
@@ -522,13 +522,13 @@ export default function AdminDashboard() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex items-center gap-2 pb-3 px-1 text-sm font-medium transition-all relative
-                                    ${activeTab === tab.id ? 'text-blue-600' : 'text-zinc-500 hover:text-zinc-900'}
+                                    ${activeTab === tab.id ? 'text-slate-600' : 'text-zinc-500 hover:text-zinc-900'}
                                 `}
                             >
                                 <tab.icon size={16} />
                                 {tab.label}
                                 {activeTab === tab.id && (
-                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />
+                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-600 rounded-t-full" />
                                 )}
                             </button>
                         ))}
@@ -592,10 +592,10 @@ export default function AdminDashboard() {
                                 </Card>
 
 
-                                <Card className="  border-zinc-200 hover:border-blue-400 transition-colors bg-white">
+                                <Card className="  border-zinc-200 hover:border-slate-300 transition-colors bg-white">
                                     <CardContent className="p-3">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                                            <div className="p-3 bg-slate-100 text-slate-600 rounded-xl">
                                                 <Users size={24} />
                                             </div>
 
@@ -622,7 +622,7 @@ export default function AdminDashboard() {
                                         placeholder="Search orders..."
                                         value={orderSearchQuery}
                                         onChange={(e) => setOrderSearchQuery(e.target.value)}
-                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
+                                        className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-slate-400 transition-colors w-full placeholder-zinc-400"
                                     />
                                 </div>
                             </div>
@@ -860,7 +860,7 @@ export default function AdminDashboard() {
                                             placeholder="Search users..."
                                             value={userSearchQuery}
                                             onChange={(e) => setUserSearchQuery(e.target.value)}
-                                            className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-blue-500 transition-colors w-full placeholder-zinc-400"
+                                            className="bg-zinc-50 border border-zinc-200 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-900 focus:outline-none focus:border-slate-400 transition-colors w-full placeholder-zinc-400"
                                         />
                                     </div>
                                     <button
@@ -891,7 +891,7 @@ export default function AdminDashboard() {
                                             <tr key={user._id} className="hover:bg-zinc-50 transition-colors">
                                                 <td className="px-6 py-4 font-medium text-zinc-900">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
                                                             {user.name.charAt(0)}
                                                         </div>
                                                         {user.name}
@@ -923,7 +923,7 @@ export default function AdminDashboard() {
                                                         )}
                                                         <button
                                                             onClick={() => openTopUpModal(user)}
-                                                            className="inline-flex items-center gap-2 px-3 py-1.5 text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all text-sm font-medium"
+                                                            className="inline-flex items-center gap-2 px-3 py-1.5 text-slate-600 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-lg transition-all text-sm font-medium"
                                                             title="Top up balance"
                                                         >
                                                             <Wallet size={16} />
@@ -951,7 +951,7 @@ export default function AdminDashboard() {
                                     <div key={user._id} className="bg-white border border-zinc-200 rounded-lg p-4 shadow-sm">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                                                <div className="w-10 h-10 rounded-full bg-slate-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
                                                     {user.name.charAt(0)}
                                                 </div>
                                                 <div>
@@ -989,7 +989,7 @@ export default function AdminDashboard() {
                                             )}
                                             <button
                                                 onClick={() => openTopUpModal(user)}
-                                                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all text-sm font-medium"
+                                                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-slate-600 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-lg transition-all text-sm font-medium"
                                             >
                                                 <Wallet size={16} />
                                                 Top Up Balance
@@ -1014,7 +1014,7 @@ export default function AdminDashboard() {
                                 <h2 className="text-xl font-semibold text-zinc-900">Data Bundles</h2>
                                 <button
                                     onClick={openAddModal}
-                                    className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 w-full sm:w-auto"
+                                    className="flex items-center justify-center gap-2 bg-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-700 transition-all shadow-md shadow-slate-600/20 w-full sm:w-auto"
                                 >
                                     <Plus size={16} /> Add Bundle
                                 </button>
@@ -1025,8 +1025,8 @@ export default function AdminDashboard() {
                                 <button
                                     onClick={() => setBundleFilter('all')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${bundleFilter === 'all'
-                                        ? 'bg-blue-600 text-white shadow-md'
-                                        : 'bg-white text-zinc-600 border border-zinc-200 hover:border-blue-300'
+                                        ? 'bg-slate-600 text-white shadow-md'
+                                        : 'bg-white text-zinc-600 border border-zinc-200 hover:border-slate-300'
                                         }`}
                                 >
                                     All Bundles
@@ -1054,7 +1054,7 @@ export default function AdminDashboard() {
                             <Card className="border-zinc-200 bg-white overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm text-left">
-                                        <thead className="bg-blue-50 text-blue-800 whitespace-nowrap">
+                                        <thead className="bg-slate-50 text-slate-800 whitespace-nowrap">
                                             <tr>
                                                 <th className="px-6 py-4 font-medium border-b">Network</th>
                                                 <th className="px-6 py-4 font-medium border-b">Bundle Name</th>
@@ -1097,7 +1097,7 @@ export default function AdminDashboard() {
                                                             <div className="flex gap-2 justify-end">
                                                                 <button
                                                                     onClick={() => openEditModal(bundle)}
-                                                                    className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                                    className="p-2 text-zinc-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-all"
                                                                     title="Edit bundle"
                                                                 >
                                                                     <Edit size={16} />
@@ -1159,7 +1159,7 @@ export default function AdminDashboard() {
                                         <p className="font-semibold text-zinc-900">{selectedUser.name}</p>
                                         <p className="text-sm text-zinc-500">{selectedUser.email}</p>
                                         <p className="text-sm text-zinc-600 mt-2">
-                                            Current Balance: <span className="font-bold text-blue-600">{formatCurrency(selectedUser.walletBalance || 0)}</span>
+                                            Current Balance: <span className="font-bold text-slate-600">{formatCurrency(selectedUser.walletBalance || 0)}</span>
                                         </p>
                                     </div>
 
@@ -1174,13 +1174,13 @@ export default function AdminDashboard() {
                                             value={topUpAmount}
                                             onChange={(e) => setTopUpAmount(e.target.value)}
                                             placeholder="Enter amount"
-                                            className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                                            className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:border-slate-400 transition-colors"
                                         />
                                     </div>
 
                                     {topUpAmount && parseFloat(topUpAmount) > 0 && (
-                                        <div className="bg-blue-50 p-4 rounded-lg">
-                                            <p className="text-sm text-blue-600">
+                                        <div className="bg-slate-50 p-4 rounded-lg">
+                                            <p className="text-sm text-slate-600">
                                                 New Balance: <span className="font-bold">{formatCurrency((selectedUser.walletBalance || 0) + parseFloat(topUpAmount))}</span>
                                             </p>
                                         </div>
@@ -1199,7 +1199,7 @@ export default function AdminDashboard() {
                                         </button>
                                         <button
                                             onClick={handleTopUpUser}
-                                            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                            className="flex-1 px-4 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium"
                                         >
                                             Confirm Top Up
                                         </button>

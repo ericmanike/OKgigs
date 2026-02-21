@@ -94,7 +94,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="text-right">
-                            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+                            <Link href="/auth/forgot-password" className="text-sm text-slate-700 hover:text-slate-900">
                                 Forgot Password?
                             </Link>
                         </div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full  cursor-pointer py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full cursor-pointer py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : "Sign In"}
                         </button>
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
                     <p className="text-center mt-6 text-sm text-slate-500">
                         Don't have an account?{" "}
-                        <Link href="/auth/register" className="text-blue-600 hover:underline font-bold">
+                        <Link href="/auth/register" className="text-slate-800 hover:underline font-bold">
                             Create one
                         </Link>
                     </p>

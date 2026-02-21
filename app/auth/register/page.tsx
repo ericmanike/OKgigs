@@ -52,11 +52,11 @@ export default function RegisterPage() {
         <div className="flex items-center justify-center h-screen overflow-y-auto  px-4" >
             <Card className="w-full max-w-md ">
                 <CardHeader className="text-center">
-                    <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 text-blue-600">
+                    <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 text-slate-800">
                         <UserPlus size={24} />
                     </div>
                     <CardTitle className="text-2xl text-slate-900">Create Account</CardTitle>
-                    <p className="text-slate-500 text-sm mt-2">Join us to start trading</p>
+                    <p className="text-slate-500 text-sm mt-2">Join us and stay connected</p>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,7 +74,7 @@ export default function RegisterPage() {
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                                 placeholder="John Doe"
                             />
                         </div>
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                                 placeholder="john@example.com"
                             />
                         </div>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
                                 type="tel"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+                                className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                                 placeholder="024XXXXXXX"
                             />
                         </div>
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white transition-all pr-10"
+                                    className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all pr-10"
                                     placeholder="Create a password"
                                 />
                                 <button
@@ -133,7 +133,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : "Create Account"}
                         </button>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
                     <p className="text-center mt-6 text-sm text-slate-500">
                         Already have an account?{" "}
-                        <Link href="/auth/login" className="text-blue-600 hover:underline font-bold">
+                        <Link href="/auth/login" className="text-slate-800 hover:underline font-bold">
                             Sign In
                         </Link>
                     </p>

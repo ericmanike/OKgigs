@@ -90,12 +90,12 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold">Profile</h1>
 
             <Card className="text-center py-8">
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600">
                     <User size={32} />
                 </div>
-                <h2 className="text-xl font-bold text-slate-600">{session?.user?.name}</h2>
-                <p className="text-slate-900 text-sm">{session?.user?.email}</p>
-                <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-blue-700 rounded-full text-xs font-medium uppercase tracking-wider text-blue-100 border border-blue-400">
+                <h2 className="text-xl font-bold text-slate-800">{session?.user?.name}</h2>
+                <p className="text-slate-500 text-sm">{session?.user?.email}</p>
+                <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-slate-100 rounded-full text-xs font-medium uppercase tracking-wider text-slate-700 border border-slate-200">
                     {session?.user?.role === 'admin' && <Shield size={12} />} {session?.user?.role || 'Undefined'}
                 </div>
             </Card>
@@ -103,25 +103,25 @@ export default function ProfilePage() {
             <div className="space-y-3">
                 <h3 className="text-sm font-medium text-zinc-500 px-1">Account Info</h3>
                 <Card>
-                    <CardContent className="divide-y divide-blue-500 p-0">
+                    <CardContent className="divide-y divide-slate-100 p-0">
                         <div className="flex items-center gap-4 p-4">
-                            <User size={20} className="text-slate-600" />
+                            <User size={20} className="text-slate-500" />
                             <div>
-                                <p className="text-xs text-slate-600">Full Name</p>
-                                <p className="font-medium text-sm text-slate-600">{session?.user?.name}</p>
+                                <p className="text-xs text-slate-400">Full Name</p>
+                                <p className="font-medium text-sm text-slate-700">{session?.user?.name}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 p-4">
-                            <Mail size={20} className="text-slate-600" />
+                            <Mail size={20} className="text-slate-500" />
                             <div>
-                                <p className="text-xs text-slate-600">Email Address</p>
-                                <p className="font-medium text-sm text-slate-600">{session?.user?.email}</p>
+                                <p className="text-xs text-slate-400">Email Address</p>
+                                <p className="font-medium text-sm text-slate-700">{session?.user?.email}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 p-4">
-                            <Phone size={20} className="text-slate-600" />
+                            <Phone size={20} className="text-slate-500" />
                             <div className="flex-1">
-                                <p className="text-xs text-slate-600 mb-1">Phone Number</p>
+                                <p className="text-xs text-slate-400 mb-1">Phone Number</p>
                                 {editingPhone ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -130,7 +130,7 @@ export default function ProfilePage() {
                                             onChange={(e) => setPhoneInput(e.target.value)}
                                             onKeyDown={handleKeyDown}
                                             placeholder="024 XXX XXXX"
-                                            className="flex-1 px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900"
+                                            className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 text-slate-900"
                                             autoFocus
                                             disabled={loading}
                                         />
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-between">
-                                        <p className="font-medium text-sm text-slate-600">
+                                        <p className="font-medium text-sm text-slate-700">
                                             {fetching ? "Loading..." : (phone || "Not set")}
                                         </p>
                                         <button
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                                                 setPhoneInput(phone || "");
                                                 setEditingPhone(true);
                                             }}
-                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            className="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
                                             title="Edit phone number"
                                         >
                                             <Edit2 size={16} />

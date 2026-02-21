@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wifi, User ,LayoutDashboard, Handshake } from 'lucide-react';
+import { Home, Wifi, User, LayoutDashboard, Handshake } from 'lucide-react';
 import clsx from 'clsx';
 import { useSession } from 'next-auth/react';
 
@@ -45,7 +45,7 @@ export default function BottomNav() {
                             <span
                                 className={clsx(
                                     "text-[10px] font-medium transition-colors",
-                                    isActive ? "text-blue-600" : "text-slate-600"
+                                    isActive ? "text-slate-900" : "text-slate-500"
                                 )}
                             >
                                 {item.label}

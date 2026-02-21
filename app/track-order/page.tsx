@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Package, Search, CheckCircle2, XCircle, Clock, Loader2, Home } from "lucide-react";
+import { ArrowRight, Search, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -63,15 +63,12 @@ export default function TrackOrderPage() {
           href="/"
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
         >
-          <Home size={16} /> Back to home
+          <ArrowLeft size={16} /> Back to home
         </Link>
 
         <div className="rounded-2xl bg-white border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden">
-          <div className="bg-[#0e0947] px-5 py-6 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/15 mb-3">
-              <Package className="text-white" size={24} />
-            </div>
-            <h1 className="font-semibold text-white text-xl">Track your order</h1>
+          <div className="bg-[#E42320] px-5 py-8 text-center">
+            <h1 className="font-semibold text-white text-2xl tracking-tight">Track your order</h1>
             <p className="text-white/80 text-sm mt-1">Enter your transaction ID — no sign-in needed</p>
           </div>
           <div className="p-5 md:p-6">
@@ -83,14 +80,14 @@ export default function TrackOrderPage() {
                   value={trackId}
                   onChange={(e) => setTrackId(e.target.value)}
                   placeholder="e.g. OKGS-123456"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0e0947]/25 focus:border-[#0e0947] transition-shadow"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#E42320]/25 focus:border-[#E42320] transition-shadow"
                   disabled={trackLoading}
                 />
               </div>
               <button
                 type="submit"
                 disabled={trackLoading || !trackId.trim()}
-                className="px-5 py-3 rounded-xl bg-[#0e0947] text-white font-medium hover:bg-[#0e0947]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0 transition-colors"
+                className="px-5 py-3 rounded-xl bg-[#E42320] text-white font-medium hover:bg-[#E42320]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0 transition-colors"
               >
                 {trackLoading ? <Loader2 size={18} className="animate-spin" /> : "Check status"}
               </button>
@@ -126,7 +123,7 @@ export default function TrackOrderPage() {
                     <span>To {trackResult.phoneNumber}</span>
                     <span>{new Date(trackResult.createdAt).toLocaleString()}</span>
                   </div>
-                  <Link href="/buy" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-[#0e0947] hover:underline">
+                  <Link href="/buy" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-[#E42320] hover:underline">
                     Buy more data <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -136,11 +133,11 @@ export default function TrackOrderPage() {
         </div>
 
         <p className="text-center text-slate-500 text-sm mt-6">
-          <Link href="/buy" className="text-[#0e0947] font-medium hover:underline">
+          <Link href="/buy" className="text-[#E42320] font-medium hover:underline">
             Place a new order
           </Link>
           {" · "}
-          <Link href="/" className="text-[#0e0947] font-medium hover:underline">
+          <Link href="/" className="text-[#E42320] font-medium hover:underline">
             Home
           </Link>
         </p>

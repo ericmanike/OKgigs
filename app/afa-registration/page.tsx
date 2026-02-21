@@ -24,7 +24,7 @@ export default function AgentsPage() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all shadow-md"
+            className="px-8 py-3 bg-slate-600 text-white font-semibold rounded-lg hover:bg-slate-700 transition-all shadow-md"
           >
             Submit Another Request
           </button>
@@ -72,7 +72,7 @@ export default function AgentsPage() {
             <div className="text-sm text-slate-600">
               Fill out the form below to register for AFA Package
               <br />
-              <h2 className="text-lg font-bold text-blue-600 mt-2">Registration Fee is 15 GHS</h2>
+              <h2 className="text-lg font-bold text-slate-600 mt-2">Registration Fee is 15 GHS</h2>
             </div>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function AgentsPage() {
             <input
               id="name"
               name="name"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="Ama Mensah"
             />
             {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
@@ -107,7 +107,7 @@ export default function AgentsPage() {
             <input
               id="phone"
               name="phone"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="054XXXXXXX"
             />
             {errors.phone && <p className="text-xs text-red-500 font-medium">{errors.phone}</p>}
@@ -119,7 +119,7 @@ export default function AgentsPage() {
             <select
               id="idType"
               name="idType"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 bg-white transition-all font-medium"
             >
               <option value="">Select ID Type</option>
               <option value="Ghana Card">Ghana Card</option>
@@ -136,7 +136,7 @@ export default function AgentsPage() {
             <input
               id="idNumber"
               name="idNumber"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="GHA-XXXXXXXXX-X"
             />
             {errors.idNumber && <p className="text-xs text-red-500 font-medium">{errors.idNumber}</p>}
@@ -148,7 +148,7 @@ export default function AgentsPage() {
             <input
               id="location"
               name="location"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="City/Town name"
             />
             {errors.location && <p className="text-xs text-red-500 font-medium">{errors.location}</p>}
@@ -160,7 +160,7 @@ export default function AgentsPage() {
             <select
               id="region"
               name="region"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 bg-white transition-all font-medium"
             >
               <option value="">Select Region</option>
               <option value="Greater Accra">Greater Accra</option>
@@ -190,7 +190,7 @@ export default function AgentsPage() {
               id="dateOfBirth"
               name="dateOfBirth"
               type="date"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
             />
             {errors.dateOfBirth && <p className="text-xs text-red-500 font-medium">{errors.dateOfBirth}</p>}
             <ValidationError prefix="DOB" field="dateOfBirth" errors={state.errors} />
@@ -201,7 +201,7 @@ export default function AgentsPage() {
             <input
               id="occupation"
               name="occupation"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="Your current work"
             />
             {errors.occupation && <p className="text-xs text-red-500 font-medium">{errors.occupation}</p>}
@@ -214,7 +214,7 @@ export default function AgentsPage() {
             <input
               id="agentContact"
               name="agentContact"
-              className="w-full col-span-2 px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+              className="w-full col-span-2 px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               placeholder="Agent Contact"
             />
             {errors.agentContact && <p className="text-xs text-red-500 font-medium">{errors.agentContact}</p>}
@@ -226,7 +226,7 @@ export default function AgentsPage() {
           <button
             type="submit"
             disabled={state.submitting}
-            className=" md:col-span-2 w-full px-6 py-4 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-md hover:shadow-lg active:scale-[0.98]"
+            className=" md:col-span-2 w-full px-6 py-4 rounded-lg bg-slate-600 hover:bg-slate-700 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-md hover:shadow-lg active:scale-[0.98]"
           >
             {state.submitting ? 'Submitting...' : 'Submit Registration'}
             <CheckCircle2 size={18} />
@@ -236,7 +236,7 @@ export default function AgentsPage() {
         <div className="mt-6 text-sm text-slate-600 flex items-center justify-center gap-2 border-t border-slate-100 pt-6">
           Need help? Reach us at{' '}
           <a
-            className="text-blue-600 font-bold hover:underline"
+            className="text-slate-800 font-bold hover:underline"
             href="mailto:support@okgigs.com"
           >
             euginesogtinye@gmail.com
