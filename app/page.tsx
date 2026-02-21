@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowRight, AlertCircle, Shield } from "lucide-react";
 import { motion } from "motion/react";
 import { FaPhone, FaWhatsapp } from "react-icons/fa";
-import Pattern from "@/components/ui/Parttern";
+import Pattern from "@/components/ui/Pattern";
 
 export default function Home() {
   return (
