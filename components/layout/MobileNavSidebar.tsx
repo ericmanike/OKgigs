@@ -66,7 +66,7 @@ export default function MobileNavSidebar({ open, onClose }: Props) {
                   "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
                   isActive
                     ? "bg-[#E42320] text-white"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                    : "text-black hover:bg-zinc-100 hover:text-black"
                 )}
               >
                 {item.label}

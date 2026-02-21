@@ -18,6 +18,11 @@ import {
   Menu,
   X,
   Shield,
+  Crown,
+  Gem,
+  Gift,
+  Headphones,
+  CheckCircle,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import BecomeAgent from "@/components/ui/becomeAgent";
@@ -26,7 +31,7 @@ import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-type DashboardSection = "overview" | "quick-actions" | "orders";
+type DashboardSection = "overview" | "quick-actions" | "orders" | "upgrade";
 
 type OrderRecord = {
   _id: string;
@@ -49,6 +54,7 @@ const sidebarItems: { id: DashboardSection; label: string; icon: typeof LayoutDa
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "quick-actions", label: "Quick Actions", icon: Zap },
   { id: "orders", label: "Orders History", icon: History },
+  { id: "upgrade", label: "Premium Upgrade", icon: Crown },
 ];
 
 function getTimeOfDayGreeting(): string {
@@ -97,9 +103,9 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
           "fixed top-0 left-0 z-50 h-full w-[min(280px,85vw)] md:w-60 md:min-h-[calc(100vh-7rem)] md:top-28",
           "flex flex-col gap-1.5 md:gap-1.5 overflow-y-auto md:overflow-x-visible",
           "px-4 py-6 md:py-6 bg-white md:bg-white border-r border-zinc-200/80",
-          "md:shadow-[2px_0_24px_-8px_rgba(0,0,0,0.08)]",
+          "",
           "transition-transform duration-300 ease-out md:translate-x-0",
-          sidebarOpen ? "translate-x-0 shadow-xl" : "-translate-x-full md:translate-x-0"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         <div className="flex items-center justify-between mb-2 md:mb-0 md:hidden pb-4 border-b border-zinc-100">
@@ -120,7 +126,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
               key={item.id}
               onClick={() => handleSectionClick(item.id)}
               className={clsx(
-                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap text-left",
+                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left",
                 activeSection === item.id
                   ? "bg-[#E42320] text-white shadow-lg shadow-[#E42320]/20 md:shadow-md"
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
@@ -144,7 +150,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
               href="/admin"
               onClick={() => setSidebarOpen(false)}
               className={clsx(
-                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap text-left",
+                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left",
                 pathname?.startsWith("/admin")
                   ? "bg-[#E42320] text-white shadow-lg shadow-[#E42320]/20 md:shadow-md"
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
@@ -168,7 +174,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
               key={item.id}
               onClick={() => handleSectionClick(item.id)}
               className={clsx(
-                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap text-left",
+                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left",
                 activeSection === item.id
                   ? "bg-[#E42320] text-white shadow-lg shadow-[#E42320]/20 md:shadow-md"
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
@@ -197,7 +203,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="md:hidden p-2.5 rounded-xl bg-white border border-zinc-200/80 shadow-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
+                className="md:hidden p-2.5 rounded-xl bg-white border border-zinc-200/80 text-zinc-700 hover:bg-zinc-50 transition-colors"
                 aria-label="Open menu"
               >
                 <Menu size={22} />
@@ -211,7 +217,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
             </div>
             {!isAdmin && (
               <div className="hidden sm:flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-zinc-200/80 shadow-sm w-full sm:w-auto min-w-0">
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-zinc-200/80 w-full sm:w-auto min-w-0">
                   <Wallet className="text-zinc-500 shrink-0" size={20} />
                   <span className="text-zinc-600 text-sm font-medium shrink-0">Balance</span>
                   <span className="font-bold text-zinc-900 truncate min-w-0">{formatCurrency(balance)}</span>
@@ -228,7 +234,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {!isAdmin && (
-                  <Card className="overflow-hidden border-zinc-200/80 shadow-sm hover:shadow-md transition-shadow">
+                  <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
                     <CardContent className="p-5 flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                         <Wallet className="text-emerald-600" size={24} />
@@ -244,7 +250,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                     </CardContent>
                   </Card>
                 )}
-                <Card className="overflow-hidden border-zinc-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
                   <CardContent className="p-5 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-slate-500/10 flex items-center justify-center">
                       <ShoppingBag className="text-slate-600" size={24} />
@@ -340,9 +346,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   </CardContent>
                 </Card>
               </div>
-              <div className="pt-2">
-                <BecomeAgent />
-              </div>
+
             </div>
           )}
 
@@ -361,7 +365,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   View all <ChevronRight size={16} />
                 </Link>
               </div>
-              <Card className="overflow-hidden border-zinc-200/80 shadow-sm">
+              <Card className="overflow-hidden border-zinc-200/80">
                 <CardContent className="p-0 divide-y divide-zinc-100">
                   {recentOrders.length === 0 ? (
                     <div className="p-12 text-center">
@@ -439,6 +443,85 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   )}
                 </CardContent>
               </Card>
+            </div>
+          )}
+
+          {/* Premium Upgrade Section */}
+          {activeSection === "upgrade" && (
+            <div className="max-w-4xl mx-auto space-y-8">
+              <div className="text-center space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100">
+                  <Gem size={14} className="text-amber-600" />
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Premium Access</span>
+                </div>
+                <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Level Up Your Experience</h2>
+                <p className="text-zinc-500 max-w-md mx-auto">
+                  Join our inner circle of agents and enjoy exclusive rates, faster delivery, and dedicated support.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  {
+                    icon: Zap,
+                    title: "Special Pricing",
+                    desc: "Get access to lower rates on all data bundles regardless of volume.",
+                    color: "bg-blue-500",
+                  },
+                  {
+                    icon: Gift,
+                    title: "Priority Access",
+                    desc: "Be the first to know about and use new network bundles and offers.",
+                    color: "bg-purple-500",
+                  },
+                  {
+                    icon: Headphones,
+                    title: "24/7 Support",
+                    desc: "Dedicated account manager to resolve your issues in minutes.",
+                    color: "bg-emerald-500",
+                  },
+                ].map((benefit, i) => (
+                  <Card key={i} className="border-zinc-100">
+                    <CardContent className="p-6 space-y-4">
+                      <div className={`w-12 h-12 rounded-2xl ${benefit.color} flex items-center justify-center text-white`}>
+                        <benefit.icon size={24} />
+                      </div>
+                      <h3 className="font-bold text-zinc-900">{benefit.title}</h3>
+                      <p className="text-sm text-zinc-500 leading-relaxed">{benefit.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[100px] rounded-full -mr-20 -mt-20" />
+                <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="space-y-4 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-3">
+                      <Crown className="text-amber-400" size={32} />
+                      <span className="text-2xl font-black tracking-tight">Upgrade to Premium</span>
+                    </div>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={16} className="text-amber-400" /> Lifetime access to agent rates
+                      </li>
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={16} className="text-amber-400" /> No monthly subscription
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-4 shrink-0">
+                    <div className="text-center">
+                      <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1">One-time payment</p>
+                      <p className="text-4xl font-black text-white">{formatCurrency(30)}</p>
+                    </div>
+                    <div className="w-full min-w-[200px]">
+                      <BecomeAgent />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -311,8 +311,9 @@ export default function BuyContent() {
                     <p className="text-sm font-medium text-zinc-500">Select Bundle Size</p>
 
                     {loadingBundles ? (
-                        <div className="flex items-center justify-center py-12">
-                            <Loader2 className="animate-spin text-slate-700" size={32} />
+                        <div className="flex flex-col items-center justify-center py-16 space-y-3">
+                            <Loader2 className="animate-spin text-[#E42320]" size={40} />
+                            <p className="text-sm font-medium text-zinc-400 animate-pulse">Fetching best deals...</p>
                         </div>
                     ) : bundles.length === 0 ? (
                         <div className="text-center py-12">

@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/providers/AuthProvider";
 import Navbar from "@/components/layout/Navbar";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -100,6 +101,7 @@ export default function RootLayout({
               })
             }}
           />
+        
         </AuthProvider>
       </body>
     </html>

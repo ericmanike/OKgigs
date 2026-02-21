@@ -80,7 +80,7 @@ export default function Navbar() {
                         href="/dashboard"
                         className={clsx(
                             "hidden md:block text-sm md:text-[16px] font-medium transition-colors",
-                            pathname === '/dashboard' ? "text-[#E42320] font-bold underline underline-offset-4" : "text-zinc-600 hover:text-[#E42320]"
+                            pathname === '/dashboard' ? "text-[#E42320] font-bold underline underline-offset-4" : "text-black hover:text-[#E42320]"
                         )}
                     >
                         Dashboard
@@ -89,7 +89,7 @@ export default function Navbar() {
                         href="/buy"
                         className={clsx(
                             "hidden md:block text-sm md:text-[16px] font-medium transition-colors",
-                            pathname === '/buy' ? "text-[#E42320] font-bold underline underline-offset-4" : "text-zinc-600 hover:text-[#E42320]"
+                            pathname === '/buy' ? "text-[#E42320] font-bold underline underline-offset-4" : "text-black hover:text-[#E42320]"
                         )}
                     >
                         Buy Data
