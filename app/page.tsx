@@ -179,7 +179,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row flex-wrap justify-around gap-3">
 
             <a
-              href="https://chat.whatsapp.com/JxpJjBisX0BGOO5BY8yWJJ?mode=gi_t"
+              href="https://whatsapp.com/channel/0029VbBcIbS7T8beipl8aZ1x"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
@@ -187,7 +187,7 @@ export default function Home() {
               <FaWhatsapp size={18} /> Join WhatsApp
             </a>
             <a
-              href="https://wa.me/233551043686"
+              href="https://wa.me/233543442518"
               className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
             >
               <FaPhone size={18} /> Contact support
