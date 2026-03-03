@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
@@ -261,14 +261,14 @@ export default function BuyContent() {
     };
 
     return (
-        <div className="p-4 md:max-w-[60%] mx-auto min-h-screen md:pt-35 pt-24 z-0">
+        <div className="p-4 w-full md:w-[80%] mx-auto min-h-screen md:pt-35 pt-24 z-0">
             <h1 className="text-2xl font-bold mb-6">Buy Data Bundle</h1>
 
             {/* Step 1: Select Network */}
             {step === 1 && (
-                <div className="space-y-4 w-[80%] mx-auto">
+                <div className="space-y-6">
                     <p className="text-sm font-medium text-zinc-500 mb-2">Select Network</p>
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {NETWORKS.map((net) => (
                             <button
                                 key={net.id}
@@ -277,20 +277,20 @@ export default function BuyContent() {
                                     setStep(2);
                                 }}
                                 className={clsx(
-                                    "flex items-center justify-between p-4 rounded-xl border transition-all",
-                                    "hover:shadow-md",
+                                    "flex flex-col items-center justify-center gap-2 md:gap-4 py-6 md:py-10 px-2 md:px-4 rounded-2xl transition-all duration-200 border border-gray-400 md:border-0",
+                                    "hover:scale-105 hover:shadow-2xl active:scale-95 shadow-lg",
                                     selectedNetwork === net.id
-                                        ? "bg-slate-600 text-white border-slate-500 shadow-lg shadow-slate-600/20"
-                                        : "bg-white text-zinc-900 border-zinc-200 hover:border-slate-400"
+                                        ? "shadow-xl shadow-slate-400/30 scale-105"
+                                        : "bg-white"
                                 )}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className={clsx("w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm", net.color, net.textColor)}>
-                                        {net.name[0]}
-                                    </div>
-                                    <span className="font-semibold">{net.name}</span>
+                                <div className={clsx(
+                                    "w-12 h-12 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-xl md:text-3xl shadow-lg",
+                                    net.color, net.textColor
+                                )}>
+                                    {net.name[0]}
                                 </div>
-                                <ChevronRight size={20} className={selectedNetwork === net.id ? "text-white" : "text-zinc-400"} />
+                                <span className="font-bold text-xs md:text-lg text-zinc-800 text-center">{net.name}</span>
                             </button>
                         ))}
                     </div>
@@ -335,13 +335,30 @@ export default function BuyContent() {
                                         setStep(3);
                                     }}
                                     className={clsx(
-                                        "p-4 rounded-xl border transition-all text-left",
-                                        "hover:shadow-lg shadow-sm font-semibold",
-                                        networkConfig ? `${networkConfig.color} ${networkConfig.textColor} border-transparent` : "bg-white border-zinc-300 text-zinc-900"
+                                        "flex flex-col items-center justify-between p-4 pt-6 rounded-2xl transition-all text-center",
+                                        "hover:scale-105 hover:shadow-2xl active:scale-95 shadow-md",
+                                        networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
                                 >
-                                    <h3 className="text-lg font-bold mb-1">{bundle.name}</h3>
-                                    <p className="font-medium opacity-90">{formatCurrency(bundle.price)}</p>
+                                    {/* Wifi icon */}
+                                    <div className={clsx(
+                                        "w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-inner",
+                                        networkConfig ? "bg-black/10" : "bg-zinc-100"
+                                    )}>
+                                        <Wifi size={24} strokeWidth={2.5} />
+                                    </div>
+
+                                    {/* Bundle name */}
+                                    <h3 className="text-xl font-black tracking-tight leading-tight mb-1">{bundle.name}</h3>
+                                    <p className="text-xs font-medium opacity-70 mb-4">Data Bundle</p>
+
+                                    {/* Price badge */}
+                                    <div className={clsx(
+                                        "w-full py-2 px-3 rounded-xl font-bold text-sm",
+                                        networkConfig ? "bg-black/10" : "bg-zinc-100 text-zinc-800"
+                                    )}>
+                                        {formatCurrency(bundle.price)}
+                                    </div>
                                 </button>
                             ))}
                         </div>

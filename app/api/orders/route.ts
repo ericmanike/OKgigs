@@ -107,6 +107,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
     }
 
+
+    const ref = reference.trim()
+   const order = await Order.create({
+      user: session.user.id,
+      transaction_id: "paid_"+ref,
+      network: network,
+      bundleName: bundleName,
+      price: price,
+      phoneNumber: phoneNumber,
+      status: 'pending',
+    });
+
+
     //place order
     const placeOrder = await fetch(
       "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
@@ -118,7 +131,7 @@ export async function POST(req: Request) {
           "x-api-key": `${DAKAZI_API_KEY}`,
         },
         body: JSON.stringify({
-          recipient_msisdn: phoneNumber,
+          recipient_msisdn: phoneNumber.trim(),
           network_id: networkId,
           shared_bundle: Number(bundleName),
           incoming_api_ref: reference
@@ -137,6 +150,14 @@ export async function POST(req: Request) {
 
     }
 
+    order.transaction_id = Orderres.transaction_code
+    order.status = 'pending'
+    await order.save()
+
+    console.log('New order created successfully throught the API:', order);
+
+
+
 
 
     console.log(' purchase order response:', Orderres)
@@ -145,15 +166,7 @@ export async function POST(req: Request) {
    
 
 
-    const order = await Order.create({
-      user: session.user.id,
-      transaction_id: Orderres.transaction_code,
-      network: network,
-      bundleName: bundleName,
-      price: price,
-      phoneNumber: phoneNumber,
-      status: 'pending',
-    });
+  
 
     console.log('📦 New order created:', order);
     return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });

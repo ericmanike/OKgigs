@@ -129,7 +129,19 @@ export async function POST(req: Request) {
 
 
         const raw = await placeOrder.text();
-        const orderRes = JSON.parse(raw);
+
+
+        let     orderRes;
+        try {
+            orderRes = JSON.parse(raw);
+        } catch (error) {
+    
+           await User.findByIdAndUpdate(session.user.id, {
+           $inc: { walletBalance: realPrice }
+           });
+            console.error('Failed to parse Dakazi response:', error);
+            return NextResponse.json({ message: "Failed to parse Dakazi response" }, { status: 500 });
+        }
         console.log('Dakazi order response:', orderRes);
            
         console.log(`Order placement response: ${placeOrder.status} - ${raw}`);
@@ -142,11 +154,9 @@ export async function POST(req: Request) {
            
 
 
-    if (!placeOrder.ok || orderRes.success !== true) {
+    if (orderRes.success !== true) {
 
-    await User.findByIdAndUpdate(session.user.id, {
-        $inc: { walletBalance: realPrice }
-    });
+   
        return NextResponse.json({ message: "Order failed. Wallet refunded." }, { status: 500 });
 }
         // Create order record
