@@ -172,9 +172,6 @@ export async function POST(req: Request) {
 
 
 
-
-
-
     console.log('📦 New order created:', order);
     return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });
   } catch (error) {

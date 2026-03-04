@@ -23,7 +23,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "MegaGigs - Buy Data Bundles Instantly",
-  description: "Cheapest data bundles for all networks in Ghana (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
+  description: "Cheapest data bundles for all stydies and research (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
   keywords: ["data bundles", "Ghana data", "MTN data", "Telecel data", "AirtelTigo data", "buy data online", "instant data delivery", "MegaGigs"],
   authors: [{ name: "MegaGigs Team" }],
   creator: "MegaGigs",
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
         url: "https://megagigs.vercel.app/og-image.jpg",
         width: 683,
         height: 1024,
-        alt: "MegaGigs - Affordable Data Bundles for MTN, Telecel & AirtelTigo",
+        alt: "MegaGigs - Data Bundles for MTN, Telecel & AirtelTigo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "MegaGigs - Buy Data Bundles Instantly",
-    description: "Cheapest data bundles for all networks in Ghana. Instant delivery.",
+    description: "Cheapest data bundles for your research and studies. Instant delivery.",
     creator: "@megagigs",
     images: ["https://megagigs.vercel.app/og-image.jpg"],
   },
