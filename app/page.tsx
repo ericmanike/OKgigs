@@ -118,7 +118,7 @@ export default function Home() {
                 <div className="flex flex-col items-center gap-3">
                   <div
                     className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500"
-                    style={{ backgroundColor: banner.bg, boxShadow: `0 20px 40px ${banner.shadowColor}` }}
+                    style={{ backgroundColor: banner.bg }}
                   >
                     {/* Background blobs */}
                     <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-2xl" style={{ backgroundColor: banner.blob1 }} />
@@ -149,9 +149,9 @@ export default function Home() {
                       <div className="flex flex-col items-center gap-2">
                         <div
                           className="w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
-                          style={{ backgroundColor: banner.iconBoxBg, borderColor: banner.iconBoxBorder }}
+                          style={{ borderColor: banner.iconBoxBorder }}
                         >
-                          <Zap size={28} strokeWidth={2.5} style={{ color: banner.iconText }} />
+                          <Zap size={36} strokeWidth={2.5} style={{ color: banner.iconText }} />
                           <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: banner.iconLabel }}>Instant</span>
                         </div>
                         <span className="text-[10px] font-bold text-center" style={{ color: banner.deliveryText }}>Delivered in<br />seconds</span>
@@ -174,7 +174,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/buy"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-base hover:bg-slate-800 transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95]"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-base hover:shadow-lg transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95]"
                   >
                     Buy data <ArrowRight size={20} />
                   </Link>
