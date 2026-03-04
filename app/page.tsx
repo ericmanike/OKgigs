@@ -104,10 +104,10 @@ export default function Home() {
             >
               <div className="max-w-xl">
                 <span className="inline-block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">
-                  Ghana Data bundles
+                 Buy Ghana Data bundles
                 </span>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-                  Affordable data for all networks. <span className="text-[#E42320]">Instant</span> delivery.
+                  Save More ,Browse More. <span className="text-[#E42320]">Instant</span> delivery.
                 </h1>
                 <p className="text-slate-600 text-base md:text-lg mt-5 leading-relaxed">
                   MTN, Telecel, and AirtelTigo. Simple checkout, secure payments, and data delivered in seconds.
