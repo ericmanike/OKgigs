@@ -9,10 +9,8 @@ import Setting from "@/models/Setting";
 
 export async function POST(req: Request) {
   try {
+    // Session is optional — guests can place orders too
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
 
     // const ip = session.user.id;
     // console.log(  'order rate limit identifier:', ip)
@@ -33,7 +31,7 @@ export async function POST(req: Request) {
     await dbConnect();
 
     const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
-    if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
+    if (Boolean(ordersClosedDoc?.value) && session?.user?.role !== "admin") {
       return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
     }
 
@@ -41,8 +39,8 @@ export async function POST(req: Request) {
     const existingOrder = await Order.findOne({ transaction_id: reference });
     if (existingOrder) {
       return NextResponse.json({ message: "Duplicate transaction reference" }, { status: 409 });
-    }     
-    
+    }
+
 
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
     const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY
@@ -85,33 +83,33 @@ export async function POST(req: Request) {
     }
 
     const { amount, currency } = paystackData.data
-    
-  
-            const tax = 0.02 * price
-            let total = price + tax
-            console.log('Total before rounding:', total)
-            total = Math.round(total * 100)/100
-            console.log('Total after rounding:', total)
- 
-         
-       console.log('Expected price:')
-       console.log('Payment amount:', amount / 100)
+
+
+    const tax = 0.02 * price
+    let total = price + tax
+    console.log('Total before rounding:', total)
+    total = Math.round(total * 100) / 100
+    console.log('Total after rounding:', total)
+
+
+    console.log('Expected price:')
+    console.log('Payment amount:', amount / 100)
 
     if (amount / 100 !== Number(total)) {
       console.log('Payment amount does not match')
       return NextResponse.json({ message: "Payment amount does not match" }, { status: 400 });
     }
 
-     if (paystackData.data.status !== 'success') {
+    if (paystackData.data.status !== 'success') {
       console.log('Payment verification failed')
       return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
     }
 
 
     const ref = reference.trim()
-   const order = await Order.create({
-      user: session.user.id,
-      transaction_id: "paid_"+ref,
+    const order = await Order.create({
+      ...(session?.user?.id ? { user: session.user.id } : {}),
+      transaction_id: "paid_" + ref,
       network: network,
       bundleName: bundleName,
       price: price,
@@ -142,9 +140,9 @@ export async function POST(req: Request) {
     let Orderres;
 
     try {
-    const raw = await placeOrder.text();
-    Orderres = JSON.parse(raw);
-    console.log(Orderres);
+      const raw = await placeOrder.text();
+      Orderres = JSON.parse(raw);
+      console.log(Orderres);
 
     } catch (error) {
       console.error("Order creation error:", error);
@@ -157,28 +155,25 @@ export async function POST(req: Request) {
 
     }
 
-  if(Orderres.transaction_code){
-    console.log('New order created with id ', Orderres.transaction_code)
-    order.transaction_id = Orderres.transaction_code
-    order.status = 'pending'
-    await order.save()
+    if (Orderres.transaction_code) {
+      console.log('New order created with id ', Orderres.transaction_code)
+      order.transaction_id = Orderres.transaction_code
+      order.status = 'pending'
+      await order.save()
 
 
-  }
+    }
 
     console.log('New order created successfully throught the API:', order);
-
-
-
 
 
     console.log(' purchase order response:', Orderres)
 
 
-   
 
 
-  
+
+
 
     console.log('📦 New order created:', order);
     return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });

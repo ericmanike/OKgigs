@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IOrder extends Document {
-    user: mongoose.Types.ObjectId;
+    user?: mongoose.Types.ObjectId; // Optional — guests have no user ID
     transaction_id: string;
     bundleName: string;
     network: string;
@@ -15,7 +15,7 @@ export interface IOrder extends Document {
 }
 const OrderSchema = new Schema<IOrder>(
     {
-        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: false },
         transaction_id: { type: String, required: true, unique: true },
         bundleName: { type: String, required: true },
         network: { type: String, required: true },

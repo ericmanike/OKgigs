@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Search, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft } from "lucide-react";
+import { ArrowRight, Search, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft, Phone } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -15,45 +15,45 @@ type TrackOrderResult = {
   phoneNumber: string;
 };
 
+const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
+  delivered: { label: "Delivered", icon: CheckCircle2, className: "text-green-600 bg-green-50" },
+  failed: { label: "Failed", icon: XCircle, className: "text-red-600 bg-red-50" },
+  reversed: { label: "Reversed", icon: XCircle, className: "text-amber-600 bg-amber-50" },
+  pending: { label: "Pending", icon: Clock, className: "text-amber-600 bg-amber-50" },
+};
+
 export default function TrackOrderPage() {
-  const [trackId, setTrackId] = useState("");
-  const [trackLoading, setTrackLoading] = useState(false);
-  const [trackResult, setTrackResult] = useState<TrackOrderResult | null>(null);
-  const [trackNotFound, setTrackNotFound] = useState(false);
-  const [trackError, setTrackError] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState<TrackOrderResult[]>([]);
+  const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleTrackOrder = async (e: React.FormEvent) => {
+  const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
-    const id = trackId.trim();
-    if (!id) return;
-    setTrackLoading(true);
-    setTrackResult(null);
-    setTrackNotFound(false);
-    setTrackError("");
-    try {
-      const res = await fetch(`/api/track-order?transaction_id=${encodeURIComponent(id)}`);
-      const data = await res.json();
-      if (data.found && data.order) {
-        setTrackResult(data.order);
-        setTrackNotFound(false);
-      } else {
-        setTrackResult(null);
-        setTrackNotFound(true);
-      }
-      if (data.error) setTrackError(data.error);
-    } catch {
-      setTrackResult(null);
-      setTrackError("Could not look up order. Please try again.");
-    } finally {
-      setTrackLoading(false);
-    }
-  };
+    const phoneNumber = phone.trim();
+    if (!phoneNumber) return;
 
-  const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
-    delivered: { label: "Delivered", icon: CheckCircle2, className: "text-green-600 bg-green-50" },
-    failed: { label: "Failed", icon: XCircle, className: "text-red-600 bg-red-50" },
-    reversed: { label: "Reversed", icon: XCircle, className: "text-amber-600 bg-amber-50" },
-    pending: { label: "Pending", icon: Clock, className: "text-amber-600 bg-amber-50" },
+    setLoading(true);
+    setOrders([]);
+    setNotFound(false);
+    setError("");
+
+    try {
+      const res = await fetch(`/api/track-order?phoneNumber=${encodeURIComponent(phoneNumber)}`);
+      const data = await res.json();
+
+      if (data.found && data.orders?.length) {
+        setOrders(data.orders);
+      } else {
+        setNotFound(true);
+      }
+      if (data.error) setError(data.error);
+    } catch {
+      setError("Could not look up orders. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,66 +67,87 @@ export default function TrackOrderPage() {
         </Link>
 
         <div className="rounded-2xl bg-white border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden">
+          {/* Header */}
           <div className="bg-[#E42320] px-5 py-8 text-center">
-            <h1 className="font-semibold text-white text-2xl tracking-tight">Track your order</h1>
-            <p className="text-white/80 text-sm mt-1">Enter your transaction ID — no sign-in needed</p>
+            <h1 className="font-semibold text-white text-2xl tracking-tight">Track your orders</h1>
+            <p className="text-white/80 text-sm mt-1">Enter your phone number — no sign-in needed</p>
           </div>
+
           <div className="p-5 md:p-6">
-            <form onSubmit={handleTrackOrder} className="flex flex-col sm:flex-row gap-3">
+            {/* Search form */}
+            <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
-                  type="text"
-                  value={trackId}
-                  onChange={(e) => setTrackId(e.target.value)}
-                  placeholder="e.g. OKGS-123456"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 0241234567"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#E42320]/25 focus:border-[#E42320] transition-shadow"
-                  disabled={trackLoading}
+                  disabled={loading}
                 />
               </div>
               <button
                 type="submit"
-                disabled={trackLoading || !trackId.trim()}
+                disabled={loading || !phone.trim()}
                 className="px-5 py-3 rounded-xl bg-[#E42320] text-white font-medium hover:bg-[#E42320]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0 transition-colors"
               >
-                {trackLoading ? <Loader2 size={18} className="animate-spin" /> : "Check status"}
+                {loading ? <Loader2 size={18} className="animate-spin" /> : "Check status"}
               </button>
             </form>
-            {trackError && (
-              <p className="mt-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{trackError}</p>
+
+            {/* Error */}
+            {error && (
+              <p className="mt-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
             )}
-            {trackNotFound && !trackLoading && (
+
+            {/* Not found */}
+            {notFound && !loading && (
               <div className="mt-4 p-5 rounded-xl bg-slate-50 border border-slate-100 text-center">
                 <XCircle className="text-slate-400 mx-auto mb-2" size={32} />
-                <p className="text-slate-700 text-sm font-medium">No order found</p>
-                <p className="text-slate-500 text-xs mt-1">Check the transaction ID or contact support.</p>
+                <p className="text-slate-700 text-sm font-medium">No orders found</p>
+                <p className="text-slate-500 text-xs mt-1">Check the phone number or contact support.</p>
               </div>
             )}
-            {trackResult && !trackLoading && (
-              <div className="mt-4 rounded-xl border border-slate-100 overflow-hidden bg-linear-to-b from-slate-50 to-white">
-                <div className="flex items-center justify-between flex-wrap gap-2 p-4 border-b border-slate-100">
-                  <span className="text-xs font-mono text-slate-500">#{trackResult.transaction_id}</span>
-                  {(() => {
-                    const cfg = statusConfig[trackResult.status] || statusConfig.pending;
-                    const Icon = cfg.icon;
-                    return (
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${cfg.className}`}>
-                        <Icon size={14} /> {cfg.label}
-                      </span>
-                    );
-                  })()}
-                </div>
-                <div className="p-4 space-y-2">
-                  <p className="font-semibold text-slate-900">{trackResult.network} · {trackResult.bundleName}</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
-                    <span>{formatCurrency(trackResult.price)}</span>
-                    <span>To {trackResult.phoneNumber}</span>
-                    <span>{new Date(trackResult.createdAt).toLocaleString()}</span>
-                  </div>
-                  <Link href="/buy" className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-[#E42320] hover:underline">
-                    Buy more data <ArrowRight size={14} />
-                  </Link>
-                </div>
+
+            {/* Orders list */}
+            {orders.length > 0 && !loading && (
+              <div className="mt-4 space-y-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  {orders.length} order{orders.length > 1 ? "s" : ""} found
+                </p>
+                {orders.map((order) => {
+                  const cfg = statusConfig[order.status] || statusConfig.pending;
+                  const Icon = cfg.icon;
+                  return (
+                    <div
+                      key={order.transaction_id}
+                      className="rounded-xl border border-slate-100 overflow-hidden bg-linear-to-b from-slate-50 to-white"
+                    >
+                      <div className="flex items-center justify-between flex-wrap gap-2 p-4 border-b border-slate-100">
+                        <span className="text-xs font-mono text-slate-500">#{order.transaction_id}</span>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${cfg.className}`}>
+                          <Icon size={14} /> {cfg.label}
+                        </span>
+                      </div>
+                      <div className="p-4 space-y-1">
+                        <p className="font-semibold text-slate-900">{order.network} · {order.bundleName}</p>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
+                          <span>{formatCurrency(order.price)}</span>
+                          <span>To {order.phoneNumber}</span>
+                          <span>{new Date(order.createdAt).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <Link
+                  href="/buy"
+                  className="inline-flex items-center gap-1.5 mt-1 text-sm font-medium text-[#E42320] hover:underline"
+                >
+                  Buy more data <ArrowRight size={14} />
+                </Link>
               </div>
             )}
           </div>

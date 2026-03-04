@@ -34,14 +34,14 @@ export default function BuyingModal({ isOpen, onClose }: Props) {
 
         <div className="flex  justify-between mt-6">
           <button onClick={() => router.push('/dashboard')}
-            className="px-6 py-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400 transition-colors">
-            Cancel
+            className="px-6 py-2 rounded-md bg-red-600 text-gray-800 hover:bg-gray-400 transition-colors">
+            Disagree and exit
           </button>
           <button
-            className="px-6 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700 transition-colors"
+            className="px-6 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-700 transition-colors"
             onClick={onClose}
           >
-            Sure, continue
+            Agree and continue
           </button>
         </div>
       </div>
