@@ -215,7 +215,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                 <p className="text-zinc-500 text-sm mt-0.5">Welcome back to your dashboard</p>
               </div>
             </div>
-            {!isAdmin && (
+          
               <div className="hidden sm:flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
                 <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-zinc-200/80 w-full sm:w-auto min-w-0">
                   <Wallet className="text-zinc-500 shrink-0" size={20} />
@@ -226,14 +226,14 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   <TopUpwallet />
                 </div>
               </div>
-            )}
+           
           </div>
 
           {/* Overview */}
           {activeSection === "overview" && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {!isAdmin && (
+                
                   <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
                     <CardContent className="p-5 flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -249,7 +249,7 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                       </div>
                     </CardContent>
                   </Card>
-                )}
+               
                 <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
                   <CardContent className="p-5 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-slate-500/10 flex items-center justify-center">
@@ -286,8 +286,41 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   </button>
                 </div>
               </div>
+
+              {/* Buy Data Bundles - Network Cards */}
+              <div>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Buy Data Bundles</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { name: "MTN", bg: "#FFCC00", text: "#1a1200", letter: "M", network: "MTN" },
+                    { name: "Telecel", bg: "#E60000", text: "#ffffff", letter: "T", network: "Telecel" },
+                    { name: "AirtelTigo", bg: "#0077C8", text: "#ffffff", letter: "A", network: "AirtelTigo" },
+                  ].map((net) => (
+                    <Link
+                      key={net.network}
+                      href={`/buy?network=${net.network}`}
+                      className="group rounded-2xl overflow-hidden border border-zinc-200/80 hover:-translate-y-1 hover:shadow-md transition-all duration-200"
+                    >
+                      <div
+                        className="p-4 flex flex-col items-center gap-2 text-center"
+                        style={{ backgroundColor: net.bg }}
+                      >
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow"
+                          style={{ backgroundColor: "rgba(0,0,0,0.15)", color: net.text }}
+                        >
+                          {net.letter}
+                        </div>
+                        <span className="text-xs font-bold" style={{ color: net.text }}>{net.name}</span>
+                        <span className="text-[10px] font-medium opacity-70" style={{ color: net.text }}>Buy Data</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
+
 
           {/* Quick Actions */}
           {activeSection === "quick-actions" && (
