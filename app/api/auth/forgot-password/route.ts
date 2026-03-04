@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
         // Send email via Resend
         const emailResult = await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+            from: process.env.RESEND_FROM_EMAIL || 'info@nyamekyeloans.com',
             to: email,
             subject: 'Password Reset - MegaGigs',
             html: `
