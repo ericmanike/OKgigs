@@ -240,13 +240,8 @@ export default function BuyContent() {
 
             if (response.ok) {
                 setMessage("Purchase successful! Redirecting...");
-                setTimeout(() => {
-                    if (session) {
-                        router.push('/dashboard');
-                    } else {
-                        router.push('/');
-                    }
-                }, 2000);
+               ;
+                
             } else {
                 alert(data.message || "Wallet purchase failed");
                 setMessage(data.message || "Purchase failed");
@@ -256,7 +251,16 @@ export default function BuyContent() {
             alert("Something went wrong with the wallet purchase.");
             setMessage(error.message);
         } finally {
+
             setLoading(false);
+
+             setTimeout(() => {
+                    if (session) {
+                        router.push('/dashboard');
+                    } else {
+                        router.push('/');
+                    }
+                }, 1000)
         }
     };
 
@@ -403,19 +407,21 @@ export default function BuyContent() {
                             <div className="space-y-3">
                                 <button
                                     onClick={handlePurchase}
-                                    disabled={loading || phoneNumber.length < 10}
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with Paystack"}
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Complete Purchase"}
+
                                 </button>
 
-                                <button
+                                {/* <button
                                     onClick={handleWalletPurchase}
-                                    disabled={loading || phoneNumber.length < 10}
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-3.5 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : "Buy with Wallet"}
-                                </button>
+                                </button> */}
+
                             </div>
                         </CardContent>
                     </Card>
