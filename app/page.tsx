@@ -1,13 +1,13 @@
 'use client'
 
 import Link from "next/link";
-import { ArrowRight, AlertCircle, Shield, Zap, Truck } from "lucide-react";
+import { ArrowRight, AlertCircle, Zap, Infinity } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import Pattern from "@/components/ui/Pattern";
-import { Star} from 'lucide-react';
-import { Infinity } from 'lucide-react';
+
+
 
 const BANNERS = [
   {
@@ -109,7 +109,7 @@ export default function Home() {
                  Buy Ghana Data bundles
                 </span>
                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-                  Save More ,Browse <Infinity className="inline text-blue-600" size={34} />  <br /> <span className="text-[#E42320]">  Cheap Mega Gigabytes</span><br /> <span className="text-[#E42320] text-blue-600">  Instant</span> delivery.
+                  Save More ,Browse <Infinity className="inline text-blue-600" size={34} />  <br /> <span className="text-[#E42320]">  Cheap Mega Gigabytes.</span><br /> <span className="text-[#E42320] text-blue-600">  Instant</span> delivery.
                 </h1>
                 <p className="text-slate-600 text-base md:text-lg mt-5 leading-relaxed">
                   MTN, Telecel, and AirtelTigo. Simple checkout, secure payments, and data delivered in seconds.
