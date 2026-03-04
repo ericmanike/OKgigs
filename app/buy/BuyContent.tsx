@@ -262,7 +262,7 @@ export default function BuyContent() {
 
     return (
         <div className="p-4 w-full md:w-[80%] mx-auto min-h-screen md:pt-35 pt-24 z-0">
-            <h1 className="text-2xl font-bold mb-4">Buy Data Bundle</h1>
+            <h1 className="text-2xl font-bold mb-4"> Stay Connected 24/7</h1>
 
             {/* BUNDLE SELECTION VIEW */}
             {step !== 3 && (
