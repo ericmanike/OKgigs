@@ -22,26 +22,26 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "OKGigs - Buy Data Bundles Instantly",
+  title: "MegaGigs - Buy Data Bundles Instantly",
   description: "Affordable data bundles for all networks in Ghana (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
-  keywords: ["data bundles", "Ghana data", "MTN data", "Telecel data", "AirtelTigo data", "buy data online", "instant data delivery", "OKGigs"],
-  authors: [{ name: "OKGigs Team" }],
-  creator: "OKGigs",
-  publisher: "OKGigs",
+  keywords: ["data bundles", "Ghana data", "MTN data", "Telecel data", "AirtelTigo data", "buy data online", "instant data delivery", "MegaGigs"],
+  authors: [{ name: "MegaGigs Team" }],
+  creator: "MegaGigs",
+  publisher: "MegaGigs",
   robots: "index, follow",
   openGraph: {
     type: "website",
     locale: "en_GH",
-    url: "https://okgigs.online",
-    title: "OKGigs - Buy Data Bundles Instantly",
+    url: "https://megagigs.online",
+    title: "MegaGigs - Buy Data Bundles Instantly",
     description: "Affordable data bundles for all networks in Ghana. Instant delivery.",
-    siteName: "OKGigs",
+    siteName: "MegaGigs",
   },
   twitter: {
     card: "summary_large_image",
-    title: "OKGigs - Buy Data Bundles Instantly",
+    title: "MegaGigs - Buy Data Bundles Instantly",
     description: "Affordable data bundles for all networks in Ghana. Instant delivery.",
-    creator: "@okgigs",
+    creator: "@megagigs",
   },
   category: "technology",
 };
@@ -68,11 +68,11 @@ export default function RootLayout({
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "OKGigs",
-                "url": "https://okgigs.online",
-                "logo": "https://okgigs.online/logo.png",
+                "name": "MegaGigs",
+                "url": "https://megagigs.online",
+                "logo": "https://megagigs.online/logo.png",
                 "sameAs": [
-                  "https://twitter.com/okgigs",
+                  "https://twitter.com/megagigs",
                   "https://whatsapp.com/channel/..."
                 ],
                 "contactPoint": {
@@ -91,17 +91,17 @@ export default function RootLayout({
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "OKGigs",
-                "url": "https://okgigs.online",
+                "name": "MegaGigs",
+                "url": "https://megagigs.online",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://okgigs.online/buy?search={search_term_string}",
+                  "target": "https://megagigs.online/buy?search={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               })
             }}
           />
-        
+
         </AuthProvider>
       </body>
     </html>

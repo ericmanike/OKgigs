@@ -5,9 +5,8 @@ import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import User from "@/models/User";
 import Setting from "@/models/Setting";
-
 import Bundle from "@/models/Bundle";
-import { p } from "motion/react-client";
+
 
 export async function POST(req: Request) {
     try {
@@ -24,10 +23,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
-
-
         await dbConnect();
-
+        
         const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
         if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
             return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });

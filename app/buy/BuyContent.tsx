@@ -41,7 +41,7 @@ export default function BuyContent() {
     const initialNetwork = searchParams.get("network");
 
     const [step, setStep] = useState(1);
-    const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork || "");
+    const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork || "MTN");
     const [selectedBundle, setSelectedBundle] = useState<any>(null);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
@@ -156,7 +156,7 @@ export default function BuyContent() {
 
             const handler = window.PaystackPop.setup({
                 key: paystackKey!,
-                email: session?.user?.email || 'guest@okgigs.online',
+                email: session?.user?.email || 'guest@megagigs.online',
                 currency: 'GHS',
                 amount: Math.round(total * 100), // Convert to kobo
 
@@ -262,71 +262,49 @@ export default function BuyContent() {
 
     return (
         <div className="p-4 w-full md:w-[80%] mx-auto min-h-screen md:pt-35 pt-24 z-0">
-            <h1 className="text-2xl font-bold mb-6">Buy Data Bundle</h1>
+            <h1 className="text-2xl font-bold mb-4">Buy Data Bundle</h1>
 
-            {/* Step 1: Select Network */}
-            {step === 1 && (
-                <div className="space-y-6">
-                    <p className="text-sm font-medium text-zinc-500 mb-2">Select Network</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {/* BUNDLE SELECTION VIEW */}
+            {step !== 3 && (
+                <div className="space-y-4">
+                    {/* Network Filter Tabs */}
+                    <div className="flex gap-2">
                         {NETWORKS.map((net) => (
                             <button
                                 key={net.id}
-                                onClick={() => {
-                                    setSelectedNetwork(net.id);
-                                    setStep(2);
-                                }}
+                                onClick={() => setSelectedNetwork(net.id)}
                                 className={clsx(
-                                    "flex flex-col items-center justify-center gap-2 md:gap-4 py-6 md:py-10 px-2 md:px-4 rounded-2xl transition-all duration-200 border border-gray-400 md:border-0",
-                                    "hover:scale-105 hover:shadow-2xl active:scale-95 shadow-lg",
+                                    "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all border-2",
                                     selectedNetwork === net.id
-                                        ? "shadow-xl shadow-slate-400/30 scale-105"
-                                        : "bg-white"
+                                        ? `${net.color} ${net.textColor} border-slate-700`
+                                        : "bg-white text-zinc-600 border-slate-300 hover:border-slate-500"
                                 )}
                             >
-                                <div className={clsx(
-                                    "w-12 h-12 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-xl md:text-3xl shadow-lg",
-                                    net.color, net.textColor
+                                <span className={clsx(
+                                    "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black",
+                                    selectedNetwork === net.id ? "bg-black/15" : net.color + " " + net.textColor
                                 )}>
                                     {net.name[0]}
-                                </div>
-                                <span className="font-bold text-xs md:text-lg text-zinc-800 text-center">{net.name}</span>
+                                </span>
+                                {net.name}
                             </button>
                         ))}
                     </div>
-                </div>
-            )}
 
-            {/* Step 2: Select Bundle */}
-            {step === 2 && (
-                <div className="space-y-4 ">
-                    <div className="flex items-center gap-2 mb-4">
-                        <button onClick={() => setStep(1)} className="text-sm text-zinc-500 hover:text-zinc-900">
-                            Change Network
-                        </button>
-                        <span className="text-zinc-300">/</span>
-                        <span className="text-sm font-semibold">{selectedNetwork}</span>
-                    </div>
-
-                    <p className="text-sm font-medium text-zinc-500">Select Bundle Size</p>
+                    {/* Bundle Cards */}
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Select Bundle</p>
 
                     {loadingBundles ? (
                         <div className="flex flex-col items-center justify-center py-16 space-y-3">
-                            <Loader2 className="animate-spin text-[#E42320]" size={40} />
+                            <Loader2 className="animate-spin text-slate-600" size={36} />
                             <p className="text-sm font-medium text-zinc-400 animate-pulse">Fetching best deals...</p>
                         </div>
                     ) : bundles.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
-                            <button
-                                onClick={() => setStep(1)}
-                                className="mt-4 text-slate-700 hover:text-slate-900 text-sm font-medium"
-                            >
-                                Choose another network
-                            </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-2">
                             {bundles.map((bundle: any) => (
                                 <button
                                     key={bundle._id}
@@ -335,27 +313,27 @@ export default function BuyContent() {
                                         setStep(3);
                                     }}
                                     className={clsx(
-                                        "flex flex-col items-center justify-between p-4 pt-6 rounded-2xl transition-all text-center",
-                                        "hover:scale-105 hover:shadow-2xl active:scale-95 shadow-md",
+                                        "flex flex-col items-center justify-between p-3 rounded-xl transition-all text-center",
+                                        "hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-sm",
                                         networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
                                 >
                                     {/* Wifi icon */}
                                     <div className={clsx(
-                                        "w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-inner",
+                                        "w-8 h-8 rounded-full flex items-center justify-center mb-2 shadow-inner",
                                         networkConfig ? "bg-black/10" : "bg-zinc-100"
                                     )}>
-                                        <Wifi size={24} strokeWidth={2.5} />
+                                        <Wifi size={16} strokeWidth={2.5} />
                                     </div>
 
                                     {/* Bundle name */}
-                                    <h3 className="text-xl font-black tracking-tight leading-tight mb-1">{bundle.name}</h3>
-                                    <p className="text-xs font-medium opacity-70 mb-4">Data Bundle</p>
+                                    <h3 className="text-base font-black tracking-tight leading-tight mb-0.5">{bundle.name}</h3>
+                                    <p className="text-[10px] font-medium opacity-70 mb-2">Data Bundle</p>
 
                                     {/* Price badge */}
                                     <div className={clsx(
-                                        "w-full py-2 px-3 rounded-xl font-bold text-sm",
-                                        networkConfig ? "bg-black/10" : "bg-zinc-100 text-zinc-800"
+                                        "w-full py-1.5 px-2 rounded-lg font-bold text-xs",
+                                        networkConfig ? "bg-slate-200" : "bg-zinc-100 text-zinc-800"
                                     )}>
                                         {formatCurrency(bundle.price)}
                                     </div>
@@ -366,16 +344,18 @@ export default function BuyContent() {
                 </div>
             )}
 
-            {/* Step 3: Enter Number & Confirm */}
+            {/* CHECKOUT VIEW */}
             {step === 3 && (
                 <div className="space-y-6 w-[80%] mx-auto">
                     <BuyingModal isOpen={buyModalOpen} onClose={() => setBuyModalOpen(false)} />
                     <div className="flex items-center gap-2 mb-4">
-                        <button onClick={() => setStep(2)} className="text-sm text-zinc-500 hover:text-zinc-900">
-                            Change Package
+                        <button onClick={() => setStep(1)} className="text-sm text-zinc-500 hover:text-zinc-900">
+                            ← Back
                         </button>
                         <span className="text-zinc-300">/</span>
-                        <span className="text-sm font-semibold">{selectedBundle.name}</span>
+                        <span className="text-sm font-semibold">{selectedNetwork}</span>
+                        <span className="text-zinc-300">/</span>
+                        <span className="text-sm font-semibold">{selectedBundle?.name}</span>
                     </div>
 
                     <Card>
@@ -404,30 +384,27 @@ export default function BuyContent() {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="opacity-80">Package</span>
-                                    <span className="font-bold">{selectedBundle.name}</span>
+                                    <span className="font-bold">{selectedBundle?.name}</span>
                                 </div>
-
 
                                 <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
                                     <span className="opacity-80">Transaction Fee</span>
-                                    <span className="text-xl font-black">{formatCurrency(0.02 * selectedBundle.price)}</span>
+                                    <span className="text-xl font-black">{formatCurrency(0.02 * selectedBundle?.price)}</span>
                                 </div>
 
                                 <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
                                     <span className="opacity-80">Total Price</span>
-                                    <span className="text-xl font-black">{formatCurrency(selectedBundle.price + 0.02 * selectedBundle.price)}</span>
+                                    <span className="text-xl font-black">{formatCurrency(selectedBundle?.price + 0.02 * selectedBundle?.price)}</span>
                                 </div>
-
                             </div>
+
                             {message && <p className="text-center text-green-600 font-semibold">{message}</p>}
 
                             <div className="space-y-3">
                                 <button
                                     onClick={handlePurchase}
                                     disabled={loading || phoneNumber.length < 10}
-                                    className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center
-                                     gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
-                                     cursor-pointer"
+                                    className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with Paystack"}
                                 </button>
@@ -435,9 +412,7 @@ export default function BuyContent() {
                                 <button
                                     onClick={handleWalletPurchase}
                                     disabled={loading || phoneNumber.length < 10}
-                                    className="w-full py-3.5 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center
-                                     gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg
-                                     cursor-pointer"
+                                    className="w-full py-3.5 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : "Buy with Wallet"}
                                 </button>
@@ -449,3 +424,4 @@ export default function BuyContent() {
         </div>
     );
 }
+

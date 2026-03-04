@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Track Order - OKGigs",
+    title: "Track Order - MegaGigs",
     description: "Check the status of your data bundle purchase instantly using your transaction ID.",
 };
 

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import BuyContent from "./BuyContent";
 
 export const metadata: Metadata = {
-    title: "Buy Data Bundles - OKGigs",
+    title: "Buy Data Bundles - MegaGigs",
     description: "Purchase affordable MTN, Telecel, and AirtelTigo data bundles. Instant delivery to your phone.",
 };
 

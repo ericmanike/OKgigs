@@ -182,7 +182,7 @@ export default function ProfilePage() {
             </button>
 
             <p className="text-center text-xs text-zinc-400 pt-4">
-                OKGigs v1.0.0
+                MegaGigs v1.0.0
             </p>
         </div>
     );

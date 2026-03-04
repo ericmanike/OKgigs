@@ -61,14 +61,14 @@ export default function Navbar() {
             <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-zinc-100 flex items-center justify-between px-4 md:px-6 py-4 shadow-sm">
                 <div className="flex items-center gap-2 md:gap-3">
                     <Link href="/" className="flex items-center gap-2 md:gap-3 group">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#E42320]/10 group-hover:bg-[#E42320]/20 transition-colors border border-[#E42320]/10">
-                            <HouseWifi className="text-[#E42320]" size={22} strokeWidth={2.5} />
+                        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-700 group-hover:bg-slate-800 transition-colors shadow-sm">
+                            <HouseWifi className="text-white" size={22} strokeWidth={2.5} />
                         </div>
                         <div className="flex flex-col leading-tight">
-                            <span className="font-logo text-lg sm:text-xl font-bold text-[#E42320] tracking-tight">
-                                OK GIGS
+                            <span className="font-logo text-lg sm:text-xl font-bold text-slate-800 tracking-tight">
+                                MEGA GIGS
                             </span>
-                            <span className="text-[9px] md:text-[9px] text-[#E42320]/80">
+                            <span className="text-[9px] md:text-[9px] font-bold text-red-500">
                                 Data & Digital Services
                             </span>
                         </div>

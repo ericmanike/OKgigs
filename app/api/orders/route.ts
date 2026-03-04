@@ -139,10 +139,17 @@ export async function POST(req: Request) {
       }
     );
 
+    let Orderres;
+
+    try {
     const raw = await placeOrder.text();
-    const Orderres = JSON.parse(raw);
-    console.log('Raw response:', raw);
+    Orderres = JSON.parse(raw);
     console.log(Orderres);
+
+    } catch (error) {
+      console.error("Order creation error:", error);
+      return NextResponse.json({ message: "Error creating order" }, { status: 500 });
+    }
 
     if (!placeOrder.ok) {
 
@@ -150,9 +157,14 @@ export async function POST(req: Request) {
 
     }
 
+  if(Orderres.transaction_code){
+    console.log('New order created with id ', Orderres.transaction_code)
     order.transaction_id = Orderres.transaction_code
     order.status = 'pending'
     await order.save()
+
+
+  }
 
     console.log('New order created successfully throught the API:', order);
 

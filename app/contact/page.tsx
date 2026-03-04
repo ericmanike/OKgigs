@@ -52,7 +52,7 @@ function ContactPage() {
       <div className={`shadow-lg rounded-xl p-8 w-full max-w-lg bg-white border border-slate-100 transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-0'}`} ref={ref}>
         <h2 className={`text-2xl font-bold text-blue-600 mb-6 text-center transition-all duration-1000 
           ${inView ? 'opacity-100 translate-y-0' : 'translate-y-4 opacity-0'}`}>
-          Contact OKGigs
+          Contact MegaGigs
         </h2>
 
         {state.errors && (

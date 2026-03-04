@@ -237,7 +237,7 @@ export default function AgentsPage() {
           Need help? Reach us at{' '}
           <a
             className="text-slate-800 font-bold hover:underline"
-            href="mailto:support@okgigs.com"
+            href="mailto:support@megagigs.com"
           >
             euginesogtinye@gmail.com
           </a>
