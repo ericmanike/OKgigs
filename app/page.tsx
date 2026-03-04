@@ -1,13 +1,93 @@
 'use client'
 
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, AlertCircle, Shield } from "lucide-react";
+import { ArrowRight, AlertCircle, Shield, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import Pattern from "@/components/ui/Pattern";
 
+const BANNERS = [
+  {
+    id: "mtn",
+    bg: "#FFCC00",
+    blob1: "rgba(180,120,0,0.18)",
+    blob2: "rgba(255,220,0,0.35)",
+    logoBg: "#1a1200",
+    logoText: "#FFCC00",
+    labelColor: "rgba(100,60,0,0.7)",
+    nameColor: "#1a1200",
+    subColor: "rgba(100,60,0,0.8)",
+    pillBg: "rgba(100,60,0,0.12)",
+    pillText: "#1a1200",
+    iconBoxBg: "rgba(100,60,0,0.10)",
+    iconBoxBorder: "rgba(100,60,0,0.20)",
+    iconText: "#1a1200",
+    iconLabel: "#5a3800",
+    deliveryText: "rgba(100,60,0,0.7)",
+    shadowColor: "rgba(255,200,0,0.4)",
+    letter: "M",
+    network: "MTN",
+    sizes: ["1GB", "2GB", "5GB", "10GB"],
+  },
+  {
+    id: "telecel",
+    bg: "#E60000",
+    blob1: "rgba(255,255,255,0.12)",
+    blob2: "rgba(255,100,100,0.18)",
+    logoBg: "#ffffff",
+    logoText: "#E60000",
+    labelColor: "rgba(255,255,255,0.75)",
+    nameColor: "#ffffff",
+    subColor: "rgba(255,255,255,0.80)",
+    pillBg: "rgba(255,255,255,0.20)",
+    pillText: "#ffffff",
+    iconBoxBg: "rgba(255,255,255,0.12)",
+    iconBoxBorder: "rgba(255,255,255,0.25)",
+    iconText: "#ffffff",
+    iconLabel: "rgba(255,255,255,0.9)",
+    deliveryText: "rgba(255,255,255,0.75)",
+    shadowColor: "rgba(220,0,0,0.4)",
+    letter: "T",
+    network: "Telecel",
+    sizes: ["1GB", "2GB", "5GB", "10GB"],
+  },
+  {
+    id: "airteltigo",
+    bg: "#0077C8",
+    blob1: "rgba(255,255,255,0.10)",
+    blob2: "rgba(0,60,140,0.25)",
+    logoBg: "#ffffff",
+    logoText: "#0077C8",
+    labelColor: "rgba(255,255,255,0.75)",
+    nameColor: "#ffffff",
+    subColor: "rgba(255,255,255,0.80)",
+    pillBg: "rgba(255,255,255,0.20)",
+    pillText: "#ffffff",
+    iconBoxBg: "rgba(255,255,255,0.12)",
+    iconBoxBorder: "rgba(255,255,255,0.25)",
+    iconText: "#ffffff",
+    iconLabel: "rgba(255,255,255,0.9)",
+    deliveryText: "rgba(255,255,255,0.75)",
+    shadowColor: "rgba(0,100,200,0.4)",
+    letter: "A",
+    network: "AirtelTigo",
+    sizes: ["1GB", "2GB", "5GB", "10GB"],
+  },
+];
+
 export default function Home() {
+  const [activeBanner, setActiveBanner] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveBanner((prev) => (prev + 1) % BANNERS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const banner = BANNERS[activeBanner];
+
   return (
     <>
       <Pattern />
@@ -34,17 +114,60 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col gap-8 shrink-0 md:pt-4">
-                <div className="relative group">
-                  {/* Visual Anchor: Clean Portrait */}
-                  <div className="relative w-full h-40 md:h-48 max-w-sm sm:max-w-md">
-                    <div className="relative h-full w-full rounded-[2.5rem] overflow-hidden border-4 border-white bg-white shadow-2xl shadow-slate-200">
-                      <Image
-                        src="/graduate.jpg"
-                        alt="Satisfied Customer"
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      />
+                {/* Network Banner Carousel */}
+                <div className="flex flex-col items-center gap-3">
+                  <div
+                    className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500"
+                    style={{ backgroundColor: banner.bg, boxShadow: `0 20px 40px ${banner.shadowColor}` }}
+                  >
+                    {/* Background blobs */}
+                    <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-2xl" style={{ backgroundColor: banner.blob1 }} />
+                    <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-xl" style={{ backgroundColor: banner.blob2 }} />
+
+                    {/* Content */}
+                    <div className="relative h-full flex items-center justify-between px-7 py-5">
+                      {/* Left side */}
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: banner.labelColor }}>Network</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-xl shadow-lg" style={{ backgroundColor: banner.logoBg, color: banner.logoText }}>
+                            {banner.letter}
+                          </div>
+                          <span className="text-2xl font-black tracking-tight" style={{ color: banner.nameColor }}>{banner.network}</span>
+                        </div>
+                        <span className="text-xs font-semibold mt-1" style={{ color: banner.subColor }}>Data Bundles Available</span>
+                        <div className="flex gap-1.5 mt-1 flex-wrap">
+                          {banner.sizes.map(size => (
+                            <span key={size} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: banner.pillBg, color: banner.pillText }}>
+                              {size}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right side */}
+                      <div className="flex flex-col items-center gap-2">
+                        <div
+                          className="w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
+                          style={{ backgroundColor: banner.iconBoxBg, borderColor: banner.iconBoxBorder }}
+                        >
+                          <Zap size={28} strokeWidth={2.5} style={{ color: banner.iconText }} />
+                          <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: banner.iconLabel }}>Instant</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-center" style={{ color: banner.deliveryText }}>Delivered in<br />seconds</span>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Dot indicators */}
+                  <div className="flex gap-2">
+                    {BANNERS.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveBanner(i)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${i === activeBanner ? "w-5 bg-slate-700" : "w-1.5 bg-slate-300"}`}
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -188,7 +311,7 @@ export default function Home() {
             </a>
             <a
               href="https://wa.me/233543442518"
-               target="_blank"
+              target="_blank"
               className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
             >
               <FaPhone size={18} /> Contact support
