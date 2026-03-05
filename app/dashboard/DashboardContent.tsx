@@ -27,6 +27,7 @@ import {
 import { formatCurrency } from "@/lib/utils";
 import BecomeAgent from "@/components/ui/becomeAgent";
 import TopUpwallet from "@/components/ui/topUpwallet";
+import DashboardWelcomeModal from "@/components/ui/DashboardWelcomeModal";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -82,8 +83,15 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
     };
   }, [sidebarOpen]);
 
+  useEffect(() => {
+    const handler = () => setActiveSection("upgrade");
+    window.addEventListener("okgigs:open-upgrade", handler);
+    return () => window.removeEventListener("okgigs:open-upgrade", handler);
+  }, []);
+
   return (
     <div className="flex flex-col md:flex-row md:pt-28 pt-24 z-0 min-h-screen bg-linear-to-b from-zinc-50/80 to-white">
+      <DashboardWelcomeModal />
       {/* Mobile sidebar backdrop */}
       <div
         role="button"
@@ -215,41 +223,41 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                 <p className="text-zinc-500 text-sm mt-0.5">Welcome back to your dashboard</p>
               </div>
             </div>
-          
-              <div className="hidden sm:flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-zinc-200/80 w-full sm:w-auto min-w-0">
-                  <Wallet className="text-zinc-500 shrink-0" size={20} />
-                  <span className="text-zinc-600 text-sm font-medium shrink-0">Balance</span>
-                  <span className="font-bold text-zinc-900 truncate min-w-0">{formatCurrency(balance)}</span>
-                </div>
-                <div className="w-full sm:w-auto shrink-0">
-                  <TopUpwallet />
-                </div>
+
+            <div className="hidden sm:flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-zinc-200/80 w-full sm:w-auto min-w-0">
+                <Wallet className="text-zinc-500 shrink-0" size={20} />
+                <span className="text-zinc-600 text-sm font-medium shrink-0">Balance</span>
+                <span className="font-bold text-zinc-900 truncate min-w-0">{formatCurrency(balance)}</span>
               </div>
-           
+              <div className="w-full sm:w-auto shrink-0">
+                <TopUpwallet />
+              </div>
+            </div>
+
           </div>
 
           {/* Overview */}
           {activeSection === "overview" && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                  <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                        <Wallet className="text-emerald-600" size={24} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
-                          Wallet balance
-                        </p>
-                        <p className="text-xl font-bold text-zinc-900 mt-0.5">
-                          {formatCurrency(balance)}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-               
+
+                <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
+                  <CardContent className="p-5 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                      <Wallet className="text-emerald-600" size={24} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
+                        Wallet balance
+                      </p>
+                      <p className="text-xl font-bold text-zinc-900 mt-0.5">
+                        {formatCurrency(balance)}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 <Card className="overflow-hidden border-zinc-200/80 transition-shadow">
                   <CardContent className="p-5 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-slate-500/10 flex items-center justify-center">
@@ -284,6 +292,36 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   >
                     Orders History <ArrowRight size={14} />
                   </button>
+                </div>
+              </div>
+
+              {/* Premium Upgrade Card */}
+              <div className="bg-zinc-900 rounded-2xl p-6 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-amber-400/10 blur-[80px] rounded-full -mr-10 -mt-10" />
+                <div className="relative flex flex-col sm:flex-row items-center justify-between gap-5">
+                  <div className="space-y-3 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <Crown className="text-amber-400" size={22} />
+                      <span className="text-lg font-black tracking-tight">Upgrade to Premium</span>
+                    </div>
+                    <ul className="space-y-1.5">
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={14} className="text-amber-400 shrink-0" /> Lifetime access to agent rates
+                      </li>
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={14} className="text-amber-400 shrink-0" /> No monthly subscription
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="flex flex-col items-center gap-3 shrink-0">
+                    <div className="text-center">
+                      <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-0.5">One-time</p>
+                      <p className="text-3xl font-black text-white">{formatCurrency(30)}</p>
+                    </div>
+                    <div className="w-full min-w-[160px]">
+                      <BecomeAgent />
+                    </div>
+                  </div>
                 </div>
               </div>
 
