@@ -312,7 +312,7 @@ export default function Home() {
               <FaWhatsapp size={18} /> Join WhatsApp
             </a>
             <a
-              href="https://wa.me/233543442518"
+              href="https://wa.me/233509352247"
               target="_blank"
               className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
             >
