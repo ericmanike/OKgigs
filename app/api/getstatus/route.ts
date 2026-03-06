@@ -18,9 +18,7 @@ console.log(pendingOrders);
           "x-api-key": process.env.DAKAZI_API_KEY!,
           "Accept": "application/json"
         },
-        body: JSON.stringify({
-          transaction_id: order.transaction_id,
-        }),
+     
         cache: "no-store",
         
       }
