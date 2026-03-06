@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://megagigs.online'
+    const baseUrl = 'https://megagigs.vercel.app'
 
     return [
         {
