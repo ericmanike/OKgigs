@@ -21,6 +21,8 @@ const outfit = Outfit({
   weight: ["600", "700"],
 });
 
+//https://documenter.getpostman.com/view/9357868/2sB3BBqrsR  api docs
+
 export const metadata: Metadata = {
   title: "MegaGigs - Buy Data Bundles Instantly",
   description: "Cheapest data bundles for all stydies and research (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
