@@ -6,8 +6,6 @@ import { Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
-import BuyingModal from "@/components/ui/buyingModal"
-
 
 
 
@@ -49,8 +47,6 @@ export default function BuyContent() {
     const [loadingBundles, setLoadingBundles] = useState(false);
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
     const { data: session } = useSession()
-
-    const [buyModalOpen, setBuyModalOpen] = useState(true);
     const [message, setMessage] = useState("")
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
 
@@ -400,7 +396,6 @@ export default function BuyContent() {
             {/* CHECKOUT VIEW */}
             {step === 3 && (
                 <div className="space-y-6 w-[80%] mx-auto">
-                    <BuyingModal isOpen={buyModalOpen} onClose={() => setBuyModalOpen(false)} />
                     <div className="flex items-center gap-2 mb-4">
                         <button onClick={() => setStep(1)} className="text-sm text-zinc-500 hover:text-zinc-900">
                             ← Back
