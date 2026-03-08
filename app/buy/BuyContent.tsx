@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
-import { ChevronRight, Loader2, Wifi } from "lucide-react";
+import {  Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
@@ -47,6 +47,7 @@ export default function BuyContent() {
     const [loading, setLoading] = useState(false);
     const [bundles, setBundles] = useState<any[]>([]);
     const [loadingBundles, setLoadingBundles] = useState(false);
+    const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
     const { data: session } = useSession()
 
     const [buyModalOpen, setBuyModalOpen] = useState(true);
@@ -67,7 +68,7 @@ export default function BuyContent() {
             fetchBundles();
             loadPaystackScript();
         }
-    }, [selectedNetwork, session]);
+    }, [selectedNetwork, session, activeCategory]);
 
     // Auto-fill phone number from profile
     useEffect(() => {
@@ -99,6 +100,9 @@ export default function BuyContent() {
 
                 // Filter bundles by selected network, active status, and audience
                 const filtered = data.filter((b: any) => {
+                    // Category filter (Promo vs All)
+                    if (activeCategory === 'promo' && b.audience !== 'promo') return false;
+
                     // Basic filters
                     if (b.network !== selectedNetwork || !b.isActive) return false;
 
@@ -108,7 +112,7 @@ export default function BuyContent() {
                         return userRole === 'agent' || userRole === 'admin';
                     }
 
-                    // If bundle is for users (default), everyone can see it
+                    // If bundle is for users (regular) or promo, everyone can see it
                     return true;
                 });
 
@@ -240,8 +244,8 @@ export default function BuyContent() {
 
             if (response.ok) {
                 setMessage("Purchase successful! Redirecting...");
-               ;
-                
+                ;
+
             } else {
                 alert(data.message || "Wallet purchase failed");
                 setMessage(data.message || "Purchase failed");
@@ -254,13 +258,13 @@ export default function BuyContent() {
 
             setLoading(false);
 
-             setTimeout(() => {
-                    if (session) {
-                        router.push('/dashboard');
-                    } else {
-                        router.push('/');
-                    }
-                }, 1000)
+            setTimeout(() => {
+                if (session) {
+                    router.push('/dashboard');
+                } else {
+                    router.push('/');
+                }
+            }, 1000)
         }
     };
 
@@ -295,6 +299,35 @@ export default function BuyContent() {
                         ))}
                     </div>
 
+                    {/* Category Filter Tabs */}
+                    <div className="flex gap-2 pt-1">
+                        <button
+                            onClick={() => setActiveCategory('all')}
+                            className={clsx(
+                                "flex-1 py-2 rounded-xl text-xs font-bold transition-all border-2",
+                                activeCategory === 'all'
+                                    ? "bg-zinc-900 text-white border-zinc-900 shadow-md"
+                                    : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300"
+                            )}
+                        >
+                            All Bundles
+                        </button>
+                        <button
+                            onClick={() => setActiveCategory('promo')}
+                            className={clsx(
+                                "flex-1 py-2 rounded-xl text-xs font-bold transition-all border-2 flex items-center justify-center gap-1.5",
+                                activeCategory === 'promo'
+                                    ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
+                                    : "bg-white text-blue-600 border-blue-100 hover:border-blue-200"
+                            )}
+                        >
+                            {activeCategory === 'promo' && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            )}
+                            Promo Offers
+                        </button>
+                    </div>
+
                     {/* Bundle Cards */}
                     <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Select Bundle</p>
 
@@ -317,27 +350,43 @@ export default function BuyContent() {
                                         setStep(3);
                                     }}
                                     className={clsx(
-                                        "flex flex-col items-center justify-between p-3 rounded-xl transition-all text-center",
-                                        "hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-sm",
+                                        "flex flex-col items-center justify-between p-4 py-8 rounded-2xl transition-all text-center min-h-[180px] relative overflow-hidden",
+                                        "hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-sm border-2 border-transparent",
                                         networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
                                 >
+                                    {bundle.audience === 'promo' && (
+                                        <div className="absolute top-0 right-0">
+                                            <div className="bg-zinc-950 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl shadow-xl uppercase tracking-[0.15em] border-l border-b border-white/10 flex items-center gap-1.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                                Promo
+                                            </div>
+                                        </div>
+                                    )}
                                     {/* Wifi icon */}
                                     <div className={clsx(
-                                        "w-8 h-8 rounded-full flex items-center justify-center mb-2 shadow-inner",
-                                        networkConfig ? "bg-black/10" : "bg-zinc-100"
+                                        "w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-xl border-2 border-white/20",
+                                        networkConfig ? "bg-black/15" : "bg-zinc-100"
                                     )}>
-                                        <Wifi size={16} strokeWidth={2.5} />
+                                        <Wifi size={22} strokeWidth={2.5} />
                                     </div>
 
                                     {/* Bundle name */}
-                                    <h3 className="text-base font-black tracking-tight leading-tight mb-0.5">{bundle.name}</h3>
-                                    <p className="text-[10px] font-medium opacity-70 mb-2">Data Bundle</p>
+                                    <div className="flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xl font-black tracking-tight leading-none mb-2">{bundle.name}</h3>
+                                        <div className="flex flex-col gap-1.5 mb-4">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Data Bundle</p>
+                                            <div className="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full self-center border border-white/10">
+                                                <div className="w-1 h-1 rounded-full bg-current" />
+                                                <p className="text-[9px] font-black uppercase tracking-tighter">Non Expire</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     {/* Price badge */}
                                     <div className={clsx(
-                                        "w-full py-1.5 px-2 rounded-lg font-bold text-xs",
-                                        networkConfig ? "bg-slate-200" : "bg-zinc-100 text-zinc-800"
+                                        "w-full py-2.5 px-2 rounded-2xl font-black text-base shadow-inner",
+                                        networkConfig ? "bg-white text-black" : "bg-zinc-900 text-white"
                                     )}>
                                         {formatCurrency(bundle.price)}
                                     </div>

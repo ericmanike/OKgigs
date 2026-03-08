@@ -24,20 +24,25 @@ export async function POST(req: Request) {
         }
 
         await dbConnect();
-        
+
         const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
         if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
             return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
         }
 
-        const dbPrice = await Bundle.findOne({ name:bundleName+"GB", network:network,  audience: session.user.role, isActive:true }).select('price');   
-       const realPrice = dbPrice ? dbPrice.price : null;
+        const dbPrice = await Bundle.findOne({
+            name: bundleName + "GB",
+            network: network,
+            audience: { $in: [session.user.role, 'promo', 'user'] },
+            isActive: true
+        }).select('price');
+        const realPrice = dbPrice ? dbPrice.price : null;
 
         if (realPrice === null) {
             return NextResponse.json({ message: "Bundle not found" }, { status: 404 });
         }
 
-        console.log('Database price fetched:', dbPrice);       
+        console.log('Database price fetched:', dbPrice);
 
         // Get user and check wallet balance
         const user = await User.findById(session.user.id);
@@ -87,22 +92,22 @@ export async function POST(req: Request) {
 
         // Deduct from wallet balance
 
-         const updatedUser = await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
             { _id: session.user.id, walletBalance: { $gte: realPrice } },
             { $inc: { walletBalance: -realPrice } },
             { new: true }
-            );
+        );
 
         if (!updatedUser) {
-        console.log('Insufficient balance during update. Refunding wallet.');
-        return NextResponse.json({ message: "Insufficient wallet balance. Transaction cancelled." }, { status: 400 });
+            console.log('Insufficient balance during update. Refunding wallet.');
+            return NextResponse.json({ message: "Insufficient wallet balance. Transaction cancelled." }, { status: 400 });
         }
 
 
 
 
 
-      
+
         console.log(`Deducted ${price} from wallet. New balance: ${updatedUser.walletBalance}`);
 
         // Place order with Dakazi
@@ -113,7 +118,7 @@ export async function POST(req: Request) {
                 headers: {
                     "Content-Type": "application/json",
                     "x-api-key": `${DAKAZI_API_KEY}`,
-                }, 
+                },
                 body: JSON.stringify({
                     recipient_msisdn: phoneNumber,
                     network_id: networkId,
@@ -128,34 +133,34 @@ export async function POST(req: Request) {
         const raw = await placeOrder.text();
 
 
-        let     orderRes;
+        let orderRes;
         try {
             orderRes = JSON.parse(raw);
         } catch (error) {
-    
-           await User.findByIdAndUpdate(session.user.id, {
-           $inc: { walletBalance: realPrice }
-           });
+
+            await User.findByIdAndUpdate(session.user.id, {
+                $inc: { walletBalance: realPrice }
+            });
             console.error('Failed to parse Dakazi response:', error);
             return NextResponse.json({ message: "Failed to parse Dakazi response" }, { status: 500 });
         }
         console.log('Dakazi order response:', orderRes);
-           
+
         console.log(`Order placement response: ${placeOrder.status} - ${raw}`);
         console.log('Order placement success:', placeOrder.ok, 'Order response status:', orderRes.status);
 
 
-   
+
         // user.walletBalance = Number(user.walletBalance) - Number(price);
 
-           
 
 
-    if (orderRes.success !== true) {
 
-   
-       return NextResponse.json({ message: "Order failed. Wallet refunded." }, { status: 500 });
-}
+        if (orderRes.success !== true) {
+
+
+            return NextResponse.json({ message: "Order failed. Wallet refunded." }, { status: 500 });
+        }
         // Create order record
         const order = await Order.create({
             user: session.user.id,
