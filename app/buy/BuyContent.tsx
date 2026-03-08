@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
-import {  Loader2, Wifi } from "lucide-react";
+import { Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
@@ -341,7 +341,7 @@ export default function BuyContent() {
                             <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                             {bundles.map((bundle: any) => (
                                 <button
                                     key={bundle._id}
