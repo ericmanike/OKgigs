@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/providers/AuthProvider";
+import PwaProvider from "@/components/providers/PwaProvider";
 import Navbar from "@/components/layout/Navbar";
 
 
@@ -69,6 +70,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
+          <PwaProvider />
           <Navbar />
           <main className="min-h-screen z-0">
             {children}
