@@ -95,7 +95,8 @@ export async function POST(req: Request) {
             }));
 
             const { data, error } = await resend.batch.send(emailsPayload);
-
+            
+            
             if (error) {
                 console.error('Batch send error:', error);
                 failed += batchUsers.length;
