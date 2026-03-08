@@ -39,6 +39,7 @@ export default async function DashboardPage() {
       balance={balance}
       recentOrders={recentOrdersSerialized}
       isAdmin={session?.user?.role === "admin"}
+      userRole={session?.user?.role || "user"}
     />
   );
 }

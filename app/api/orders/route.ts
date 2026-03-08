@@ -20,9 +20,9 @@ export async function POST(req: Request) {
     //   return NextResponse.json({ message: "Too many order attempts. Please try again later." }, { status: 429 });
     // }
 
-    const { network, bundleName, price, phoneNumber, reference } = await req.json();
+    const { network, bundleName, price, phoneNumber, reference, agentId, agentProfit } = await req.json();
 
-    console.log('Received data:', { network, bundleName, price, phoneNumber, reference });
+    console.log('Received data:', { network, bundleName, price, phoneNumber, reference, agentId, agentProfit });
 
     if (!network || !bundleName || !price || !phoneNumber || !reference) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -161,7 +161,17 @@ export async function POST(req: Request) {
       order.status = 'pending'
       await order.save()
 
-
+      if (agentId) {
+        try {
+          const AgentStore = (await import('@/models/AgentStore')).default;
+          await AgentStore.findOneAndUpdate(
+            { user: agentId },
+            { $inc: { totalSalesCount: 1, totalProfit: Number(agentProfit) || 0 } }
+          );
+        } catch (err) {
+          console.error("Failed to update agent store stats:", err);
+        }
+      }
     }
 
     console.log('New order created successfully throught the API:', order);

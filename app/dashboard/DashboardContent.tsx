@@ -28,11 +28,12 @@ import { formatCurrency } from "@/lib/utils";
 import BecomeAgent from "@/components/ui/becomeAgent";
 import TopUpwallet from "@/components/ui/topUpwallet";
 import DashboardWelcomeModal from "@/components/ui/DashboardWelcomeModal";
+import AgentStoreSettings from "@/components/ui/AgentStoreSettings";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-type DashboardSection = "overview" | "quick-actions" | "orders" | "upgrade";
+type DashboardSection = "overview" | "quick-actions" | "orders" | "upgrade" | "store";
 
 type OrderRecord = {
   _id: string;
@@ -49,6 +50,7 @@ type Props = {
   balance: number;
   recentOrders: OrderRecord[];
   isAdmin: boolean;
+  userRole: string;
 };
 
 const sidebarItems: { id: DashboardSection; label: string; icon: typeof LayoutDashboard }[] = [
@@ -65,7 +67,7 @@ function getTimeOfDayGreeting(): string {
   return "Good evening";
 }
 
-export default function DashboardContent({ userName, balance, recentOrders, isAdmin }: Props) {
+export default function DashboardContent({ userName, balance, recentOrders, isAdmin, userRole }: Props) {
   const [activeSection, setActiveSection] = useState<DashboardSection>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -174,6 +176,28 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
               </span>
               Admin
             </Link>
+          )}
+
+          {(userRole === "agent" || isAdmin) && (
+            <button
+              onClick={() => handleSectionClick("store")}
+              className={clsx(
+                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left",
+                activeSection === "store"
+                  ? "bg-[#E42320] text-white shadow-lg shadow-[#E42320]/20 md:shadow-md"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+              )}
+            >
+              <span
+                className={clsx(
+                  "flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0",
+                  activeSection === "store" ? "bg-white/15" : "bg-zinc-100"
+                )}
+              >
+                <ShoppingBag size={18} strokeWidth={2} />
+              </span>
+              My Store
+            </button>
           )}
 
           {/* Rest of sidebar items */}
@@ -593,6 +617,12 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeSection === "store" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <AgentStoreSettings />
             </div>
           )}
         </div>

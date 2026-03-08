@@ -33,6 +33,14 @@ export function CardTitle({ children, className }: { children: React.ReactNode; 
     );
 }
 
+export function CardDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+    return (
+        <p className={twMerge(clsx('text-sm text-zinc-500', className))}>
+            {children}
+        </p>
+    );
+}
+
 export function CardContent({ children, className }: CardProps) {
     return <div className={twMerge(clsx('', className))}>{children}</div>;
 }
