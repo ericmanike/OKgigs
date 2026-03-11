@@ -555,7 +555,43 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+            
+
+              <div className="bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[100px] rounded-full -mr-20 -mt-20" />
+                <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="space-y-4 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-3">
+                      <Crown className="text-amber-400" size={32} />
+                      <span className="text-2xl font-black tracking-tight">Upgrade to Premium</span>
+                    </div>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={16} className="text-amber-400" /> Lifetime access to agent rates
+                      </li>
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={16} className="text-amber-400" /> No monthly subscription
+                      </li>
+
+                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                        <CheckCircle size={16} className="text-amber-400" /> You get a personalized  store dashboard
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-4 shrink-0">
+                    <div className="text-center">
+                      <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1">One-time payment</p>
+                      <p className="text-4xl font-black text-white">{formatCurrency(30)}</p>
+                    </div>
+                    <div className="w-full min-w-[200px]">
+                      <BecomeAgent />
+                    </div>
+                  </div>
+                </div>
+              </div>
+             
+               <div className="grid md:grid-cols-3 gap-6">
                 {[
                   {
                     icon: Zap,
@@ -588,35 +624,9 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                 ))}
               </div>
 
-              <div className="bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[100px] rounded-full -mr-20 -mt-20" />
-                <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div className="space-y-4 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-3">
-                      <Crown className="text-amber-400" size={32} />
-                      <span className="text-2xl font-black tracking-tight">Upgrade to Premium</span>
-                    </div>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                        <CheckCircle size={16} className="text-amber-400" /> Lifetime access to agent rates
-                      </li>
-                      <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                        <CheckCircle size={16} className="text-amber-400" /> No monthly subscription
-                      </li>
-                    </ul>
-                  </div>
 
-                  <div className="flex flex-col items-center gap-4 shrink-0">
-                    <div className="text-center">
-                      <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1">One-time payment</p>
-                      <p className="text-4xl font-black text-white">{formatCurrency(30)}</p>
-                    </div>
-                    <div className="w-full min-w-[200px]">
-                      <BecomeAgent />
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+
             </div>
           )}
 

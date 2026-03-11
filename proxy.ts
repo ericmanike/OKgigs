@@ -23,7 +23,7 @@ async function getOrdersClosedFlag(req: Request): Promise<boolean> {
 }
 
 export default withAuth(
-    async function middleware(req) {
+    async function proxy(req) {
         // req.nextauth.token is automatically populated by withAuth
         const token = req.nextauth.token;
         const role = token?.role;

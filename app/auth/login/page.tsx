@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { LogIn, Loader2, Eye, EyeOff } from "lucide-react";
+import { LogIn, Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -41,7 +41,15 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen overflow-y-auto  px-4">
+        <div className="flex flex-col items-center justify-center h-screen overflow-y-auto px-4 relative">
+            <button
+                onClick={() => router.back()}
+                className="absolute top-6 left-6 p-2 rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer shadow-sm z-10"
+                aria-label="Go back"
+            >
+                <ArrowLeft className="w-5 h-5" />
+            </button>
+
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
 
