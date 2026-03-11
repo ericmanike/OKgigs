@@ -1,10 +1,10 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { UserPlus, Loader2, Eye, EyeOff } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -21,7 +21,7 @@ export default function RegisterPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
-
+ 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -39,8 +39,32 @@ export default function RegisterPage() {
             if (!res.ok) {
                 throw new Error(data.message || "Something went wrong");
             }
+    const email = formData?.email
+    const password = formData?.password
+    if(!email || !password){
+        alert('something went wrong missing email and paddword')
+        return
+    }
 
-            router.push("/auth/login?registered=true");
+
+
+   const Loginres =  await signIn("credentials",{
+          email,
+          password,
+          redirect:false,
+             }
+             )
+            if (Loginres?.error) {
+                setError(Loginres.error);
+            } else {
+                router.push("/dashboard");
+                router.refresh();
+            }
+
+         console.log(Loginres)
+
+
+
         } catch (err: any) {
             setError(err.message);
         } finally {
