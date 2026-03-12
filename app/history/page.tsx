@@ -57,15 +57,22 @@ export default async function HistoryPage() {
 
                                 <div className="text-right">
                                     <p className="font-bold text-zinc-900">{formatCurrency(order.price)}</p>
-                                    <div className="flex items-center justify-end gap-1 mt-1">
-                                        {order.status === 'delivered' && <CheckCircle2 size={14} className="text-green-600" />}
-                                        {order.status === 'failed' && <XCircle size={14} className="text-red-600" />}
-                                        {order.status === 'pending' && <Clock size={14} className="text-orange-600" />}
-                                        <span className={`text-xs capitalize
-                      ${order.status === 'delivered' ? 'text-green-600' :
-                                                order.status === 'failed' ? 'text-red-600' :
-                                                    'text-orange-600'}`}>
-                                            {order.status}
+                                    <div className="flex items-center justify-end mt-2">
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold
+                                            ${order.status === 'delivered'
+                                                ? 'bg-green-500 text-white'
+                                                : order.status === 'pending'
+                                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                                : order.status === 'failed'
+                                                ? 'bg-red-50 text-red-700'
+                                                : 'bg-zinc-200 text-zinc-500'}`}>
+                                            {order.status === 'delivered' && <CheckCircle2 size={13} className="shrink-0 text-green-200" />}
+                                            {order.status === 'pending' && <Clock size={13} className="shrink-0" />}
+                                            {order.status === 'failed' && <XCircle size={13} className="shrink-0" />}
+                                            {order.status === 'reversed' && <XCircle size={13} className="shrink-0" />}
+                                            <span className="capitalize">
+                                                {order.status === 'delivered' ? 'Delivered' : order.status === 'pending' ? 'Processing' : order.status}
+                                            </span>
                                         </span>
                                     </div>
                                 </div>

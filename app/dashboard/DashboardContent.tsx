@@ -514,23 +514,32 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                           <p className="font-bold text-zinc-900">{formatCurrency(order.price)}</p>
                           <span
                             className={clsx(
-                              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
                               order.status === "delivered" &&
-                              "bg-emerald-50 text-emerald-700",
+                              "bg-green-500 text-white",
+                              order.status === "pending" &&
+                              "bg-red-100 text-red-700 border border-red-200",
                               order.status === "failed" && "bg-red-50 text-red-700",
-                              order.status === "pending" && "bg-amber-50 text-amber-700"
+                              order.status === "processing" && "bg-zinc-100 text-zinc-500"
                             )}
                           >
                             {order.status === "delivered" && (
-                              <CheckCircle2 size={12} className="shrink-0" />
-                            )}
-                            {order.status === "failed" && (
-                              <XCircle size={12} className="shrink-0" />
+                              <CheckCircle2 size={12} className="shrink-0 text-green-200" />
                             )}
                             {order.status === "pending" && (
                               <Clock size={12} className="shrink-0" />
                             )}
-                            {order.status === "delivered" ? "Delivered" : order.status}
+                            {order.status === "failed" && (
+                              <XCircle size={12} className="shrink-0" />
+                            )}
+                            {order.status === "reversed" && (
+                              <XCircle size={12} className="shrink-0" />
+                            )}
+                            {order.status === "delivered"
+                              ? "Delivered"
+                              : order.status === "pending"
+                              ? "Processing"
+                              : order.status}
                           </span>
                         </div>
                       </div>
