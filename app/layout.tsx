@@ -57,6 +57,8 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
+import WhatsAppWidget from "@/components/layout/WhatsAppWidget";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -113,9 +115,7 @@ export default function RootLayout({
             }}
           />
 
-          {/* Elfsight WhatsApp Chat */}
-          <script src="https://elfsightcdn.com/platform.js" async></script>
-          <div className="elfsight-app-560e9bc9-3a5e-4820-8629-56cde29d1bb0" data-elfsight-app-lazy></div>
+          <WhatsAppWidget />
 
         </AuthProvider>
       </body>

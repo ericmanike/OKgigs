@@ -77,8 +77,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        {/* Sidebar header — user greeting */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100">
+        {/* Sidebar header — user greeting - hidden on desktop */}
+        <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100 md:hidden">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E42320] to-rose-400 flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
               {userName.charAt(0).toUpperCase()}
@@ -210,6 +210,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </p>
               <p className="text-[11px] font-semibold text-zinc-900">{userName}</p>
             </div>
+          </div>
+
+          {/* Desktop header greeting */}
+          <div className="hidden md:block mb-2">
+            <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
+              {greeting}, {userName}! 👋
+            </h1>
+            <p className="text-zinc-500 font-medium text-sm mt-1">
+              Welcome back to your dashboard.
+            </p>
           </div>
 
           {/* Page content */}
