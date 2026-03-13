@@ -131,7 +131,7 @@ export default function TrackOrderPage() {
                         </span>
                       </div>
                       <div className="p-4 space-y-1">
-                        <p className="font-semibold text-slate-900">{order.network} · {order.bundleName}</p>
+                        <p className="font-semibold text-slate-900">{order.network} · {order.bundleName} GB</p>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
                           <span>{formatCurrency(order.price)}</span>
                           <span>To {order.phoneNumber}</span>
