@@ -24,8 +24,8 @@ const outfit = Outfit({
 //https://documenter.getpostman.com/view/9357868/2sB3BBqrsR  api docs
 
 export const metadata: Metadata = {
-  title: "MegaGigs - Buy Data Bundles Instantly",
-  description: "Cheapest data bundles for all stydies and research (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
+  title: "MegaGigs - Buy Data Bundles at lower prices",
+  description: "Cheapest and trusted data bundle reseller in Ghana. Buy data bundles at lower prices for all  your studies and research (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
   keywords: ["data bundles", "Ghana data", "MTN data", "Telecel data", "AirtelTigo data", "buy data online", "instant data delivery", "MegaGigs"],
   authors: [{ name: "MegaGigs Team" }],
   creator: "MegaGigs",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     locale: "en_GH",
     url: "https://megagigs.vercel.app",
     title: "MegaGigs - Buy Data Bundles Instantly",
-    description: "Cheapest data bundles for all networks in Ghana. Instant delivery.",
+    description: "Cheapest data bundles for all in Ghana. Instant delivery.",
     siteName: "MegaGigs",
     images: [
       {

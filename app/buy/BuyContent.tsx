@@ -351,6 +351,13 @@ export default function BuyContent() {
                                         networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
                                 >
+                                    {/* Network Badge */}
+                                    <div className="absolute top-0 left-0">
+                                        <div className="bg-white text-black backdrop-blur-md text-[12px] font-black px-3 py-1.5 rounded-br-2xl uppercase tracking-widest border-r border-b border-white/10">
+                                            {bundle.network}
+                                        </div>
+                                    </div>
+
                                     {bundle.audience === 'promo' && (
                                         <div className="absolute top-0 right-0">
                                             <div className="bg-zinc-950 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl shadow-xl uppercase tracking-[0.15em] border-l border-b border-white/10 flex items-center gap-1.5">
@@ -361,20 +368,20 @@ export default function BuyContent() {
                                     )}
                                     {/* Wifi icon */}
                                     <div className={clsx(
-                                        "w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-xl border-2 border-white/20",
-                                        networkConfig ? "bg-black/15" : "bg-zinc-100"
+                                        "w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-xl border-2 border-white/30",
+                                        networkConfig ? "bg-black/10" : "bg-zinc-100"
                                     )}>
                                         <Wifi size={22} strokeWidth={2.5} />
                                     </div>
 
                                     {/* Bundle name */}
                                     <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-black tracking-tight leading-none mb-2">{bundle.name}</h3>
+                                        <h5 className=" font-black tracking-tight leading-none mb-2">{bundle.name} - {formatCurrency(bundle.price)}</h5>
                                         <div className="flex flex-col gap-1.5 mb-4">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Data Bundle</p>
+                                            <p className="text-[7px] font-black uppercase tracking-[0.2em] opacity-80">Data Bundle</p>
                                             <div className="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full self-center border border-white/10">
                                                 <div className="w-1 h-1 rounded-full bg-current" />
-                                                <p className="text-[9px] font-black uppercase tracking-tighter">Non Expire</p>
+                                                <p className="text-[10px] font-black uppercase tracking-tighter">Non Expire </p>
                                             </div>
                                         </div>
                                     </div>
@@ -384,7 +391,7 @@ export default function BuyContent() {
                                         "w-full py-2.5 px-2 rounded-2xl font-black text-base shadow-inner",
                                         networkConfig ? "bg-white text-black" : "bg-zinc-900 text-white"
                                     )}>
-                                        {formatCurrency(bundle.price)}
+                                       Buy Now
                                     </div>
                                 </button>
                             ))}
@@ -395,7 +402,7 @@ export default function BuyContent() {
 
             {/* CHECKOUT VIEW */}
             {step === 3 && (
-                <div className="space-y-6 w-[80%] mx-auto">
+                <div className="space-y-6 w-[100%] md:w-[80%] mx-auto">
                     <div className="flex items-center gap-2 mb-4">
                         <button onClick={() => setStep(1)} className="text-sm text-zinc-500 hover:text-zinc-900">
                             ← Back
@@ -434,6 +441,10 @@ export default function BuyContent() {
                                     <span className="opacity-80">Package</span>
                                     <span className="font-bold">{selectedBundle?.name}</span>
                                 </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="opacity-80">Price</span>
+                                    <span className="font-bold">{formatCurrency(selectedBundle?.price)}</span>
+                                </div>
 
                                 <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
                                     <span className="opacity-80">Transaction Fee</span>
@@ -454,7 +465,7 @@ export default function BuyContent() {
                                     disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Complete Purchase"}
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with MoMo - Paystack"}
 
                                 </button>
 

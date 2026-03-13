@@ -12,7 +12,8 @@ export async function GET() {
         }
 
         await dbConnect();
-        const users = await User.find().select('-password').sort({ createdAt: -1 }); // Limit for performance
+        const rawUsers = await User.find().select('-password').sort({ createdAt: -1 }).lean();
+        const users = rawUsers.map((u: any) => ({ ...u, _id: u._id.toString() }));
 
         return NextResponse.json(users);
     } catch (error) {

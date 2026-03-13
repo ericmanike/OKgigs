@@ -7,7 +7,8 @@ import Order from "@/models/Order";
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || session.user.role !== 'admin') {
+        const role = session?.user?.role;
+        if (!session || (role !== 'admin' && role !== 'moderator')) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 

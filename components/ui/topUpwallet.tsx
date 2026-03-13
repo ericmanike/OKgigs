@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { DollarSign } from 'lucide-react'
 import { useSession, } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import RechargeModal from './rechargeModal'
@@ -121,7 +120,7 @@ function topUpwallet() {
                
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto "
             >
-                <DollarSign size={18} />
+                <span className="font-bold text-base leading-none">GH₵</span>
                 Top up your wallet
             </button>
         </>

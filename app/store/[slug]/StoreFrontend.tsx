@@ -216,7 +216,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                     key={bundle._id}
                                     onClick={() => {
                                         setSelectedBundle(bundle);
-                                        setStep(2); // Jump straight to checkout
+                                        setStep(2);
                                     }}
                                     className={clsx(
                                         "flex flex-col items-center justify-between p-4 py-8 rounded-2xl transition-all text-center min-h-[160px] relative overflow-hidden",
@@ -224,6 +224,13 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                         networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
                                 >
+                                    {/* Network Badge */}
+                                    <div className="absolute top-0 left-0">
+                                        <div className="bg-black/20 backdrop-blur-md text-[9px] font-black px-3 py-1.5 rounded-br-2xl uppercase tracking-widest border-r border-b border-white/10">
+                                            {bundle.network}
+                                        </div>
+                                    </div>
+
                                     <div className={clsx(
                                         "w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-xl border-2 border-white/20",
                                         networkConfig ? "bg-black/15" : "bg-zinc-100"
