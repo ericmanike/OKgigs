@@ -6,6 +6,7 @@ import { Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
+import BuyingModal from "@/components/ui/buyingModal";
 
 
 
@@ -48,6 +49,7 @@ export default function BuyContent() {
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
+    const [showModal, setShowModal] = useState(false)
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
 
 
@@ -415,6 +417,11 @@ export default function BuyContent() {
 
                     <Card>
                         <CardContent className="p-6">
+
+                            <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center mb-6"> <strong className="text-red-900">Notice! </strong> After momo approval click on I have made payment wait for the transaction to be confirmed <br />
+                         
+                            
+                            </div>
                             <div className="mb-6">
                                 <label className="text-sm font-medium text-black mb-2 block">
                                     Phone Number
@@ -461,12 +468,17 @@ export default function BuyContent() {
 
                             <div className="space-y-3">
                                 <button
-                                    onClick={handlePurchase}
+                                    onClick={() => {
+                                        if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
+                                            handlePurchase();
+                                        } else {
+                                            setShowModal(true);
+                                        }
+                                    }}
                                     disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with MoMo - Paystack"}
-
                                 </button>
 
                                 {/* <button
@@ -482,6 +494,13 @@ export default function BuyContent() {
                     </Card>
                 </div>
             )}
+
+            {/* Pre-payment disclaimer modal */}
+            <BuyingModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={handlePurchase}
+            />
         </div>
     );
 }

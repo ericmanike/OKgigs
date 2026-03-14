@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import Pattern from "@/components/ui/Pattern";
+import BuyingModal from "@/components/ui/buyingModal";
+import { useRouter } from "next/navigation";
 
 
 
@@ -80,6 +82,18 @@ const BANNERS = [
 
 export default function Home() {
   const [activeBanner, setActiveBanner] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [pendingUrl, setPendingUrl] = useState('/buy');
+  const router = useRouter();
+
+  const handleCtaClick = (url: string) => {
+    if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
+      router.push(url);
+    } else {
+      setPendingUrl(url);
+      setShowModal(true);
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -118,48 +132,49 @@ export default function Home() {
               <div className="flex flex-col gap-8 shrink-0 md:pt-4">
                 {/* Network Banner Carousel */}
                 <div className="flex flex-col items-center gap-3">
-                  <div
-                    className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500"
-                    style={{ backgroundColor: banner.bg }}
-                  >
-                    {/* Background blobs */}
-                    <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-2xl" style={{ backgroundColor: banner.blob1 }} />
-                    <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-xl" style={{ backgroundColor: banner.blob2 }} />
+                    <button
+                      onClick={() => handleCtaClick(`/buy?network=${banner.network}`)}
+                      className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500 cursor-pointer text-left"
+                      style={{ backgroundColor: banner.bg }}
+                    >
+                      {/* Background blobs */}
+                      <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-2xl" style={{ backgroundColor: banner.blob1 }} />
+                      <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-xl" style={{ backgroundColor: banner.blob2 }} />
 
-                    {/* Content */}
-                    <div className="relative h-full flex items-center justify-between px-7 py-5">
-                      {/* Left side */}
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: banner.labelColor }}>Network</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-xl shadow-lg" style={{ backgroundColor: banner.logoBg, color: banner.logoText }}>
-                            {banner.letter}
+                      {/* Content */}
+                      <div className="relative h-full flex items-center justify-between px-7 py-5">
+                        {/* Left side */}
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: banner.labelColor }}>Network</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-xl shadow-lg" style={{ backgroundColor: banner.logoBg, color: banner.logoText }}>
+                              {banner.letter}
+                            </div>
+                            <span className="text-2xl font-black tracking-tight" style={{ color: banner.nameColor }}>{banner.network}</span>
                           </div>
-                          <span className="text-2xl font-black tracking-tight" style={{ color: banner.nameColor }}>{banner.network}</span>
+                          <span className="text-xs font-semibold mt-1" style={{ color: banner.subColor }}>Data Bundles Available</span>
+                          <div className="flex gap-1.5 mt-1 flex-wrap">
+                            {banner.sizes.map(size => (
+                              <span key={size} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: banner.pillBg, color: banner.pillText }}>
+                                {size}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                        <span className="text-xs font-semibold mt-1" style={{ color: banner.subColor }}>Data Bundles Available</span>
-                        <div className="flex gap-1.5 mt-1 flex-wrap">
-                          {banner.sizes.map(size => (
-                            <span key={size} className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: banner.pillBg, color: banner.pillText }}>
-                              {size}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
 
-                      {/* Right side */}
-                      <div className="flex flex-col items-center gap-2">
-                        <div
-                          className="w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
-                          style={{ borderColor: banner.iconBoxBorder }}
-                        >
-                          <Zap size={36} strokeWidth={2.5} style={{ color: banner.iconText }} />
-                          <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: banner.iconLabel }}>Instant</span>
+                        {/* Right side */}
+                        <div className="flex flex-col items-center gap-2">
+                          <div
+                            className="w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
+                            style={{ borderColor: banner.iconBoxBorder }}
+                          >
+                            <Zap size={36} strokeWidth={2.5} style={{ color: banner.iconText }} />
+                            <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: banner.iconLabel }}>Instant</span>
+                          </div>
+                          <span className="text-[10px] font-bold text-center" style={{ color: banner.deliveryText }}>Delivered in<br />seconds</span>
                         </div>
-                        <span className="text-[10px] font-bold text-center" style={{ color: banner.deliveryText }}>Delivered in<br />seconds</span>
                       </div>
-                    </div>
-                  </div>
+                    </button>
 
                   {/* Dot indicators */}
                   <div className="flex gap-2">
@@ -174,12 +189,12 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="/buy"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-base hover:shadow-lg transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95]"
+                  <button
+                    onClick={() => handleCtaClick('/buy')}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-base hover:shadow-lg transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95] cursor-pointer"
                   >
                     Buy data <ArrowRight size={20} />
-                  </Link>
+                  </button>
                   <Link
                     href="/track-order"
                     className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-base hover:bg-zinc-50 transition-all active:scale-[0.95]"
@@ -210,7 +225,10 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Link href="/buy">
+            <button
+              onClick={() => handleCtaClick('/buy')}
+              className="w-full text-left cursor-pointer"
+            >
               <div className="rounded-2xl bg-[#E42320] text-white p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-[#E42320]/95 transition-colors shadow-lg">
                 <div>
                   <h2 className="text-lg md:text-xl font-bold">Ready to get your data?</h2>
@@ -220,7 +238,7 @@ export default function Home() {
                   Place order <ArrowRight size={18} />
                 </span>
               </div>
-            </Link>
+            </button>
           </motion.div>
         </section>
 
@@ -327,6 +345,13 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      {/* Pre-purchase disclaimer modal */}
+      <BuyingModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={() => router.push(pendingUrl)}
+      />
     </>
   );
 }
