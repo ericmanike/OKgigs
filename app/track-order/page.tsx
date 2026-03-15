@@ -71,10 +71,13 @@ export default function TrackOrderPage() {
           <div className="bg-[#E42320] px-5 py-8 text-center">
             <h1 className="font-semibold text-white text-2xl tracking-tight">Track your orders</h1>
             <p className="text-white/80 text-sm mt-1">Enter your phone number — no sign-in needed</p>
+            <p className="text-black/80 bg-red-200 text-sm mt-1 px-2 py-2 rounded-lg mT-2 text-center">
+            If you HAVE MADE PAYMENT but don't see your order, please contact support.</p>
           </div>
 
           <div className="p-5 md:p-6">
             {/* Search form */}
+         
             <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />

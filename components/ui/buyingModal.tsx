@@ -79,7 +79,6 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             text={
               <>  
                Kindly double-check your number before proceeding.<strong>wrong phone number</strong>
-               <br />
                cannot be refunded.
                
               </>
@@ -103,7 +102,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             icon={<CheckCircle size={15} className="text-green-500 shrink-0 mt-0.5" />}
             text={
               <>
-                after making payment wait for  the transaction to be confirm <strong>best service possible</strong>. 
+                after momo approval wait for  the transaction to be confirmed <strong>to ensure your order is created</strong>. 
               </>
             }
             accent="green"
@@ -132,13 +131,13 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
         <div className="h-px bg-slate-100 mx-6" />
 
         {/* Actions */}
-        <div className="flex gap-3 px-6 py-4">
+        <div className="flex gap-4 px-6 py-2">
           <button
             onClick={() => {
                 onClose();
                 router.push('/');
             }}
-            className="flex-1 px-4 py-3 text-sm rounded-xL border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
+            className="flex-1 md:px-3 px-2 text-sm py-3 text-sm rounded-2xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
           >
           Exit
           </button>

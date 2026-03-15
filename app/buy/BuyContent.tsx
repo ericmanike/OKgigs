@@ -183,24 +183,23 @@ export default function BuyContent() {
 
                             if (verifyResponse.ok) {
                                 console.log('Payment verified');
-                                setTimeout(() => {
+                               
                                     if (session) {
                                         router.push('/dashboard');
                                     } else {
-                                        router.push('/');
+                                        router.push('/track-order');
                                     }
-                                }, 2000);
+                                
                                 setMessage("Payment successful");
                             } else {
                                 console.log('Payment verification failed');
-
-                            }
+                                
+                            } 
                         } catch (err: any) {
                             console.error('Error verifying payment', err);
                             setMessage(err.message);
-                        } finally {
-
-                        }
+                            alert("Something went wrong with the purchase. Please try again.");
+                        } 
                     })();
                 },
 
