@@ -6,7 +6,6 @@ import { Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
-import BuyingModal from "@/components/ui/buyingModal";
 
 
 
@@ -49,7 +48,6 @@ export default function BuyContent() {
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
-    const [showModal, setShowModal] = useState(false)
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
 
 
@@ -469,13 +467,7 @@ export default function BuyContent() {
 
                             <div className="space-y-3">
                                 <button
-                                    onClick={() => {
-                                        if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
-                                            handlePurchase();
-                                        } else {
-                                            setShowModal(true);
-                                        }
-                                    }}
+                                    onClick={handlePurchase}
                                     disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
@@ -496,12 +488,6 @@ export default function BuyContent() {
                 </div>
             )}
 
-            {/* Pre-payment disclaimer modal */}
-            <BuyingModal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                onConfirm={handlePurchase}
-            />
         </div>
     );
 }
