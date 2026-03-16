@@ -101,7 +101,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
             (window as any).PaystackPop.setup({
                 key: paystackKey,
-                email: 'guest@megagigs.online',
+                email: 'guest@megagigs.net',
                 currency: 'GHS',
                 amount: Math.round(total * 100),
                 ref: reference,

@@ -156,7 +156,7 @@ export default function BuyContent() {
 
             const handler = window.PaystackPop.setup({
                 key: paystackKey!,
-                email: session?.user?.email || 'guest@megagigs.online',
+                email: session?.user?.email || 'guest@megagigs.net',
                 currency: 'GHS',
                 amount: Math.round(total * 100), // Convert to kobo
 

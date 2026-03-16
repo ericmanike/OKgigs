@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/api/'],
         },
-        sitemap: 'https://megagigs.online/sitemap.xml',
+        sitemap: 'https://megagigs.net/sitemap.xml',
     }
 }

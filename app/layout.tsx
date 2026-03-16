@@ -34,13 +34,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_GH",
-    url: "https://megagigs.vercel.app",
+    url: "https://megagigs.net",
     title: "MegaGigs - Buy Data Bundles Instantly",
     description: "Cheapest data bundles for all in Ghana. Instant delivery.",
     siteName: "MegaGigs",
     images: [
       {
-        url: "https://megagigs.vercel.app/og-image.jpg",
+        url: "https://megagigs.net/og-image.jpg",
         width: 683,
         height: 1024,
         alt: "MegaGigs - Data Bundles for MTN, Telecel & AirtelTigo",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "MegaGigs - Buy Data Bundles Instantly",
     description: "Cheapest data bundles for your research and studies. Instant delivery.",
     creator: "@megagigs",
-    images: ["https://megagigs.vercel.app/og-image.jpg"],
+    images: ["https://megagigs.net/og-image.jpg"],
   },
   category: "technology",
 };
@@ -82,8 +82,8 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 "name": "MegaGigs",
-                "url": "https://megagigs.vercel.app",
-                "logo": "https://megagigs.vercel.app/logo.png",
+                "url": "https://megagigs.net",
+                "logo": "https://megagigs.net/logo.png",
                 "sameAs": [
                   "https://twitter.com/megagigs",
                   "https://whatsapp.com/channel/..."
@@ -105,10 +105,10 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 "name": "MegaGigs",
-                "url": "https://megagigs.vercel.app",
+                "url": "https://megagigs.net",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://megagigs.vercel.app/buy?search={search_term_string}",
+                  "target": "https://megagigs.net/buy?search={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               })

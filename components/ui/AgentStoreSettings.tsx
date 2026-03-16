@@ -105,7 +105,7 @@ export default function AgentStoreSettings() {
         );
     }
 
-    const storeUrl = typeof window !== 'undefined' ? `${window.location.origin}/store/${slug}` : `https://megagigs.com/store/${slug}`;
+    const storeUrl = typeof window !== 'undefined' ? `${window.location.origin}/store/${slug}` : `https://megagigs.net/store/${slug}`;
 
     const handleCopyUrl = async () => {
         try {
@@ -183,7 +183,7 @@ export default function AgentStoreSettings() {
                             <label className="text-sm font-medium">Store URL Slug</label>
                             <div className="flex items-center">
                                 <span className="bg-zinc-100 px-3 py-2 rounded-l-lg border border-r-0 text-sm text-zinc-500">
-                                    megagigs.com/store/
+                                    megagigs.net/store/
                                 </span>
                                 <input
                                     type="text"
