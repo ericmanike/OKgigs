@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Search, CheckCircle2, XCircle, Clock, ShoppingBag, Trash2, Copy,
+  Search, CheckCircle2, XCircle, Clock, ShoppingBag, Trash2, Copy, RefreshCw,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
@@ -38,7 +38,7 @@ export default function AdminOrdersPage() {
         setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
       } else {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Failed to update order");
+        alert("This error occurred " + data.error || "Failed to update order");
       }
     } catch {
       alert("Error updating order");
@@ -170,12 +170,21 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      {order.status !== "delivered" && (
+                      {(order.status !== "delivered" && order.transaction_id?.startsWith('paid_')) && (
                         <button
                           onClick={() => handleMarkOrderDelivered(order._id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-green-600 text-green-700 hover:bg-green-600 hover:text-white transition-all"
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all
+                            ${order.transaction_id?.startsWith('paid_')
+                              ? "border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"
+                              : "border-green-600 text-green-700 hover:bg-green-600 hover:text-white"}`}
                         >
-                          <CheckCircle2 size={14} /> Mark delivered
+
+                            
+                            Retry
+                            
+                         
+                               
+                          
                         </button>
                       )}
                       <button
@@ -258,9 +267,22 @@ export default function AdminOrdersPage() {
                 {order.status !== "delivered" && (
                   <button
                     onClick={() => handleMarkOrderDelivered(order._id)}
-                    className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all text-sm font-medium"
+                    className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2 border rounded-lg transition-all text-sm font-medium
+                      ${order.transaction_id?.startsWith('paid_')
+                        ? "text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white"
+                        : "text-green-600 border-green-600 hover:bg-green-600 hover:text-white"}`}
                   >
-                    <CheckCircle2 size={16} /> Mark delivered
+                    {order.transaction_id?.startsWith('paid_') ? (
+                      <>
+                        <RefreshCw size={16} /> 
+                        Retry order
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={16} /> 
+                        Mark delivered
+                      </>
+                    )}
                   </button>
                 )}
                 <button

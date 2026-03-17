@@ -59,16 +59,72 @@ export async function PATCH(
 
         await dbConnect();
 
-        const order = await Order.findByIdAndUpdate(
-            id,
-            { status },
-            { new: true }
-        ).populate('user', 'name email');
+        const order = await Order.findById(id);
 
         if (!order) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
         }
 
+        // Handle retry for Dakazi failed orders (transaction_id starts with "paid_")
+        if (order.transaction_id.startsWith('paid_') && status == 'pending') {
+            const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY;
+            if (!DAKAZI_API_KEY) {
+                return NextResponse.json({ error: 'Data provider API key not configured' }, { status: 500 });
+            }
+
+            const network = order.network;
+            let networkId;
+            const upperNetwork = network.toUpperCase();
+            if (upperNetwork === "MTN") {
+                networkId = 3;
+            } else if (upperNetwork === "TELECEL") {
+                networkId = 2;
+            } else if (upperNetwork.startsWith("AT") || upperNetwork.includes("AIRTEL")) {
+                networkId = 4;
+            }
+
+            if (networkId) {
+                const originalRef = order.transaction_id.replace('paid_', '');
+                try {
+                    const placeOrder = await fetch(
+                        "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-api-key": `${DAKAZI_API_KEY}`,
+                            },
+                            body: JSON.stringify({
+                                recipient_msisdn: order.phoneNumber.trim(),
+                                network_id: networkId,
+                                shared_bundle: Number(order.bundleName),
+                                incoming_api_ref: originalRef
+                            })
+                        }
+                    );
+
+                    const orderRes = await placeOrder.json().catch(() => ({}));
+                    if (orderRes.transaction_code) {
+                        order.transaction_id = orderRes.transaction_code;
+                        order.status = 'pending';
+                        await order.save();
+                        await order.populate('user', 'name email');
+                        return NextResponse.json(order);
+                    } else {
+                        return NextResponse.json({ error: orderRes.message || 'Data provider error' }, { status: 400 });
+                    }
+                } catch (err) {
+                    console.error('Retry order error:', err);
+                    return NextResponse.json({ error: 'Failed to contact data provider' }, { status: 500 });
+                }
+            }
+        }
+
+        // Standard update
+        order.status = status as any;
+        await order.save();
+        await order.populate('user', 'name email');
+          console.log("Admin  unsucessfull order",order);
         return NextResponse.json(order);
     } catch (error) {
         console.error('Error updating order:', error);
