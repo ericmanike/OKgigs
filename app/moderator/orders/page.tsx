@@ -129,7 +129,7 @@ export default function ModeratorOrdersPage() {
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider
                       ${order.network === "MTN" ? "bg-[#FFCC00] text-[#51291e]" :
                         order.network === "Telecel" ? "bg-[#E60000] text-white" : "bg-blue-600 text-white"}`}>
-                      {order.network} {order.bundleName}
+                      {order.network} {order.bundleName} GB
                     </span>
                   </td>
                   <td className="px-6 py-4 font-black text-zinc-900">{formatCurrency(order.price)}</td>
@@ -174,7 +174,7 @@ export default function ModeratorOrdersPage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center mb-4">
-                   <span className="text-sm font-medium text-zinc-700">{order.bundleName}</span>
+                   <span className="text-sm font-medium text-zinc-700">{order.bundleName} GB</span>
                    <span className="text-sm font-black text-zinc-900">{formatCurrency(order.price)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-3">

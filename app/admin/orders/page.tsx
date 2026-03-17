@@ -139,7 +139,7 @@ export default function AdminOrdersPage() {
                     <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium
                       ${order.network === "MTN" ? "bg-yellow-400 text-yellow-950" :
                         order.network === "Telecel" ? "bg-red-500 text-white" : "bg-blue-600 text-white"}`}>
-                      {order.network} {order.bundleName}
+                      {order.network} {order.bundleName} GB
                     </span>
                   </td>
                   <td className="px-6 py-4 font-medium text-zinc-700">{formatCurrency(order.price)}</td>
@@ -234,7 +234,7 @@ export default function AdminOrdersPage() {
                 <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium
                   ${order.network === "MTN" ? "bg-yellow-400 text-yellow-950" :
                     order.network === "Telecel" ? "bg-red-500 text-white" : "bg-blue-600 text-white"}`}>
-                  {order.network} {order.bundleName}
+                  {order.network} {order.bundleName} GB
                 </span>
               </div>
 

@@ -44,7 +44,7 @@ export default async function HistoryPage() {
                                         <Wifi size={20} />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-zinc-900">{order.network} {order.bundleName}</h3>
+                                        <h3 className="font-semibold text-zinc-900">{order.network} {order.bundleName} GB</h3>
                                         <div className="flex flex-col">
                                             <span className="text-sm text-slate-950/70">{new Date(order.createdAt).toLocaleDateString()}</span>
                                             <span className="text-xs text-slate-950/50">

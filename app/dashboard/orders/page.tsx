@@ -92,7 +92,7 @@ export default async function OrdersPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-zinc-900 truncate">
-                      {order.network} {order.bundleName}
+                      {order.network} {order.bundleName} GB
                     </p>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <span className="text-xs text-zinc-500">
