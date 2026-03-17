@@ -104,6 +104,7 @@ export async function PATCH(
                     );
 
                     const orderRes = await placeOrder.json().catch(() => ({}));
+                    console.log("Admin reordered unsucessfull order",orderRes);
                     if (orderRes.transaction_code) {
                         order.transaction_id = orderRes.transaction_code;
                         order.status = 'pending';
@@ -121,9 +122,7 @@ export async function PATCH(
         }
 
         // Standard update
-        order.status = status as any;
-        await order.save();
-        await order.populate('user', 'name email');
+    
           console.log("Admin  unsucessfull order",order);
         return NextResponse.json(order);
     } catch (error) {
