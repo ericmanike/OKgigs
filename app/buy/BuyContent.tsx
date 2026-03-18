@@ -6,6 +6,7 @@ import { Loader2, Wifi } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useSession } from "next-auth/react"
+import Link from "next/link";
 
 
 
@@ -331,11 +332,25 @@ export default function BuyContent() {
                             <Loader2 className="animate-spin text-slate-600" size={36} />
                             <p className="text-sm font-medium text-zinc-400 animate-pulse">Fetching best deals...</p>
                         </div>
-                    ) : bundles.length === 0 ? (
+                    )  : activeCategory=== 'promo' && !session?.user.role ? (
+                        <div className="text-center py-12">
+                            <p className="text-zinc-500 text-2xl my-2"> Promo offers are only available for customers with accounts </p>
+                                 <p className="my-3"> Sign Up  to get access to promo data  bundles! <br /> Enjoy <span className=" text-red-500 font-bold my-3"> Over 10% discount</span></p>
+                           
+                           <Link href="/auth/login">
+                            <button className="bg-red-600 my-4 text-white px-8 py-2  font-bold rounded-xl">Sign In</button>
+                           </Link>
+                        </div>
+                     )
+                    
+                    
+                    
+                    : bundles.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
                         </div>
-                    ) : (
+                    ):  
+                       (
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                             {bundles.map((bundle: any) => (
                                 <button
@@ -365,6 +380,12 @@ export default function BuyContent() {
                                             </div>
                                         </div>
                                     )}
+
+                                      
+                      
+                   
+           
+
                                     {/* Wifi icon */}
                                     <div className={clsx(
                                         "w-12 h-12 rounded-full flex items-center justify-center mb-4 shadow-xl border-2 border-white/30",
