@@ -9,6 +9,7 @@ import Setting from "@/models/Setting";
 
 export async function POST(req: Request) {
   try {
+    
     // Session is optional — guests can place orders too
     const session = await getServerSession(authOptions);
 
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
     }
 
-    const { amount, currency } = paystackData.data
+    const { amount } = paystackData.data
 
 
     const tax = 0.02 * price
@@ -137,10 +138,13 @@ export async function POST(req: Request) {
       }
     );
 
-    let Orderres;
 
-    try {
       const raw = await placeOrder.text();
+    
+
+     let Orderres;
+    try {
+    
       Orderres = JSON.parse(raw);
       console.log(Orderres);
 

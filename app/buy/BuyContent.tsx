@@ -334,7 +334,7 @@ export default function BuyContent() {
                         </div>
                     )  : activeCategory=== 'promo' && !session?.user.role ? (
                         <div className="text-center py-12">
-                            <p className="text-zinc-500 text-2xl my-2"> Promo offers are only available for customers with accounts </p>
+                            <p className="text-slate-700 text-2xl my-2 font-bold"> Promo offers are only available for customers with accounts </p>
                                  <p className="my-3"> Sign Up  to get access to promo data  bundles! <br /> Enjoy <span className=" text-red-500 font-bold my-3"> Over 10% discount</span></p>
                            
                            <Link href="/auth/login">
