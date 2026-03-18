@@ -1,11 +1,16 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import dbConnect from './mongoose';
 import User from '@/models/User';
 
 export const authOptions: NextAuthOptions = {
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        }),
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
@@ -40,10 +45,40 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
+        async signIn({ user, account, profile }) {
+            if (account?.provider === 'google') {
+                if (!user.email) {
+                    return false;
+                }
+
+                await dbConnect();
+                try {
+                    const existingUser = await User.findOne({ email: user.email });
+                    if (!existingUser) {
+                        const newUser = await User.create({
+                            name: user.name || 'Google User',
+                            email: user.email,
+                            role: 'user',
+                            walletBalance: 0,
+                        }) as any;
+                        user.id = newUser._id.toString();
+                        (user as any).role = newUser.role;
+                    } else {
+                        user.id = (existingUser as any)._id.toString();
+                        (user as any).role = (existingUser as any).role;
+                    }
+                    return true;
+                } catch (error) {
+                    console.error('Error during Google sign-in:', error);
+                    return false;
+                }
+            }
+            return true;
+        },
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
-                token.role = user.role;
+                token.role = (user as any).role;
             }
 
             // Support for updating the session (e.g. wallet balance or role change)
