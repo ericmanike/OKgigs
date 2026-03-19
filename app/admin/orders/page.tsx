@@ -11,6 +11,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -27,6 +28,7 @@ export default function AdminOrdersPage() {
   }, []);
 
   const handleMarkOrderDelivered = async (orderId: string) => {
+    setProcessingId(orderId);
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
@@ -38,10 +40,34 @@ export default function AdminOrdersPage() {
         setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
       } else {
         const data = await res.json().catch(() => ({}));
-        alert("This error occurred " + data.error || "Failed to update order");
+        alert("Error: " + (data.error || "Failed to update order"));
       }
     } catch {
       alert("Error updating order");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleRetryOrder = async (orderId: string) => {
+    setProcessingId(orderId);
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "pending" }),
+      });
+      if (res.ok) {
+        const updatedOrder = await res.json();
+        setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert("Retry failed: " + (data.error || "Failed to retry order"));
+      }
+    } catch {
+      alert("Error retrying order");
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -172,19 +198,21 @@ export default function AdminOrdersPage() {
                     <div className="flex items-center justify-end gap-2">
                       {(order.status !== "delivered" && order.transaction_id?.startsWith('paid_')) && (
                         <button
-                          onClick={() => handleMarkOrderDelivered(order._id)}
+                          onClick={() => handleRetryOrder(order._id)}
+                          disabled={processingId === order._id}
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all
-                            ${order.transaction_id?.startsWith('paid_')
-                              ? "border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"
-                              : "border-green-600 text-green-700 hover:bg-green-600 hover:text-white"}`}
+                            ${processingId === order._id
+                              ? "bg-zinc-100 text-zinc-400 border-zinc-200 cursor-not-allowed"
+                              : "border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"}`}
                         >
-
-                            
-                            Retry
-                            
-                         
-                               
-                          
+                          {processingId === order._id ? (
+                            <>
+                              <RefreshCw size={14} className="animate-spin" />
+                              Retrying...
+                            </>
+                          ) : (
+                            "Retry"
+                          )}
                         </button>
                       )}
                       <button
@@ -266,13 +294,21 @@ export default function AdminOrdersPage() {
               <div className="flex flex-col gap-2 pt-3 border-t border-zinc-100">
                 {order.status !== "delivered" && (
                   <button
-                    onClick={() => handleMarkOrderDelivered(order._id)}
+                    onClick={() => order.transaction_id?.startsWith('paid_') ? handleRetryOrder(order._id) : handleMarkOrderDelivered(order._id)}
+                    disabled={processingId === order._id}
                     className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2 border rounded-lg transition-all text-sm font-medium
-                      ${order.transaction_id?.startsWith('paid_')
-                        ? "text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white"
-                        : "text-green-600 border-green-600 hover:bg-green-600 hover:text-white"}`}
+                      ${processingId === order._id
+                        ? "bg-zinc-100 text-zinc-400 border-zinc-200 cursor-not-allowed"
+                        : order.transaction_id?.startsWith('paid_')
+                          ? "text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white"
+                          : "text-green-600 border-green-600 hover:bg-green-600 hover:text-white"}`}
                   >
-                    {order.transaction_id?.startsWith('paid_') ? (
+                    {processingId === order._id ? (
+                      <>
+                        <RefreshCw size={16} className="animate-spin" />
+                        Processing...
+                      </>
+                    ) : order.transaction_id?.startsWith('paid_') ? (
                       <>
                         <RefreshCw size={16} /> 
                         Retry order

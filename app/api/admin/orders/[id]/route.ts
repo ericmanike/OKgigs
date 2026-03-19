@@ -104,7 +104,7 @@ export async function PATCH(
                     );
 
                     const orderRes = await placeOrder.json().catch(() => ({}));
-                    console.log("Admin reordered unsucessfull order",orderRes);
+                    console.log("Admin reordered unsucessfull order response",orderRes);
                     if (orderRes.transaction_code) {
                         order.transaction_id = orderRes.transaction_code;
                         order.status = 'pending';
@@ -119,11 +119,11 @@ export async function PATCH(
                     return NextResponse.json({ error: 'Failed to contact data provider' }, { status: 500 });
                 }
             }
-        }
+        }  
 
         // Standard update
-    
-          console.log("Admin  unsucessfull order",order);
+           console.log("Order updated with id", order.transaction_id)
+   
         return NextResponse.json(order);
     } catch (error) {
         console.error('Error updating order:', error);
