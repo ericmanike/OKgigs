@@ -110,6 +110,9 @@ export default function BuyContent() {
                     }
 
                     // If bundle is for users (regular) or promo, everyone can see it
+                    if (b.audience == 'promo' && !session) {
+                        return false;
+                    }
                     return true;
                 });
 
