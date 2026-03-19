@@ -24,13 +24,30 @@ const outfit = Outfit({
 //https://documenter.getpostman.com/view/9357868/2sB3BBqrsR  api docs
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://megagigs.net'),
+  alternates: {
+    canonical: '/',
+  },
   title: "MegaGigs - Buy Data Bundles at lower prices",
   description: "Cheapest and trusted data bundle reseller in Ghana. Buy data bundles at lower prices for all  your studies and research (MTN, Telecel, AirtelTigo). Simple checkout, instant delivery with no hidden charges.",
   keywords: ["data bundles", "Ghana data", "MTN data", "Telecel data", "AirtelTigo data", "buy data online", "instant data delivery", "MegaGigs"],
   authors: [{ name: "MegaGigs Team" }],
   creator: "MegaGigs",
   publisher: "MegaGigs",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: "YOUR_GOOGLE_VERIFICATION_CODE",
+  },
   openGraph: {
     type: "website",
     locale: "en_GH",
