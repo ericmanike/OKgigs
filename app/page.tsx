@@ -199,7 +199,7 @@ export default function Home() {
                     href="/track-order"
                     className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-base hover:bg-zinc-50 transition-all active:scale-[0.95]"
                   >
-                    Track order
+                    Check order Status
                   </Link>
                 </div>
               </div>
