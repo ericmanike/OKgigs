@@ -5,7 +5,6 @@ export interface IAgentStore extends Document {
     storeName: string;
     slug: string;
     description: string;
-    bundleProfits: Record<string, number>;
     isActive: boolean;
     totalSalesCount: number;
     totalProfit: number;
@@ -19,7 +18,6 @@ const AgentStoreSchema = new Schema<IAgentStore>(
         storeName: { type: String, required: true },
         slug: { type: String, required: true, unique: true },
         description: { type: String, default: '' },
-        bundleProfits: { type: Map, of: Number, default: {} },
         isActive: { type: Boolean, default: true },
         totalSalesCount: { type: Number, default: 0 },
         totalProfit: { type: Number, default: 0 }

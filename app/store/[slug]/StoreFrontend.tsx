@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Loader2, Wifi, Store } from "lucide-react";
+import { Loader2, Wifi, Store, Search, MessageCircle } from "lucide-react";
 import clsx from "clsx";
 import { formatCurrency } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 
@@ -171,7 +172,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     return (
         <div className="w-full max-w-4xl mx-auto pb-12 pt-28 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Store Header */}
-            <div className="text-center mb-8 bg-white p-6 rounded-[2rem] shadow-sm border border-zinc-100">
+            <div className="text-center mb-8 bg-white p-6 rounded-[5px] shadow-lg">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Store className="text-blue-600" size={32} />
                 </div>
@@ -179,6 +180,17 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                     {storeData.storeName}
                 </h1>
                 <p className="text-zinc-500 text-sm">{storeData.description || 'Welcome to my data store! Grab the best bundles here.'}</p>
+                
+                <div className="flex items-center justify-center gap-3 mt-6">
+                    <Link href="/track-order" className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg text-sm hover:bg-zinc-200 font-medium transition-colors">
+                        <Search size={16} />
+                        Track Order
+                    </Link>
+                    <a href="https://wa.me/233551043686" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100 font-medium transition-colors border border-green-100">
+                        <MessageCircle size={16} />
+                        Contact Support
+                    </a>
+                </div>
             </div>
 
             {/* SELECTION VIEW */}
@@ -192,9 +204,9 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                 key={network.id}
                                 onClick={() => setSelectedNetwork(network.id)}
                                 className={clsx(
-                                    "flex flex-col items-center justify-center py-4 rounded-xl transition-all border-2",
+                                    "flex flex-col items-center justify-center py-2 rounded-[5px] transition-all border-2",
                                     selectedNetwork === network.id
-                                        ? `${network.color} ${network.textColor} border-transparent shadow-lg scale-105 z-10 font-bold`
+                                        ? `${network.color} ${network.textColor} border-transparent shadow-lg scale-105  font-bold`
                                         : "bg-white text-zinc-600 border-transparent hover:border-zinc-200 hover:bg-zinc-50"
                                 )}
                             >
@@ -219,7 +231,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                         setStep(2);
                                     }}
                                     className={clsx(
-                                        "flex flex-col items-center justify-between p-4 py-8 rounded-2xl transition-all text-center min-h-[160px] relative overflow-hidden",
+                                        "flex flex-col items-center justify-between p-4 py-8 rounded-[5px] transition-all text-center min-h-[160px] relative overflow-hidden",
                                         "hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-sm border-2 border-transparent",
                                         networkConfig ? `${networkConfig.color} ${networkConfig.textColor}` : "bg-white text-zinc-900"
                                     )}
@@ -239,16 +251,16 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                     </div>
 
                                     <div className="flex-1 flex flex-col justify-center w-full min-h-[40px] mb-4">
-                                        <h3 className="font-black text-2xl tracking-tighter leading-none break-words">
-                                            {bundle.name}
+                                        <h3 className="font-black text-[12px] tracking-tighter leading-none break-words">
+                                            {bundle.name} - {formatCurrency(bundle.price)}
                                         </h3>
                                     </div>
 
                                     <div className={clsx(
-                                        "w-full py-2.5 px-2 rounded-2xl font-black text-base shadow-inner text-center block",
+                                        "w-full py-2 px-2 rounded  font-black text-sm shadow-inner text-center block",
                                         networkConfig ? "bg-white text-black" : "bg-zinc-900 text-white"
                                     )}>
-                                        {formatCurrency(bundle.price)}
+                                       Buy Now
                                     </div>
                                 </button>
                             ))}
@@ -281,7 +293,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                     className="w-full px-4 py-3 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
-                                    placeholder="024 XXX XXXX"
+                                    placeholder="024XXXXXXX"
                                     autoFocus
                                 />
                             </div>
@@ -317,7 +329,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                             <button
                                 onClick={handlePurchase}
                                 disabled={loading || phoneNumber.length !== 10}
-                                className="w-full py-4 text-white hover:bg-slate-800 bg-slate-900 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer text-lg"
+                                className="w-full py-2 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer text-lg"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={24} /> : "Pay Now"}
                             </button>

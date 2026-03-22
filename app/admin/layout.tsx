@@ -11,14 +11,15 @@ import {
   Shield,
   X,
   Menu,
+  Wallet,
 } from "lucide-react";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 const navItems = [
-  { href: "/admin", label: "Stats", icon: CheckCircle2, exact: true },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
+  { href: "/admin/withdrawals", label: "Withdrawals", icon: Wallet, exact: false },
   { href: "/admin/users", label: "Users", icon: Users, exact: false },
   { href: "/admin/bundles", label: "Bundles", icon: Package, exact: false },
   { href: "/admin/broadcast", label: "Broadcast", icon: Megaphone, exact: false },

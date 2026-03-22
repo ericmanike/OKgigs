@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongoose';
 import AgentStore from '@/models/AgentStore';
+import StoreBundle from '@/models/StoreBundle';
+import Bundle from '@/models/Bundle';
 
 export async function GET(req: Request) {
     try {
@@ -14,13 +16,20 @@ export async function GET(req: Request) {
 
         await dbConnect();
 
-        let store = await AgentStore.findOne({ user: session.user.id });
+        let store = await AgentStore.findOne({ user: session.user.id }).lean();
         if (!store) {
             // Return empty layout
             return NextResponse.json(null);
         }
 
-        return NextResponse.json(store);
+        // Fetch custom profits from StoreBundle
+        const customBundles = await StoreBundle.find({ agent: session.user.id });
+        const bundleProfits: Record<string, number> = {};
+        customBundles.forEach(cb => {
+            bundleProfits[cb.bundle.toString()] = cb.customPrice - cb.basePrice;
+        });
+
+        return NextResponse.json({ ...store, bundleProfits });
     } catch (error: any) {
         console.error("Store GET Error:", error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -56,7 +65,6 @@ export async function POST(req: Request) {
             store.storeName = storeName;
             store.slug = slug;
             store.description = description || '';
-            store.bundleProfits = bundleProfits || {};
             await store.save();
         } else {
             store = await AgentStore.create({
@@ -64,8 +72,33 @@ export async function POST(req: Request) {
                 storeName,
                 slug,
                 description: description || '',
-                bundleProfits: bundleProfits || {}
             });
+        }
+
+        // Sync with StoreBundle model
+        if (bundleProfits) {
+            const bundleIds = Object.keys(bundleProfits);
+            const bundleDocs = await Bundle.find({ _id: { $in: bundleIds } });
+            
+            const storeBundlePromises = bundleIds.map(async (bundleId) => {
+                const profit = bundleProfits[bundleId];
+                const bundleDoc = bundleDocs.find(b => b._id.toString() === bundleId);
+                if (bundleDoc) {
+                    return StoreBundle.findOneAndUpdate(
+                        { agent: session.user.id, bundle: bundleId },
+                        {
+                            agent: session.user.id,
+                            bundle: bundleId,
+                            basePrice: bundleDoc.price,
+                            customPrice: bundleDoc.price + profit,
+                            isActive: true
+                        },
+                        { upsert: true, new: true }
+                    );
+                }
+            });
+            
+            await Promise.all(storeBundlePromises);
         }
 
         return NextResponse.json(store);

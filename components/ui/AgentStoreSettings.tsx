@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle } from "lucide-react";
+import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle,DownloadCloud } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import clsx from "clsx";
 import Link from "next/link";
+import WithdrawalModal from "./WithdrawalModal";
 
 export default function AgentStoreSettings() {
     const [storeName, setStoreName] = useState("");
@@ -19,6 +20,8 @@ export default function AgentStoreSettings() {
     const [totalProfit, setTotalProfit] = useState(0);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [copied, setCopied] = useState(false);
+    const [withdrawing, setWithdrawing] = useState(false);
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
     useEffect(() => {
         fetchStoreData();
@@ -97,6 +100,36 @@ export default function AgentStoreSettings() {
         }
     };
 
+    const handleWithdraw = async () => {
+        if (totalProfit <= 0) return;
+        
+        if (!confirm(`Are you sure you want to withdraw ${formatCurrency(totalProfit)} to your wallet balance?`)) {
+            return;
+        }
+
+        setWithdrawing(true);
+        setMessage(null);
+        try {
+            const res = await fetch('/api/agent/withdraw', {
+                method: 'POST',
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                setMessage({ type: 'success', text: `Successfully withdrawn ${formatCurrency(totalProfit)} to your wallet!` });
+                setTotalProfit(0);
+                // Also update session wallet balance if needed, but a reload or manual fetch would be better
+                // For now just clearing the current profit display
+            } else {
+                setMessage({ type: 'error', text: data.error || "Failed to process withdrawal." });
+            }
+        } catch (error) {
+            setMessage({ type: 'error', text: "An error occurred during withdrawal." });
+        } finally {
+            setWithdrawing(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-20">
@@ -127,24 +160,37 @@ export default function AgentStoreSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                     <CardContent className="p-6 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                            <TrendingUp size={24} />
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                            <TrendingUp size={13} />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-zinc-500">Total Store Sales</p>
-                            <h3 className="text-2xl font-black text-zinc-900">{totalSalesCount}</h3>
+                            <h3 className="text-sm font-black text-zinc-900">{totalSalesCount}</h3>
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
-                            <Wallet size={24} />
+                    <CardContent className="p-6 flex flex-col items-center  gap-4">
+                        <div className="flex items-center gap-4 self-start">
+                            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
+                                <Wallet size={15} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-zinc-500">Total Profit Earned</p>
+                                <h3 className="text-sm font-black text-zinc-900">{formatCurrency(totalProfit)}</h3>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-zinc-500">Total Profit Earned</p>
-                            <h3 className="text-2xl font-black text-zinc-900">{formatCurrency(totalProfit)}</h3>
-                        </div>
+                        <button 
+                            onClick={() => setIsWithdrawModalOpen(true)}
+                            disabled={totalProfit <= 0 || withdrawing}
+                            className={clsx(
+                                "px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-500 transition-colors flex items-center gap-2 self-center w-full",
+                                (totalProfit != 0 || withdrawing) && "opacity-50 cursor-not-allowed"
+                            )}
+                        >
+                            {withdrawing ? <Loader2 className="animate-spin" size={16} /> : <DownloadCloud size={13} />}
+                            Withdraw
+                        </button>
                     </CardContent>
                 </Card>
             </div>
@@ -174,24 +220,30 @@ export default function AgentStoreSettings() {
                             <input
                                 type="text"
                                 value={storeName}
-                                onChange={e => setStoreName(e.target.value)}
+                                onChange={e => {
+                                    const name = e.target.value;
+                                    setStoreName(name);
+                                    // Auto-generate slug: lowercase, replace spaces with hyphens, remove non-alphanumeric (except hyphens)
+                                    setSlug(name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
+                                }}
                                 className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
                                 placeholder="e.g. John's Data Plug"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Store URL Slug</label>
-                            <div className="flex items-center">
-                                <span className="bg-zinc-100 px-3 py-2 rounded-l-lg border border-r-0 text-sm text-zinc-500">
-                                    megagigs.net/store/
-                                </span>
-                                <input
-                                    type="text"
-                                    value={slug}
-                                    onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                                    className="w-full px-3 py-2 rounded-r-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="john-data"
-                                />
+                            <label className="text-sm font-medium text-zinc-500 uppercase tracking-wider text-[10px]">Store URL </label>
+                            <div className="flex items-center justify-between px-4 py-2 bg-zinc-50 rounded-xl border border-dashed border-zinc-200 text-sm font-mono overflow-hidden">
+                                <div className="flex items-center truncate mr-2">
+                                    <span className="text-zinc-400 select-none">megagigs.net/store/</span>
+                                    <span className="text-blue-600 font-bold truncate">{slug || 'your-slug'}</span>
+                                </div>
+                                <button
+                                    onClick={handleCopyUrl}
+                                    title="Copy Store URL"
+                                    className="p-2 border-l border-zinc-200 pl-3 hover:text-blue-600 transition-colors shrink-0"
+                                >
+                                    {copied ? <Check size={16} className="text-green-600 animate-in zoom-in" /> : <Copy size={16} className="text-zinc-400" />}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -202,14 +254,6 @@ export default function AgentStoreSettings() {
                                 <LinkIcon size={16} />
                                 View Store
                             </Link>
-
-                            <button
-                                onClick={handleCopyUrl}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg text-sm hover:bg-zinc-200 font-medium transition-colors"
-                            >
-                                {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
-                                {copied ? 'Copied!' : 'Copy Link'}
-                            </button>
 
                             <button
                                 onClick={handleWhatsAppShare}
@@ -274,7 +318,7 @@ export default function AgentStoreSettings() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-zinc-800 disabled:opacity-50 flex items-center gap-2"
+                            className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-500 disabled:opacity-50 flex items-center gap-2"
                         >
                             {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                             Save Store Settings
@@ -282,6 +326,16 @@ export default function AgentStoreSettings() {
                     </div>
                 </CardContent>
             </Card>
+
+            <WithdrawalModal 
+                isOpen={isWithdrawModalOpen}
+                onClose={() => setIsWithdrawModalOpen(false)}
+                maxAmount={totalProfit}
+                onSuccess={(amount) => {
+                    setTotalProfit(prev => prev - amount);
+                    setMessage({ type: 'success', text: `Withdrawal request for ${formatCurrency(amount)} submitted! Your balance will update once approved.` });
+                }}
+            />
         </div>
     );
 }
