@@ -65,19 +65,13 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
+        
+        // Determine active provider
+        const providerDoc = await Setting.findOne({ key: "provider" }).select("value");
+        const provider = providerDoc?.value || "dakazina";
+
         const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY;
-        if (!DAKAZI_API_KEY) {
-            return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
-        }
-
-        // Network ID logic
-        let networkId;
         const network = bundle.network;
-        if (network === "MTN") networkId = 3;
-        else if (network === "Telecel") networkId = 2;
-        else if (network.startsWith("AT") || network === "AirtelTigo") networkId = 4;
-        else return NextResponse.json({ message: "Invalid network configuration" }, { status: 400 });
-
         const reference = `agent_${Date.now()}_${session.user.id}`;
 
         // Atomic update: Deduct from agent's wallet
@@ -91,31 +85,130 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Transaction failed: Insufficient agent balance" }, { status: 400 });
         }
 
-        // Place order with Dakazi
+        // Create initial order record
+        const order = await Order.create({
+            user: session.user.id,
+            agent: agentId as mongoose.Types.ObjectId,
+            transaction_id: reference,
+            network: network,
+            bundleName: bundle.name,
+            price: customPrice,
+            originalPrice: basePrice,
+            phoneNumber: phoneNumber,
+            status: 'placed',
+        });
+
+        let orderResponse;
+
         try {
-            const placeOrder = await fetch(
-                "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
-                {
+            if (provider === "dakazina") {
+                if (!DAKAZI_API_KEY) {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
+                }
+
+                // Dakazina network ID mapping
+                let networkId;
+                const networkUpper = network.toUpperCase();
+                if (networkUpper === "MTN") networkId = 3;
+                else if (networkUpper === "TELECEL") networkId = 2;
+                else if (networkUpper.startsWith("AT") || networkUpper === "AIRTELTIGO") networkId = 4;
+                else {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: "Invalid network configuration" }, { status: 400 });
+                }
+
+                const placeOrder = await fetch(
+                    "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-api-key": `${DAKAZI_API_KEY}`,
+                        },
+                        body: JSON.stringify({
+                            recipient_msisdn: phoneNumber,
+                            network_id: networkId,
+                            shared_bundle: Number(bundle.name.replace(/[^0-9]/g, '')),
+                            incoming_api_ref: reference
+                        })
+                    }
+                );
+
+                const raw = await placeOrder.text();
+                let Orderres;
+                try {
+                    Orderres = JSON.parse(raw);
+                    console.log('Dakazina order response:', Orderres);
+                    orderResponse = Orderres;
+                } catch (error) {
+                    console.error("Failed to parse Dakazina response:", error);
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: "Error creating order" }, { status: 500 });
+                }
+
+                if (!placeOrder.ok) {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: Orderres.message || "Order failed with provider" }, { status: 500 });
+                }
+
+                if (Orderres.transaction_code) {
+                    order.transaction_id = Orderres.transaction_code;
+                    order.status = 'pending';
+                    await order.save();
+                }
+
+            } else if (provider === "spendless") {
+                const apiKey = process.env.SPENDLESS_API_KEY?.trim();
+
+                if (!apiKey) {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: "Spendless API key not configured" }, { status: 500 });
+                }
+
+                // Spendless network key mapping
+                let networkKey;
+                if (network.toUpperCase() === "MTN") networkKey = "YELLO";
+                else if (network.toUpperCase() === "TELECEL") networkKey = "TELECEL";
+                else if (network.startsWith("AT")) networkKey = "AT_PREMIUM";
+                else {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: "Invalid network configuration" }, { status: 400 });
+                }
+
+                const spendlessResponse = await fetch("https://spendless.top/api/purchase", {
                     method: "POST",
                     headers: {
+                        "X-API-Key": apiKey,
                         "Content-Type": "application/json",
-                        "x-api-key": `${DAKAZI_API_KEY}`,
                     },
                     body: JSON.stringify({
-                        recipient_msisdn: phoneNumber,
-                        network_id: networkId,
-                        shared_bundle: Number(bundle.name.replace(/[^0-9]/g, '')), // Get numeric value from bundle name
-                        incoming_api_ref: reference
-                    })
+                        networkKey: networkKey,
+                        recipient: phoneNumber.trim(),
+                        capacity: Number(bundle.name.replace(/[^0-9]/g, '')),
+                    }),
+                });
+
+                const data = await spendlessResponse.json();
+                orderResponse = data;
+                console.log("Spendless order response:", orderResponse);
+
+                if (data.status === "success") {
+                    order.transaction_id = data.data.transactionReference;
+                    order.status = "placed";
+                    await order.save();
+                } else {
+                    await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                    return NextResponse.json({ message: data.message || "Order failed with Spendless" }, { status: 500 });
                 }
-            );
 
-            const orderRes = await placeOrder.json();
-
-            if (!placeOrder.ok || !orderRes.success) {
-                // Refund wallet if API fails
+            } else if (provider === "datamart") {
+                // Datamart provider placeholder
                 await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
-                return NextResponse.json({ message: orderRes.message || "Order failed with provider" }, { status: 500 });
+                return NextResponse.json({ message: "Datamart provider not yet implemented" }, { status: 501 });
+            } else {
+                await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
+                return NextResponse.json({ message: "Unknown provider configured" }, { status: 500 });
             }
 
             // Credit Profit to Agent's Store
@@ -123,28 +216,16 @@ export async function POST(req: Request) {
                 { user: agentId },
                 { $inc: { totalProfit: profit, totalSalesCount: 1 } }
             );
-                  
-            // Create order record
-            const order = await Order.create({
-                user: session.user.id,
-                agent: agentId as mongoose.Types.ObjectId ,
-                transaction_id: orderRes.transaction_code,
-                network: network,
-                bundleName: bundle.name,
-                price: customPrice,
-                originalPrice: basePrice,
-                phoneNumber: phoneNumber,
-                status: 'pending',
-            });
 
             return NextResponse.json({
                 message: "Order placed successfully",
                 order,
+                orderResponse,
                 newBalance: updatedAgent.walletBalance
             }, { status: 201 });
 
         } catch (err) {
-            // Refund wallet on catch
+            // Refund wallet on unexpected error
             await User.findByIdAndUpdate(agentId, { $inc: { walletBalance: customPrice } });
             throw err;
         }

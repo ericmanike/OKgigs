@@ -111,6 +111,7 @@ export default async function OrdersPage() {
                       "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
                       order.status === "delivered" && "bg-green-500 text-white",
                       order.status === "pending"   && "bg-amber-100 text-amber-700 border border-amber-200",
+                      order.status === "placed"    && "bg-amber-100 text-amber-700 border border-amber-200",
                       order.status === "processing" && "bg-zinc-100 text-zinc-500 border border-zinc-200",
                       order.status === "failed"    && "bg-red-50 text-red-700 border border-red-200",
                       order.status === "reversed"  && "bg-red-50 text-red-700 border border-red-200"
@@ -118,6 +119,7 @@ export default async function OrdersPage() {
                   >
                     {order.status === "delivered" && <CheckCircle2 size={12} className="shrink-0 text-green-200" />}
                     {order.status === "pending" && <Clock size={12} className="shrink-0" />}
+                    {order.status === "placed" && <Clock size={12} className="shrink-0" />}
                     {order.status === "processing" && <Clock size={12} className="shrink-0" />}
                     {order.status === "failed" && <XCircle size={12} className="shrink-0" />}
                     {order.status === "reversed" && <XCircle size={12} className="shrink-0" />}

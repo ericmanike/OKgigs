@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Setting from "@/models/Setting";
+import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+import { createOrder } from "@/lib/orderService";
 
 
 
@@ -21,10 +23,9 @@ export async function POST(req: Request) {
     //   return NextResponse.json({ message: "Too many order attempts. Please try again later." }, { status: 429 });
     // }
 
-    const { network, bundleName, price, phoneNumber, reference, agentId, agentProfit } = await req.json();
+    const { network, bundleName, price, phoneNumber, reference } = await req.json();
 
-    console.log('Received data:', { network, bundleName, price, phoneNumber, reference, agentId, agentProfit });
-
+    console.log('Received data:', { network, bundleName, price, phoneNumber, reference });
     if (!network || !bundleName || !price || !phoneNumber || !reference) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
@@ -36,6 +37,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
     }
 
+
+  
+      
+  
+
     // prevent replay attack
     const existingOrder = await Order.findOne({ transaction_id: reference });
     if (existingOrder) {
@@ -44,29 +50,15 @@ export async function POST(req: Request) {
 
 
     const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
-    const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY
+  
 
-    if (!PAYSTACK_SECRET_KEY || !DAKAZI_API_KEY) {
+    if (!PAYSTACK_SECRET_KEY) {
       //console.log('Paystack secret key not found')
       return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
     }
 
-    let networkId;
-    if (network === "MTN") {
-      networkId = 3;
-    } else if (network === "TELECEL") {
-      networkId = 2;
-    } else if (network.startsWith("AT")) {
-      networkId = 4;
-    } else {
-      return NextResponse.json({ message: "Invalid network" }, { status: 400 });
-    }
 
-    console.log('Network ID:', networkId);
-    if (!networkId) {
-      return NextResponse.json({ message: "Invalid network" }, { status: 400 });
-    }
-
+    
 
 
     const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
@@ -107,88 +99,41 @@ export async function POST(req: Request) {
     }
 
 
-    const ref = reference.trim()
-    const order = await Order.create({
-      ...(session?.user?.id ? { user: session.user.id } : {}),
-      transaction_id: "paid_" + ref,
-      agent: agentId || undefined,
-      network: network,
-      bundleName: bundleName,
-      price: price,
-      phoneNumber: phoneNumber,
-      status: 'pending',
-    });
+    const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY!;
+    const SPENDLESS_API_KEY = process.env.SPENDLESS_API_KEY!;
 
+    if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
+      return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
+    }
+    const data = {
+      network,
+      bundleName,
+      price,
+      phoneNumber,
+      reference,
+    }
+    
+const order = await createOrder(session, data);
 
-    //place order
-    const placeOrder = await fetch(
-      "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
-      {
-        method: "POST",
-        headers: {
+    const providerDoc = await Setting.findOne({ key: "provider" });
+    const provider = providerDoc?.value || "dakazina";
 
-          "Content-Type": "application/json",
-          "x-api-key": `${DAKAZI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          recipient_msisdn: phoneNumber.trim(),
-          network_id: networkId,
-          shared_bundle: Number(bundleName),
-          incoming_api_ref: reference
-        })
-      }
+    let response;
+
+    if (provider === "dakazina") {
+      response = await handleDakazina(order, data, DAKAZI_API_KEY);
+    } else if (provider === "spendless") {
+      response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+    }
+
+    return NextResponse.json(
+      { message: "Order created successfully", response },
+      { status: 201 }
     );
 
-
-      const raw = await placeOrder.text();
-    
-
-     let Orderres;
-    try {
-    
-      Orderres = JSON.parse(raw);
-      console.log(Orderres);
-
-    } catch (error) {
-      console.error("Order creation error:", error);
-      return NextResponse.json({ message: "Error creating order" }, { status: 500 });
-    }
-
-    if (!placeOrder.ok) {
-
-      NextResponse.json({ error: ' could not place an order' })
-
-    }
-
-    if (Orderres.transaction_code) {
-      console.log('New order created with id ', Orderres.transaction_code)
-      order.transaction_id = Orderres.transaction_code
-      order.status = 'pending'
-      await order.save()
-
-      if (agentId) {
-        try {
-          const AgentStore = (await import('@/models/AgentStore')).default;
-          await AgentStore.findOneAndUpdate(
-            { user: agentId },
-            { $inc: { totalSalesCount: 1, totalProfit: Number(agentProfit) || 0 } }
-          );
-        } catch (err) {
-          console.error("Failed to update agent store stats:", err);
-        }
-      }
-    }
-
-    console.log('New order created successfully throught the API:', order);
+    console.log('Order created successfully', response);
 
 
-    console.log(' purchase order response:', Orderres)
-
-
-
-
-    console.log('📦 New order created:', order);
-    return NextResponse.json({ message: "Order created successfully", order }, { status: 201 });
   } catch (error) {
     console.error("Order creation error:", error);
     return NextResponse.json({ message: "Error creating order" }, { status: 500 });

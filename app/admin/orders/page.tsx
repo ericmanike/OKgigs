@@ -15,10 +15,11 @@ export default function AdminOrdersPage() {
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0 });
-  const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { "Wallet Balance": 0 } });
+  const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { "Wallet Balance": 0 }, spendlessBalance: null as any });
   const [ordersClosed, setOrdersClosed] = useState(false);
   const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState("dakazina");
+  const [savingProvider, setSavingProvider] = useState(false);
 
   useEffect(() => {
     const fetchEverything = async () => {
@@ -36,6 +37,7 @@ export default function AdminOrdersPage() {
         if (ordersClosedRes.ok) {
           const data = await ordersClosedRes.json();
           setOrdersClosed(Boolean(data?.ordersClosed));
+          if (data?.provider) setSelectedProvider(data.provider);
         }
       } catch (e) {
         console.error(e);
@@ -65,6 +67,25 @@ export default function AdminOrdersPage() {
       alert("Error updating setting");
     } finally {
       setOrdersClosedUpdating(false);
+    }
+  };
+
+  const handleProviderChange = async (provider: string) => {
+    setSelectedProvider(provider);
+    setSavingProvider(true);
+    try {
+      const res = await fetch("/api/admin/settings/orders-closed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider }),
+      });
+      if (!res.ok) {
+        alert("Failed to update provider");
+      }
+    } catch {
+      alert("Error updating provider");
+    } finally {
+      setSavingProvider(false);
     }
   };
 
@@ -165,54 +186,68 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-100 text-green-600 rounded-xl">
-                <CreditCard size={22} />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+                <CreditCard size={16} />
+              </div>
+              <p className="text-zinc-500 text-xs font-medium">Account Balances</p>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-zinc-500">Dakazina</span>
+                <span className="text-sm font-bold text-zinc-900">
+                  {formatCurrency(dakaziStats.AccountBalance["Wallet Balance"])}
+                </span>
+              </div>
+              <div className="border-t border-zinc-100" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-zinc-500">Spendless</span>
+                <span className="text-sm font-bold text-zinc-900">
+                  {dakaziStats.spendlessBalance?.data?.balance != null
+                    ? dakaziStats.spendlessBalance.data.balance
+                    : "—"}
+                </span>
               </div>
             </div>
-            <p className="text-zinc-500 text-sm font-medium">Account Balance</p>
-            <h3 className="text-3xl font-bold mt-1 text-zinc-900">
-              {formatCurrency(dakaziStats.AccountBalance["Wallet Balance"])}
-            </h3>
           </CardContent>
         </Card>
 
         <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
-                <CreditCard size={22} />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+                <CreditCard size={16} />
               </div>
+              <p className="text-zinc-500 text-xs font-medium">Total Sales</p>
             </div>
-            <p className="text-zinc-500 text-sm font-medium">Total Sales</p>
-            <h3 className="text-3xl font-bold mt-1 text-zinc-900">{formatCurrency(stats.sales)}</h3>
+            <h3 className="text-xl font-bold text-zinc-900">{formatCurrency(stats.sales)}</h3>
           </CardContent>
         </Card>
 
         <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
-                <ShoppingBag size={22} />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                <ShoppingBag size={16} />
               </div>
+              <p className="text-zinc-500 text-xs font-medium">Total Orders</p>
             </div>
-            <p className="text-zinc-500 text-sm font-medium">Total Orders</p>
-            <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.orders}</h3>
+            <h3 className="text-xl font-bold text-zinc-900">{stats.orders}</h3>
           </CardContent>
         </Card>
 
         <Card className="border-zinc-200 hover:border-slate-300 transition-colors bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-slate-100 text-slate-600 rounded-xl">
-                <Users size={22} />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
+                <Users size={16} />
               </div>
+              <p className="text-zinc-500 text-xs font-medium">Total Users</p>
             </div>
-            <p className="text-zinc-500 text-sm font-medium">Total Users</p>
-            <h3 className="text-3xl font-bold mt-1 text-zinc-900">{stats.users}</h3>
+            <h3 className="text-xl font-bold text-zinc-900">{stats.users}</h3>
           </CardContent>
         </Card>
       </div>
@@ -239,12 +274,17 @@ export default function AdminOrdersPage() {
       {/* API Providers */}
       <Card className="border-zinc-200 bg-white">
         <CardContent className="p-5">
-          <h3 className="text-sm font-semibold text-zinc-900 mb-3">API Provider</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-zinc-900">API Provider</h3>
+            {savingProvider && (
+              <span className="text-xs text-zinc-400 animate-pulse">Saving...</span>
+            )}
+          </div>
           <div className="flex flex-wrap gap-3">
             {[
               { value: "dakazina", label: "Dakazina" },
-              { value: "spendless", label: "Spendless" },
-              { value: "datamart", label: "Datamart" },
+              { value: "spendless", label: "Spendless" }
+           
             ].map((provider) => (
               <label
                 key={provider.value}
@@ -258,7 +298,7 @@ export default function AdminOrdersPage() {
                   name="apiProvider"
                   value={provider.value}
                   checked={selectedProvider === provider.value}
-                  onChange={(e) => setSelectedProvider(e.target.value)}
+                  onChange={(e) => handleProviderChange(e.target.value)}
                   className="accent-purple-600 w-4 h-4"
                 />
                 {provider.label}

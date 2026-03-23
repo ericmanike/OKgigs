@@ -62,12 +62,15 @@ export default async function HistoryPage() {
                                             ${order.status === 'delivered'
                                                 ? 'bg-green-500 text-white'
                                                 : order.status === 'pending'
-                                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                                                : order.status === 'placed'
+                                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
                                                 : order.status === 'failed'
                                                 ? 'bg-red-50 text-red-700'
                                                 : 'bg-zinc-200 text-zinc-500'}`}>
                                             {order.status === 'delivered' && <CheckCircle2 size={13} className="shrink-0 text-green-200" />}
                                             {order.status === 'pending' && <Clock size={13} className="shrink-0" />}
+                                            {order.status === 'placed' && <Clock size={13} className="shrink-0" />}
                                             {order.status === 'failed' && <XCircle size={13} className="shrink-0" />}
                                             {order.status === 'reversed' && <XCircle size={13} className="shrink-0" />}
                                             <span className="capitalize">

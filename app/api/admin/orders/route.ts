@@ -13,7 +13,7 @@ export async function GET() {
         }
 
         await dbConnect();
-        const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 }).limit(100);
+        const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 }).limit(200);
 
         return NextResponse.json(orders);
     } catch (error) {

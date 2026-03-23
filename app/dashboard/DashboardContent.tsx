@@ -518,7 +518,9 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                               order.status === "delivered" &&
                               "bg-green-500 text-white",
                               order.status === "pending" &&
-                              "bg-red-100 text-red-700 border border-red-200",
+                              "bg-amber-100 text-amber-700 border border-amber-200",
+                              order.status === "placed" &&
+                              "bg-amber-100 text-amber-700 border border-amber-200",
                               order.status === "failed" && "bg-red-50 text-red-700",
                               order.status === "processing" && "bg-zinc-100 text-zinc-500"
                             )}
@@ -527,6 +529,9 @@ export default function DashboardContent({ userName, balance, recentOrders, isAd
                               <CheckCircle2 size={12} className="shrink-0 text-green-200" />
                             )}
                             {order.status === "pending" && (
+                              <Clock size={12} className="shrink-0" />
+                            )}
+                            {order.status === "placed" && (
                               <Clock size={12} className="shrink-0" />
                             )}
                             {order.status === "failed" && (

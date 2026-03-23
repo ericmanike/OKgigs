@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongoose';
 import Order from '@/models/Order';
+import Setting from '@/models/Setting';
 
 // Delete an order
 export async function DELETE(
@@ -64,65 +65,133 @@ export async function PATCH(
         if (!order) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
         }
+  const provider  = await Setting.findOne({ key: "provider" }).select("value");
 
-        // Handle retry for Dakazi failed orders (transaction_id starts with "paid_")
-        if (order.transaction_id.startsWith('paid_') && status == 'pending') {
-            const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY;
-            if (!DAKAZI_API_KEY) {
-                return NextResponse.json({ error: 'Data provider API key not configured' }, { status: 500 });
-            }
+   let orderResponse;
 
-            const network = order.network;
-            let networkId;
-            const upperNetwork = network.toUpperCase();
-            if (upperNetwork === "MTN") {
-                networkId = 3;
-            } else if (upperNetwork === "TELECEL") {
-                networkId = 2;
-            } else if (upperNetwork.startsWith("AT") || upperNetwork.includes("AIRTEL")) {
-                networkId = 4;
-            }
+    if (provider?.value === "dakazina") {
+     let networkId;
+    if (order.network === "MTN") {
+      networkId = 3;
+    } else if (order.network === "TELECEL") {
+      networkId = 2;
+    } else if (order.network.startsWith("AT")) {
+      networkId = 4;
+    } else {
+      return NextResponse.json({ message: "Invalid network" }, { status: 400 });
+    }
 
-            if (networkId) {
-                const originalRef = order.transaction_id.replace('paid_', '');
-                try {
-                    const placeOrder = await fetch(
-                        "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "x-api-key": `${DAKAZI_API_KEY}`,
-                            },
-                            body: JSON.stringify({
-                                recipient_msisdn: order.phoneNumber.trim(),
-                                network_id: networkId,
-                                shared_bundle: Number(order.bundleName),
-                                incoming_api_ref: originalRef
-                            })
-                        }
-                    );
+    console.log('Network ID:', networkId);
+    if (!networkId) {
+      return NextResponse.json({ message: "Invalid network" }, { status: 400 });
+    }
 
-                    const orderRes = await placeOrder.json().catch(() => ({}));
-                    console.log("Admin reordered unsucessfull order response",orderRes);
-                    if (orderRes.transaction_code) {
-                        order.transaction_id = orderRes.transaction_code;
-                        order.status = 'pending';
-                        await order.save();
-                        await order.populate('user', 'name email');
-                        return NextResponse.json(order);
-                    } else {
-                        return NextResponse.json({ error: orderRes.message || 'Data provider error' }, { status: 400 });
-                    }
-                } catch (err) {
-                    console.error('Retry order error:', err);
-                    return NextResponse.json({ error: 'Failed to contact data provider' }, { status: 500 });
-                }
-            }
-        }  
+  const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY;
 
-        // Standard update
-           console.log("Order updated with id", order.transaction_id)
+
+    //place order
+    const placeOrder = await fetch(
+      "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
+      {
+        method: "POST",
+        headers: {
+
+          "Content-Type": "application/json",
+          "x-api-key": `${DAKAZI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          recipient_msisdn: order.phoneNumber.trim(),
+          network_id: networkId,
+          shared_bundle: Number(order.bundleName),
+          incoming_api_ref: order.transaction_id
+        })
+      }
+    );
+
+
+      const raw = await placeOrder.text();
+    
+
+     let Orderres;
+    try {
+    
+      Orderres = JSON.parse(raw);
+      console.log(Orderres);
+      orderResponse = Orderres;
+
+    } catch (error) {
+      console.error("Order creation error:", error);
+      return NextResponse.json({ message: "Error creating order" }, { status: 500 });
+    }
+
+    if (!placeOrder.ok) {
+
+      NextResponse.json({ error: ' could not place an order' })
+
+    }
+
+    if (Orderres.transaction_code) {
+      console.log('New order created with id ', Orderres.transaction_code)
+      order.transaction_id = Orderres.transaction_code
+      order.status = 'pending'
+      await order.save()
+
+    }
+
+    console.log('New order created successfully throught dakazina API:', order);
+
+    console.log(' purchase order response:', Orderres)
+
+
+  } else if (provider?.value === "spendless") {
+    
+     const apiKey = process.env.SPENDLESS_API_KEY?.trim();
+
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "Spendless API key not configured" },
+        { status: 500 }
+      );
+    }
+    let networkKey;
+    if (order.network.toUpperCase() == "MTN") {
+      networkKey = "YELLO";
+    } else if (order.network.toUpperCase() == "TELECEL") {
+      networkKey = "TELECEL";
+    } else if (order.network.startsWith("AT")) {
+      networkKey = "AT_PREMIUM";
+    } else {
+      return NextResponse.json({ message: "Invalid network" }, { status: 400 });
+    }
+
+    const spendlessResponse = await fetch("https://spendless.top/api/purchase", {
+      method: "POST",
+      headers: {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        networkKey:networkKey,
+        recipient:order.phoneNumber.trim(),
+        capacity:Number(order.bundleName),
+      }),
+    });
+
+    const data = await spendlessResponse.json();
+    orderResponse = data;
+ console.log("spendless order response:",orderResponse);
+
+ if (data.status === "success") {
+      order.transaction_id = data.data.transactionReference;
+      order.status = "placed";
+      await order.save();
+    }
+  
+  } else if (provider?.value === "datamart") {
+    
+  }
+
+         
    
         return NextResponse.json(order);
     } catch (error) {
