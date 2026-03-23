@@ -18,6 +18,7 @@ export default function AdminOrdersPage() {
   const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { "Wallet Balance": 0 } });
   const [ordersClosed, setOrdersClosed] = useState(false);
   const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState("dakazina");
 
   useEffect(() => {
     const fetchEverything = async () => {
@@ -234,6 +235,38 @@ export default function AdminOrdersPage() {
           </Link>
         ))}
       </div>
+
+      {/* API Providers */}
+      <Card className="border-zinc-200 bg-white">
+        <CardContent className="p-5">
+          <h3 className="text-sm font-semibold text-zinc-900 mb-3">API Provider</h3>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { value: "dakazina", label: "Dakazina" },
+              { value: "spendless", label: "Spendless" },
+              { value: "datamart", label: "Datamart" },
+            ].map((provider) => (
+              <label
+                key={provider.value}
+                className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-lg border text-sm font-medium transition-all select-none
+                  ${selectedProvider === provider.value
+                    ? "border-purple-600 bg-purple-50 text-purple-700 ring-1 ring-purple-600"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100"}`}
+              >
+                <input
+                  type="radio"
+                  name="apiProvider"
+                  value={provider.value}
+                  checked={selectedProvider === provider.value}
+                  onChange={(e) => setSelectedProvider(e.target.value)}
+                  className="accent-purple-600 w-4 h-4"
+                />
+                {provider.label}
+              </label>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="pt-4">
         <h2 className="text-lg font-bold text-zinc-900">Orders</h2>

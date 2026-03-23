@@ -111,6 +111,7 @@ export async function POST(req: Request) {
     const order = await Order.create({
       ...(session?.user?.id ? { user: session.user.id } : {}),
       transaction_id: "paid_" + ref,
+      agent: agentId || undefined,
       network: network,
       bundleName: bundleName,
       price: price,

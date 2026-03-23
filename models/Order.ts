@@ -2,10 +2,12 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IOrder extends Document {
     user?: mongoose.Types.ObjectId; // Optional — guests have no user ID
+    agent?: mongoose.Types.ObjectId;
     transaction_id: string;
     bundleName: string;
     network: string;
     price: number;
+    originalPrice?: number;
     phoneNumber: string;
 
     status: 'pending' | 'delivered' | 'failed' | 'reversed';
@@ -21,6 +23,8 @@ const OrderSchema = new Schema<IOrder>(
         network: { type: String, required: true },
         price: { type: Number, required: true },
         phoneNumber: { type: String, required: true },
+        agent: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+        originalPrice: { type: Number, required: false },
         status: {
             type: String,
             enum: ['pending', 'delivered', 'failed', 'reversed'],
