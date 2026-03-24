@@ -5,6 +5,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import Navbar from "@/components/layout/Navbar";
 
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -74,7 +75,7 @@ export const metadata: Metadata = {
   category: "technology",
 };
 
-import WhatsAppWidget from "@/components/layout/WhatsAppWidget";
+
 
 export default function RootLayout({
   children,
@@ -88,6 +89,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
+          
           <Navbar />
           <main className="min-h-screen z-0">
             {children}
@@ -132,7 +134,7 @@ export default function RootLayout({
             }}
           />
 
-          <WhatsAppWidget />
+       
 
         </AuthProvider>
       </body>

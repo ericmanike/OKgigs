@@ -8,6 +8,8 @@ import { FaPhone, FaWhatsapp } from "react-icons/fa";
 import Pattern from "@/components/ui/Pattern";
 import BuyingModal from "@/components/ui/buyingModal";
 import { useRouter } from "next/navigation";
+import ContactHeader from "@/components/ui/contactHeader";
+import SamplePrices from "@/components/ui/SamplePrices";
 
 
 
@@ -191,13 +193,13 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => handleCtaClick('/buy')}
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold text-base hover:shadow-lg transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95] cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3  bg-slate-900 text-white font-bold text-base hover:shadow-lg transition-all shadow-xl hover:shadow-slate-900/30 active:scale-[0.95] cursor-pointer"
                   >
                     Buy data <ArrowRight size={20} />
                   </button>
                   <Link
                     href="/track-order"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-base hover:bg-zinc-50 transition-all active:scale-[0.95]"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3  border-2 border-slate-200 bg-white text-slate-700 font-bold text-base hover:bg-zinc-50 transition-all active:scale-[0.95]"
                   >
                     Check order Status
                   </Link>
@@ -217,6 +219,9 @@ export default function Home() {
 
           </div>
         </section>
+
+        {/* Sample Prices */}
+        <SamplePrices />
 
         {/* CTA block */}
         <section className=" md:w-[80%] w-full mx-auto px-6 pb-16">
@@ -318,32 +323,7 @@ export default function Home() {
         </section>
 
         {/* Footer actions */}
-        <footer className="mt-auto w-full px-6 py-10 border-t border-zinc-200/80">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row flex-wrap justify-around gap-3">
-
-            <a
-              href="https://whatsapp.com/channel/0029VbBcIbS7T8beipl8aZ1x"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              <FaWhatsapp size={18} /> Join Our WhatsApp Channel
-            </a>
-            <a
-              href="https://wa.me/233509352247"
-              target="_blank"
-              className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              <FaPhone size={18} /> Contact support
-            </a>
-            <Link
-              href="/terms"
-              className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-xl px-5 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              Terms of Service
-            </Link>
-          </div>
-        </footer>
+       <ContactHeader />  
       </div>
 
       {/* Pre-purchase disclaimer modal */}

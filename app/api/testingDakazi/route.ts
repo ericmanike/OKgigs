@@ -47,6 +47,12 @@ export async function GET(req: NextRequest) {
     const teleceldata = data2.filter((item: any) => item.network === "TELECEL");
     const airteltigodata = data2.filter((item: any) => item.network.startsWith("AT"));
 
+     console.log({
+        AccountBalance: data1,
+        spendlessBalance,
+       
+      })
+
     return NextResponse.json(
       {
         AccountBalance: data1,

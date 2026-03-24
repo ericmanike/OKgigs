@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   const totalOrders = recentOrdersRaw.length;
   const delivered  = recentOrdersRaw.filter((o: any) => o.status === "delivered").length;
-  const pending    = recentOrdersRaw.filter((o: any) => o.status === "pending").length;
+  const placed   = recentOrdersRaw.filter((o: any) => o.status === "placed").length;
   const processing = recentOrdersRaw.filter((o: any) => o.status === "processing").length;
 
   return (
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">
                   <Clock size={11} />
-                  {pending} Pending
+                  {placed} Placed 
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-500">
                   <RefreshCw size={11} />

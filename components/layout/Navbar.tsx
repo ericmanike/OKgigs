@@ -7,6 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 import clsx from 'clsx';
 import { useState, useEffect, useRef } from 'react';
 import MobileNavSidebar from './MobileNavSidebar';
+import {FaWhatsapp, FaPhone} from 'react-icons/fa';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -57,9 +58,12 @@ export default function Navbar() {
 
     return (
         <>
+    
             <MobileNavSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             <nav className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-zinc-100 flex items-center justify-between px-4 md:px-6 py-4 shadow-sm">
+                 
                 <div className="flex items-center gap-2 md:gap-3">
+                  
                     <Link href="/" className="flex items-center gap-2 md:gap-3 group">
                         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-700 group-hover:bg-slate-800 transition-colors shadow-sm">
                             <HouseWifi className="text-white" size={22} strokeWidth={2.5} />
@@ -76,6 +80,17 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-6">
+                    <Link
+                        href="https://whatsapp.com/channel/0029VbBcIbS7T8beipl8aZ1x"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 bg-[#E42320] text-white  px-2 md:px-5 py-2 md:py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                        <FaWhatsapp size={13} /> Join us
+                    </Link>
+                   
+
+
                     <Link
                         href="/dashboard"
                         className={clsx(
