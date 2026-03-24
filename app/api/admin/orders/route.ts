@@ -20,3 +20,28 @@ export async function GET() {
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
+
+export async function PATCH(req: Request) {
+    const body = await req.json().catch(() => ({}));
+    const { status } = body;
+    if (!status) {
+        return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+    }
+    const allowedStatuses = ['pending', 'delivered', 'failed', 'reversed', 'processing', 'placed'];
+    if (!allowedStatuses.includes(status)) {
+        return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
+    }
+
+    await dbConnect();
+    const order = await Order.findById(body.id);
+    if (!order) {
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+    order.status = status;
+    await order.save();
+    return NextResponse.json(order);
+
+
+
+
+}

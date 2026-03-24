@@ -89,23 +89,23 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const handleMarkOrderDelivered = async (orderId: string) => {
+  const handleUpdateStatus = async (orderId: string, status: string) => {
     setProcessingId(orderId);
     try {
-      const res = await fetch(`/api/admin/orders/${orderId}`, {
+      const res = await fetch("/api/admin/orders", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "delivered" }),
+        body: JSON.stringify({ status, id: orderId }),
       });
       if (res.ok) {
         const updatedOrder = await res.json();
         setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
       } else {
         const data = await res.json().catch(() => ({}));
-        alert("Error: " + (data.error || "Failed to update order"));
+        alert("Error: " + (data.error || "Failed to update status"));
       }
     } catch {
-      alert("Error updating order");
+      alert("Error updating status");
     } finally {
       setProcessingId(null);
     }
@@ -389,17 +389,26 @@ export default function AdminOrdersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                      ${order.status === "delivered" ? "bg-green-600 text-white border-green-700" :
-                        order.status === "completed" ? "bg-green-100 text-green-700 border-green-200" :
-                          order.status === "failed" ? "bg-red-100 text-red-700 border-red-200" :
-                            "bg-orange-100 text-orange-700 border-orange-200"}`}>
-                      {order.status === "delivered" && <CheckCircle2 size={12} />}
-                      {order.status === "completed" && <CheckCircle2 size={12} />}
-                      {order.status === "failed" && <XCircle size={12} />}
-                      {order.status === "pending" && <Clock size={12} />}
-                      <span className="capitalize">{order.status}</span>
-                    </span>
+                    <select
+                      value={order.status}
+                      onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                      disabled={processingId === order._id}
+                      className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border-2 focus:outline-none focus:ring-4 focus:ring-purple-500/10 transition-all shadow-sm
+                        ${order.status === "delivered" ? "bg-green-600 text-white border-green-700 hover:bg-green-700" :
+                          order.status === "completed" ? "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600" :
+                            order.status === "failed" ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100" :
+                              order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
+                                "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
+                        ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      <option value="pending" className="bg-white text-zinc-900">Pending</option>
+                      <option value="processing" className="bg-white text-zinc-900">Processing</option>
+                      <option value="delivered" className="bg-white text-zinc-900">Delivered</option>
+                      <option value="completed" className="bg-white text-zinc-900">Completed</option>
+                      <option value="failed" className="bg-white text-zinc-900">Failed</option>
+                      <option value="placed" className="bg-white text-zinc-900">Placed</option>
+                      <option value="reversed" className="bg-white text-zinc-900">Reversed</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -487,21 +496,32 @@ export default function AdminOrdersPage() {
               </div>
 
               <div className="flex items-center justify-between mb-3">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border
-                  ${order.status === "delivered" ? "bg-green-600 text-white border-green-700" :
-                    order.status === "failed" ? "bg-red-100 text-red-700 border-red-200" :
-                      "bg-orange-100 text-orange-700 border-orange-200"}`}>
-                  {order.status === "delivered" && <CheckCircle2 size={11} />}
-                  {order.status === "failed" && <XCircle size={11} />}
-                  {order.status === "pending" && <Clock size={11} />}
-                  <span className="capitalize">{order.status}</span>
-                </span>
+                <select
+                  value={order.status}
+                  onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                  disabled={processingId === order._id}
+                  className={`w-full cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold border-2 focus:outline-none transition-all
+                    ${order.status === "delivered" ? "bg-green-600 text-white border-green-700 hover:bg-green-700" :
+                      order.status === "completed" ? "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600" :
+                        order.status === "failed" ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100" :
+                          order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
+                            "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
+                    ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <option value="pending" className="bg-white text-zinc-900">Pending</option>
+                  <option value="processing" className="bg-white text-zinc-900">Processing</option>
+                  <option value="delivered" className="bg-white text-zinc-900">Delivered</option>
+                  <option value="completed" className="bg-white text-zinc-900">Completed</option>
+                  <option value="failed" className="bg-white text-zinc-900">Failed</option>
+                  <option value="placed" className="bg-white text-zinc-900">Placed</option>
+                  <option value="reversed" className="bg-white text-zinc-900">Reversed</option>
+                </select>
               </div>
 
               <div className="flex flex-col gap-2 pt-3 border-t border-zinc-100">
                 {order.status !== "delivered" && (
-                  <button
-                    onClick={() => order.transaction_id?.startsWith('paid_') ? handleRetryOrder(order._id) : handleMarkOrderDelivered(order._id)}
+                   <button
+                    onClick={() => order.transaction_id?.startsWith('paid_') ? handleRetryOrder(order._id) : handleUpdateStatus(order._id, 'delivered')}
                     disabled={processingId === order._id}
                     className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2 border rounded-lg transition-all text-sm font-medium
                       ${processingId === order._id

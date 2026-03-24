@@ -10,12 +10,12 @@ export interface IOrder extends Document {
     originalPrice?: number;
     phoneNumber: string;
 
-    status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'placed';
+    status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'processing' | 'placed';
     transactionId?: string; // External or generated ID
     createdAt: Date;
     updatedAt: Date;
 }
-const OrderSchema = new Schema<IOrder>(
+const OrderSchema = new Schema<IOrder>( 
     {
         user: { type: Schema.Types.ObjectId, ref: 'User', required: false },
         transaction_id: { type: String, required: true, unique: true },
@@ -27,7 +27,7 @@ const OrderSchema = new Schema<IOrder>(
         originalPrice: { type: Number, required: false },
         status: {
             type: String,
-            enum: ['pending', 'delivered', 'failed','placed', 'reversed'],
+            enum: ['pending', 'delivered', 'failed','placed', 'reversed', 'processing'],
             default: 'placed'
         },
         transactionId: { type: String },
