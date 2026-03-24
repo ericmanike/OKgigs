@@ -9,6 +9,7 @@ import StoreBundle from "@/models/StoreBundle";
 import AgentStore from "@/models/AgentStore";
 import Bundle from "@/models/Bundle";
 import mongoose from "mongoose";
+import SystemLog from "@/models/SystemLog";
 import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
 
 
@@ -98,6 +99,21 @@ export async function POST(req: Request) {
             originalPrice: basePrice,
             phoneNumber: phoneNumber,
             status: 'placed',
+        });
+
+        await SystemLog.create({
+            level: 'info',
+            category: 'agent',
+            message: `Agent ${agent.name} store purchase initiated`,
+            meta: {
+                agentId,
+                orderId: order._id,
+                bundleName: bundle.name,
+                phoneNumber,
+                customPrice,
+                profit
+            },
+            user: session.user.id
         });
 
         let orderResponse;

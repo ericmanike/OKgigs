@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Setting from "@/models/Setting";
+import SystemLog from "@/models/SystemLog";
 import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
 import { createOrder } from "@/lib/orderService";
 
@@ -113,7 +114,22 @@ export async function POST(req: Request) {
       reference,
     }
     
-const order = await createOrder(session, data);
+    const order = await createOrder(session, data);
+
+    await SystemLog.create({
+      level: 'info',
+      category: 'order',
+      message: `New order ${order.transaction_id} created via Paystack`,
+      meta: {
+        orderId: order._id,
+        network,
+        bundleName,
+        price,
+        phoneNumber,
+        reference
+      },
+      user: session?.user?.id
+    });
 
     const providerDoc = await Setting.findOne({ key: "provider" });
     const provider = providerDoc?.value || "dakazina";

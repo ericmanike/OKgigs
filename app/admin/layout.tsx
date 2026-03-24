@@ -12,6 +12,7 @@ import {
   X,
   Menu,
   Wallet,
+  Terminal,
 } from "lucide-react";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin/users", label: "Users", icon: Users, exact: false },
   { href: "/admin/bundles", label: "Bundles", icon: Package, exact: false },
   { href: "/admin/broadcast", label: "Broadcast", icon: Megaphone, exact: false },
+  { href: "/admin/debug", label: "Debug Console", icon: Terminal, exact: false },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

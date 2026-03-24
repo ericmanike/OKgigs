@@ -439,7 +439,7 @@ export default function BuyContent() {
                     <Card>
                         <CardContent className="p-6">
 
-                            <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center text-sm mb-6 font-bold"> 
+                            <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center text-sm mb-6 font-bold shadow-lg"> 
                                 <strong className="text-red-900 font-extrabold">Notice! </strong> After momo approval, click on I have made payment wait
                                  for  payment to be confirmed to ensure your order is created
                          
