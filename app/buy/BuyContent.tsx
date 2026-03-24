@@ -439,8 +439,8 @@ export default function BuyContent() {
                     <Card>
                         <CardContent className="p-6">
 
-                            <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center text-sm mb-6"> 
-                                <strong className="text-red-900">Notice! </strong> After momo approval, click on I have made payment wait
+                            <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center text-sm mb-6 font-bold"> 
+                                <strong className="text-red-900 font-extrabold">Notice! </strong> After momo approval, click on I have made payment wait
                                  for  payment to be confirmed to ensure your order is created
                          
                             
@@ -476,14 +476,14 @@ export default function BuyContent() {
                                     <span className="font-bold ">{formatCurrency(selectedBundle?.price)}</span>
                                 </div>
 
-                                <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
+                                {/* <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
                                     <span className="opacity-80 "> Paystack charges (2%)</span>
                                     <span className=" font-black text-sm md:text-xl">{formatCurrency(0.02 * selectedBundle?.price)}</span>
-                                </div>
+                                </div> */}
 
                                 <div className="border-t border-black/10 my-2 pt-2 flex justify-between items-center">
                                     <span className="opacity-80">Total Price</span>
-                                    <span className="text-sm md:text-xl font-black">{formatCurrency(selectedBundle?.price + 0.02 * selectedBundle?.price)}</span>
+                                    <span className="text-sm md:text-xl font-black">{formatCurrency(selectedBundle?.price /*+ 0.02 * selectedBundle?.price*/)}</span>
                                 </div>
                             </div>
 

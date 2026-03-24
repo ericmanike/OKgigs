@@ -217,9 +217,9 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                     {storeData.storeName}
                 </h1>
                 <p className="text-zinc-500 text-sm">{storeData.description || 'Welcome to my data store! Grab the best bundles here.'}</p>
-                
+
                 <div className="flex items-center justify-center gap-3 mt-6">
-                    <Link href="/track-order" className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg text-sm hover:bg-zinc-200 font-medium transition-colors">
+                    <Link href={`/store/${slug}/track-order`} className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg text-sm hover:bg-zinc-200 font-medium transition-colors">
                         <Search size={16} />
                         Track Order
                     </Link>
@@ -297,7 +297,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                         "w-full py-2 px-2 rounded  font-black text-sm shadow-inner text-center block",
                                         networkConfig ? "bg-white text-black" : "bg-zinc-900 text-white"
                                     )}>
-                                       Buy Now
+                                        Buy Now
                                     </div>
                                 </button>
                             ))}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle,DownloadCloud } from "lucide-react";
+import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle, DownloadCloud, Wifi, CheckCircle2, XCircle, Clock, ShoppingBag } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import clsx from "clsx";
 import Link from "next/link";
@@ -22,9 +22,12 @@ export default function AgentStoreSettings() {
     const [copied, setCopied] = useState(false);
     const [withdrawing, setWithdrawing] = useState(false);
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+    const [storeOrders, setStoreOrders] = useState<any[]>([]);
+    const [loadingOrders, setLoadingOrders] = useState(true);
 
     useEffect(() => {
         fetchStoreData();
+        fetchStoreOrders();
     }, []);
 
     const fetchStoreData = async () => {
@@ -56,6 +59,21 @@ export default function AgentStoreSettings() {
             console.error("Error fetching store data:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchStoreOrders = async () => {
+        setLoadingOrders(true);
+        try {
+            const res = await fetch('/api/agent/orders');
+            if (res.ok) {
+                const data = await res.json();
+                setStoreOrders(data);
+            }
+        } catch (error) {
+            console.error("Error fetching store orders:", error);
+        } finally {
+            setLoadingOrders(false);
         }
     };
 
@@ -324,6 +342,95 @@ export default function AgentStoreSettings() {
                             Save Store Settings
                         </button>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* Store Orders */}
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                            <ShoppingBag className="text-purple-600" size={20} />
+                        </div>
+                        <div>
+                            <CardTitle>Orders Through Your Store</CardTitle>
+                            <CardDescription>Orders placed by customers via your store link</CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-0 divide-y divide-zinc-100">
+                    {loadingOrders ? (
+                        <div className="flex justify-center items-center py-12">
+                            <Loader2 className="animate-spin text-zinc-400" size={24} />
+                        </div>
+                    ) : storeOrders.length === 0 ? (
+                        <div className="p-10 text-center">
+                            <div className="w-14 h-14 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-4">
+                                <ShoppingBag size={24} className="text-zinc-400" />
+                            </div>
+                            <p className="text-zinc-600 font-medium">No store orders yet</p>
+                            <p className="text-sm text-zinc-400 mt-1">Share your store link to start receiving orders</p>
+                        </div>
+                    ) : (
+                        storeOrders.map((order) => {
+                            const profit = order.originalPrice ? order.price - order.originalPrice : 0;
+                            return (
+                                <div
+                                    key={order._id}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 hover:bg-zinc-50/80 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div
+                                            className={clsx(
+                                                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                                order.network === "MTN" && "bg-amber-400 text-amber-950",
+                                                order.network === "Telecel" && "bg-red-500 text-white",
+                                                order.network !== "MTN" && order.network !== "Telecel" && "bg-blue-600 text-white"
+                                            )}
+                                        >
+                                            <Wifi size={18} />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="font-semibold text-zinc-900 text-sm truncate">
+                                                {order.network} {order.bundleName}
+                                            </p>
+                                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                                <span className="text-xs text-zinc-500">{order.phoneNumber}</span>
+                                                <span className="text-xs text-zinc-300">•</span>
+                                                <span className="text-xs text-zinc-400">
+                                                    {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 sm:gap-4">
+                                        <div className="text-right">
+                                            <p className="font-bold text-zinc-900 text-sm">{formatCurrency(order.price)}</p>
+                                            {profit > 0 && (
+                                                <p className="text-[11px] font-semibold text-green-600">+{formatCurrency(profit)} profit</p>
+                                            )}
+                                        </div>
+                                        <span
+                                            className={clsx(
+                                                "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap",
+                                                order.status === "delivered" && "bg-green-500 text-white",
+                                                order.status === "pending" && "bg-amber-100 text-amber-700 border border-amber-200",
+                                                order.status === "placed" && "bg-amber-100 text-amber-700 border border-amber-200",
+                                                order.status === "failed" && "bg-red-50 text-red-700 border border-red-200",
+                                                order.status === "reversed" && "bg-red-50 text-red-700 border border-red-200"
+                                            )}
+                                        >
+                                            {order.status === "delivered" && <CheckCircle2 size={12} className="text-green-200" />}
+                                            {(order.status === "pending" || order.status === "placed") && <Clock size={12} />}
+                                            {(order.status === "failed" || order.status === "reversed") && <XCircle size={12} />}
+                                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </CardContent>
             </Card>
 

@@ -46,6 +46,8 @@ export default function Navbar() {
     const isAuthPage = pathname?.startsWith('/auth');
     if (isAuthPage) return null;
 
+    if (pathname?.startsWith('/store')) return null;
+
     // Get user initials
     const getUserInitials = (name: string | undefined | null): string => {
         if (!name) return 'U';

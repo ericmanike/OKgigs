@@ -7,7 +7,9 @@ export async function createOrder(session: any, data: any) {
     ...(session?.user?.id ? { user: session.user.id } : {}),
     transaction_id: "paid_" + ref,
     network: data.network,
+    agent: data.agent || null,
     bundleName: data.bundleName,
+
     price: data.price,
     phoneNumber: data.phoneNumber,
     status: "placed",

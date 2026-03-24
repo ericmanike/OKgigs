@@ -9,6 +9,8 @@ import StoreBundle from "@/models/StoreBundle";
 import AgentStore from "@/models/AgentStore";
 import Bundle from "@/models/Bundle";
 import mongoose from "mongoose";
+import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+
 
 export async function POST(req: Request) {
     try {
@@ -49,10 +51,10 @@ export async function POST(req: Request) {
         const basePrice = storeBundle.basePrice;
         const profit = customPrice - basePrice;
 
-        // Get buyer (authenticated user)
+        // Get agent  
         const agent = await User.findById(agentId);
         if (!agent) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
+            return NextResponse.json({ message: "No Shop found" }, { status: 404 });
         }
 
         // Check wallet balance (deduct the custom price set by agent)

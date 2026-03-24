@@ -56,23 +56,23 @@ export default async function UpgradePage() {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3">
               <Crown className="text-amber-400" size={32} />
-              <span className="text-2xl font-black tracking-tight">Upgrade to Premium</span>
+              <span className="text-2xl font-black tracking-tight">Become a Premium Agent</span>
             </div>
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Lifetime access to agent rates
+                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Lifetime access to agent rates, lower prices
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
                 <CheckCircle size={16} className="text-amber-400 shrink-0" /> No monthly subscription
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={16} className="text-amber-400 shrink-0" /> You get a personalized store dashboard
+                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Get a personalized store and  dashboard
               </li>
             </ul>
           </div>
           <div className="flex flex-col items-center gap-4 shrink-0">
             <div className="text-center">
-              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1">One-time payment</p>
+              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1"> One time payment</p>
               <p className="text-4xl font-black text-white">{formatCurrency(30)}</p>
             </div>
             <div className="w-full min-w-[200px]">

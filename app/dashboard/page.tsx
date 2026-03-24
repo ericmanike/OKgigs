@@ -125,14 +125,17 @@ export default async function DashboardPage() {
           <div className="space-y-3 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2">
               <Crown className="text-amber-400" size={22} />
-              <span className="text-lg font-black tracking-tight">Upgrade to Premium</span>
+              <span className="text-lg font-black tracking-tight">Upgrade to Premium Agent</span>
             </div>
             <ul className="space-y-1.5">
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={14} className="text-amber-400 shrink-0" /> Lifetime access to agent rates
+                <CheckCircle size={14} className="text-amber-400 shrink-0" /> Lifetime access to agent rates, lower prices and more
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
                 <CheckCircle size={14} className="text-amber-400 shrink-0" /> No monthly subscription
+              </li>
+              <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                <CheckCircle size={14} className="text-amber-400 shrink-0" /> Get a personalized store and dashboard
               </li>
             </ul>
           </div>
