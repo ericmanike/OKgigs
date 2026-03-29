@@ -136,12 +136,12 @@ export default function Home() {
                 <div className="flex flex-col items-center gap-3">
                     <button
                       onClick={() => handleCtaClick(`/buy?network=${banner.network}`)}
-                      className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500 cursor-pointer text-left"
+                      className="relative w-full h-44 md:h-52 max-w-sm sm:max-w-lg rounded-[30px] overflow-hidden border-4 border-white shadow-2xl group transition-all duration-500 cursor-pointer text-left"
                       style={{ backgroundColor: banner.bg }}
                     >
                       {/* Background blobs */}
-                      <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full blur-2xl" style={{ backgroundColor: banner.blob1 }} />
-                      <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-xl" style={{ backgroundColor: banner.blob2 }} />
+                      <div className="absolute -top-8 -right-8 w-40 h-40 rounded-[20px] blur-2xl" style={{ backgroundColor: banner.blob1 }} />
+                      <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-[20px] blur-xl" style={{ backgroundColor: banner.blob2 }} />
 
                       {/* Content */}
                       <div className="relative h-full flex items-center justify-between px-7 py-5">
