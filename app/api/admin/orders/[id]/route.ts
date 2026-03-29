@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongoose';
 import Order from '@/models/Order';
 import Setting from '@/models/Setting';
-
+import { handleDakazina, handleSpendless } from '@/components/providers/apiProviders';
 // Delete an order
 export async function DELETE(
   req: Request,
