@@ -125,7 +125,7 @@ export default function Home() {
                  Buy Ghana Data bundles
                 </span>
                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-                  Save More ,Browse <Infinity className="inline text-blue-600" size={34} />  <br /> <span className="text-[#E42320]">  Cheap Mega Gigabytes.</span><br /> <span className=" text-blue-600">  Instant</span> delivery.
+                  Save More ,Browse <Infinity className="inline text-blue-600" size={34} />  <br /> <span className="text-[#E42320]">  Cheap Internet Data Bundles.</span><br /> <span className=" text-blue-600">  Instant</span> delivery.
                 </h1>
                 <p className="text-slate-600 text-base md:text-lg mt-5 leading-relaxed">
                   MTN, Telecel, and AirtelTigo. Simple checkout, secure payments, and data delivered in seconds.
