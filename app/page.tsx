@@ -167,7 +167,7 @@ export default function Home() {
                         {/* Right side */}
                         <div className="flex flex-col items-center gap-2">
                           <div
-                            className="w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
+                            className="w-20 h-20 rounded-[10px] border-2 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-500"
                             style={{ borderColor: banner.iconBoxBorder }}
                           >
                             <Zap size={36} strokeWidth={2.5} style={{ color: banner.iconText }} />
