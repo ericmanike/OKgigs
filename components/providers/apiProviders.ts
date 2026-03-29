@@ -40,9 +40,9 @@ export async function handleDakazina(order: any, data: any, apiKey: string) {
 export async function handleSpendless(order: any, data: any, apiKey: string) {
   let networkKey;
 
-  if (data.network === "MTN") networkKey = "YELLO";
-  else if (data.network === "TELECEL") networkKey = "TELECEL";
-  else if (data.network.startsWith("AT")) networkKey = "AT_PREMIUM";
+  if (data.network.toUpperCase() === "MTN") networkKey = "YELLO";
+  else if (data.network.toUpperCase() === "TELECEL") networkKey = "TELECEL";
+  else if (data.network.toUpperCase().startsWith("AT")) networkKey = "AT_PREMIUM";
   else throw new Error("Invalid network");
 
   const res = await fetch("https://spendless.top/api/purchase", {
