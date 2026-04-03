@@ -17,9 +17,10 @@ type TrackOrderResult = {
 
 const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
   delivered: { label: "Delivered", icon: CheckCircle2, className: "text-green-600 bg-green-50" },
+  processing: { label: "Processing", icon: Clock, className: "text-amber-600 bg-amber-50" },
   failed: { label: "Failed", icon: XCircle, className: "text-red-600 bg-red-50" },
   reversed: { label: "Reversed", icon: XCircle, className: "text-amber-600 bg-amber-50" },
-  pending: { label: "Pending", icon: Clock, className: "text-amber-600 bg-amber-50" },
+  placed: { label: "Placed", icon: Clock, className: "text-amber-600 bg-amber-50" },
 };
 
 export default function TrackOrderPage() {
@@ -120,7 +121,7 @@ export default function TrackOrderPage() {
                   {orders.length} order{orders.length > 1 ? "s" : ""} found
                 </p>
                 {orders.map((order) => {
-                  const cfg = statusConfig[order.status] || statusConfig.pending;
+                  const cfg = statusConfig[order.status] || statusConfig.placed;
                   const Icon = cfg.icon;
                   return (
                     <div
