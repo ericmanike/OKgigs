@@ -79,14 +79,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         {/* Sidebar header — user greeting - hidden on desktop */}
         <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100 md:hidden">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E42320] to-rose-400 flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
-              {userName.charAt(0).toUpperCase()}
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-bold text-zinc-900 leading-tight">{greeting} 👋</p>
-              <p className="text-xs font-semibold text-zinc-900 mt-0.5">{userName}</p>
-            </div>
+          <div className="text-slate-600 text-2xl font-bold">
+             Dashboard
           </div>
           <button
             type="button"
