@@ -9,6 +9,7 @@ export interface IOrder extends Document {
     price: number;
     originalPrice?: number;
     phoneNumber: string;
+    payment_id: string;
 
     status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'processing' | 'placed';
     transactionId?: string; // External or generated ID
@@ -25,6 +26,7 @@ const OrderSchema = new Schema<IOrder>(
         phoneNumber: { type: String, required: true },
         agent: { type: Schema.Types.ObjectId, ref: 'User', required: false },
         originalPrice: { type: Number, required: false },
+        payment_id: { type: String, required: true, unique: true },
         status: {
             type: String,
             enum: ['pending', 'delivered', 'failed','placed', 'reversed', 'processing'],

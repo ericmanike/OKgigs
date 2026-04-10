@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Send } from "lucide-react";
 
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

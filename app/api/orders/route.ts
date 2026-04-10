@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   
 
     // prevent replay attack
-    const existingOrder = await Order.findOne({ transaction_id: reference });
+    const existingOrder = await Order.findOne({ payment_id: reference });
     if (existingOrder) {
       return NextResponse.json({ message: "Duplicate transaction reference" }, { status: 409 });
     }
@@ -77,6 +77,8 @@ export async function POST(req: Request) {
     }
 
     const { amount } = paystackData.data
+
+    const realPrice = await Order.findOne({ bundleName: bundleName , audience: session?.user?.role}).select("price");
 
 
     const tax = 0.02 * price
@@ -147,11 +149,11 @@ export async function POST(req: Request) {
       { status: 201 }
     );
 
-    console.log('Order created successfully', response);
+  
 
 
   } catch (error) {
-    console.error("Order creation error:", error);
+  
     return NextResponse.json({ message: "Error creating order" }, { status: 500 });
   }
 }

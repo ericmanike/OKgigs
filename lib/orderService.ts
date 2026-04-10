@@ -9,7 +9,7 @@ export async function createOrder(session: any, data: any) {
     network: data.network,
     agent: data.agent || null,
     bundleName: data.bundleName,
-
+    payment_id: ref,
     price: data.price,
     phoneNumber: data.phoneNumber,
     status: "placed",
