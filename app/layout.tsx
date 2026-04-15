@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/providers/AuthProvider";
 import Navbar from "@/components/layout/Navbar";
+import WhatsAppWidget from "@/components/layout/WhatsAppWidget";
 import Link from "next/link";
 import { Send } from "lucide-react";
 
@@ -96,6 +97,7 @@ export default function RootLayout({
             {children} 
             <div className="w-full  flex justify-center  py-5"><Link href="https://ericmanike.tech" target="_blank" className="text-center text-zinc-700 text-sm text-3xl  hover:text-zinc-900  flex  justify-center  items-center gap-2 hover:text-[16px] transition-all duration-200 w-fit"> Contact <span className="font-bold"> Developer </span>  <Send  size={14}/></Link> </div> 
           </main>  
+          <WhatsAppWidget />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
