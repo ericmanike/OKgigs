@@ -33,7 +33,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -130,7 +130,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
         <div className="h-px bg-slate-100 mx-6" />
 
         {/* Actions */}
-        <div className="flex gap-4 px-6 py-2">
+        <div className="flex gap-4 px-6 py-2 mb-4 md:mb-6">
           <button
             onClick={() => {
                 onClose();
