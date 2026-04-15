@@ -28,12 +28,12 @@ export default function WhatsAppWidget() {
         >
             {/* Tooltip text bubble (shows on hover for desktop) */}
             <div 
-                className={`hidden md:flex items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-xl transition-all duration-300 origin-right ${
+                className={`  flex items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-xl transition-all duration-300 origin-right ${
                     isHovered ? 'scale-100 opacity-100 translate-x-0' : 'scale-95 opacity-0 pointer-events-none translate-x-4'
                 }`}
             >
                 <div className="h-2.5 w-2.5 rounded-full bg-[#25D366] animate-pulse"></div>
-                <span className="text-sm font-semibold text-zinc-700 whitespace-nowrap">Need help? Chat with us!</span>
+                <span className=" text-[9px] md:text-sm  font-semibold text-zinc-700 whitespace-nowrap">Need help? Chat with us!</span>
             </div>
 
             {/* Floating Action Button */}
@@ -41,7 +41,7 @@ export default function WhatsAppWidget() {
                 href="https://wa.me/233543442518" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#25D366]/50"
+                className="group relative flex md:h-[60px] md:w-[60px] h-[45px] w-[45px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#25D366]/50"
                 aria-label="Chat with us on WhatsApp"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}

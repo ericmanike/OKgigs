@@ -121,7 +121,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
               <CheckCircle size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
             </div>
             <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
-              Don't show this notice again
+              Don't show this again
             </span>
           </label>
         </div>
