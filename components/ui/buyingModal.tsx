@@ -15,23 +15,14 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
   const router = useRouter()
   const [dontShowAgain, setDontShowAgain] = useState(false)
 
-  // Effect to handle automatic confirmation if "Don't show again" was previously checked
+  // Initialize state from local storage so it persists if they re-open it
   useEffect(() => {
     if (isOpen) {
-      const skip = localStorage.getItem(STORAGE_KEY) === "true"
-      if (skip) {
-        onConfirm()
-        onClose()
-      }
+      setDontShowAgain(localStorage.getItem(STORAGE_KEY) === "true")
     }
-  }, [isOpen, onConfirm, onClose])
+  }, [isOpen])
 
   if (!isOpen) return null
-
-  // Check if we should skip rendering if already confirmed (prevents flicker)
-  if (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === "true") {
-    return null
-  }
 
   const handleConfirm = () => {
     if (dontShowAgain) {
@@ -78,7 +69,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             icon={<AlertTriangle size={15} className="text-red-500 shrink-0 mt-0.5" />}
             text={
               <>  
-               Kindly double-check your number before proceeding.<strong>wrong phone number</strong>
+               Kindly double-check your number before proceeding.<strong className="px-2">wrong phone number</strong>
                cannot be refunded.
                
               </>
@@ -116,7 +107,15 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
               <input
                 type="checkbox"
                 checked={dontShowAgain}
-                onChange={(e) => setDontShowAgain(e.target.checked)}
+                onChange={(e) => {
+                  const isChecked = e.target.checked
+                  setDontShowAgain(isChecked)
+                  if (isChecked) {
+                    localStorage.setItem(STORAGE_KEY, "true")
+                  } else {
+                    localStorage.removeItem(STORAGE_KEY)
+                  }
+                }}
                 className="peer appearance-none w-5 h-5 rounded-md border-2 border-slate-300 checked:bg-slate-900 checked:border-slate-900 transition-all cursor-pointer"
               />
               <CheckCircle size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
@@ -137,15 +136,15 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
                 onClose();
                 router.push('/');
             }}
-            className="flex-1 md:px-3 px-2 text-sm py-3 text-sm rounded-2xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
+            className="flex-1 md:px-3 px-2 text-sm md:py-2 py-1 text-sm rounded-2xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all"
           >
-          Exit
+          close
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 px-4 py-3 text-sm rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95"
+            className="flex-1 px-4 md:py-2 py-1 text-sm rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white font-semibold hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg shadow-slate-900/20 active:scale-95"
           >
-            Agree & Continue
+            Continue
           </button>
         </div>
       </div>

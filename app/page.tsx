@@ -88,13 +88,8 @@ export default function Home() {
   const [pendingUrl, setPendingUrl] = useState('/buy');
   const router = useRouter();
 
-  const handleCtaClick = (url: string) => {
-    if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
-      router.push(url);
-    } else {
-      setPendingUrl(url);
-      setShowModal(true);
-    }
+  const handleCtaClick = (url: string) => {  
+  router.push(url)
   };
 
   useEffect(() => {
@@ -102,6 +97,17 @@ export default function Home() {
       setActiveBanner((prev) => (prev + 1) % BANNERS.length);
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+
+  useEffect(() => {
+    if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
+      return
+    } else {
+    
+       setShowModal(true);
+    }
+   
   }, []);
 
   const banner = BANNERS[activeBanner];
