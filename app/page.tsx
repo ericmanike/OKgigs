@@ -104,8 +104,9 @@ export default function Home() {
     if (localStorage.getItem("okgigs_skip_buying_notice") === "true") {
       return
     } else {
-    
-       setShowModal(true);
+      setTimeout(() => {
+        setShowModal(true);
+      }, 1500);
     }
    
   }, []);
