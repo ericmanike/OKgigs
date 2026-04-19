@@ -189,7 +189,7 @@ export default function BuyContent() {
                                     if (session) {
                                         router.push('/dashboard');
                                     } else {
-                                        router.push('/track-order');
+                                        router.push(`/track-order?phone=${phoneNumber}`);
                                     }
                                 
                                 setMessage("Payment successful");
