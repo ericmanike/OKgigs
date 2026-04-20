@@ -364,8 +364,8 @@ export default function AdminOrdersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span className="font-medium text-zinc-900">{order.user?.name || "Unknown"}</span>
-                      <span className="text-xs text-zinc-500">{order.phoneNumber}</span>
+                      <span className="font-medium text-zinc-900">{order.user?.name || "Unknown"}</span> 
+                      <span className="text-xs text-zinc-500"><Link href={`https://wa.me/233${order.phoneNumber}`}  target="_blank" >{order.phoneNumber}</Link></span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight, Search, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 
 type TrackOrderResult = {
@@ -23,6 +24,8 @@ const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; c
   placed: { label: "Placed", icon: Clock, className: "text-amber-600 bg-amber-50" },
 };
 
+
+
 export default function TrackOrderPage() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,6 +33,7 @@ export default function TrackOrderPage() {
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState("");
 
+  const searchParams = useSearchParams();
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
     const phoneNumber = phone.trim();
@@ -56,6 +60,19 @@ export default function TrackOrderPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    
+    const phone = searchParams.get("phone");
+    if (phone) {
+      setPhone(phone);
+      handleTrack({ preventDefault: () => { } } as React.FormEvent);
+    } else{
+      console.log("Phone number not reader")
+    }
+  }, [phone]);
+
+
 
   return (
     <div className="min-h-screen bg-linear-to-b from-zinc-50 to-white pt-24 md:pt-28 pb-12 px-4">
