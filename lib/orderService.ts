@@ -12,6 +12,6 @@ export async function createOrder(session: any, data: any) {
     payment_id: ref,
     price: data.price,
     phoneNumber: data.phoneNumber,
-    status: "placed",
+    status: "processing",
   });
 }
