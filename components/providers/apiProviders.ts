@@ -27,7 +27,7 @@ export async function handleDakazina(order: any, data: any, apiKey: string) {
 
   if (result.transaction_code) {
     order.transaction_id = result.transaction_code;
-    order.status = "placed";
+    order.status = "processing";
     await order.save();
   }
     console.log('Dakazina result:', result);
@@ -62,7 +62,7 @@ export async function handleSpendless(order: any, data: any, apiKey: string) {
 
   if (result.status === "success") {
     order.transaction_id = result.data.transactionReference;
-    order.status = "placed";
+    order.status = "processing";
     await order.save();
   }
     console.log('Spendless result:', result);
