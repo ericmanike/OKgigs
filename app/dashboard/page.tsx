@@ -121,22 +121,23 @@ export default async function DashboardPage() {
         <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
           Available Services
         </p>
-        <div className="grid  grid-cols-4 gap-3">
+        <div className="grid  grid-cols-3 md:grid-cols-4 gap-3">
           {[
             { name: "MTN", bg: "#FFCC00", text: "#1a1200", letter: "M", network: "MTN" },
             { name: "Telecel", bg: "#E60000", text: "#ffffff", letter: "T", network: "Telecel" },
             { name: "AirtelTigo", bg: "#0077C8", text: "#ffffff", letter: "A", network: "AirtelTigo" },
-            {name:"AFA",bg:"#109f12db",text:"#FFFFFF",letter:"A",network:"AFA"},
-            {name:"Result Checker",bg:"#3905f5ff",text:"#FFFFFF",letter:"R",network:"Result Checker"}
+            {name:"AFA Registration",bg:"#109f12db",text:"#FFFFFF",letter:"A",network:"AFA"},
+            {name:"Result Checker",bg:"#3905f5ff",text:"#FFFFFF",letter:"R",network:"Result Checker"},
+            {name:"Create Data Shop", bg:"#5E7A76",text:"#FFFFFF",letter:"D",network:"Data Shop"}
           ].map((net) => (
             <Link
               key={net.network}
-              href={`${net.network =="Result Checker" ? '/dashboard/result-checkers' : `/buy?network=${net.network}`}`}
+              href={`${net.network =="Result Checker" ? '/dashboard/result-checkers' : net.network =="Data Shop" ? '/dashboard/upgrade': net.network =="AFA" ? '/afa-registration': `/buy?network=${net.network}`}`}
               className="group rounded-2xl overflow-hidden border border-zinc-200/80 hover:-translate-y-1 hover:shadow-md transition-all duration-200"
             >
               <div
                 className="p-4 flex flex-col items-center gap-2 text-center"
-                style={{ backgroundColor: net.bg }}
+                style={{ backgroundColor: net.bg}}
               >
                 <div
                   className="w-6 h-6 text-[10px] rounded-full flex items-center justify-center font-black text-lg shadow"
@@ -189,10 +190,7 @@ export default async function DashboardPage() {
 
        <div className="w-full flex justify-center">
 
-      <button className="bg-red-600  text-white hover:bg-red-700 rounded-md p-2.5  px-10 ">
-       <a href="/dashboard/upgrade"> Create Your Data Shop </a>
- 
-      </button>
+     
        </div>
   
     </div>
