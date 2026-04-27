@@ -42,7 +42,7 @@ export default async function ResultCheckersPage() {
             <div className="flex items-center justify-between mt-auto">
               <div>
                 <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">Price</span>
-                <p className="text-lg font-black text-zinc-900">{formatCurrency(35)}</p>
+                <p className="text-lg font-black text-zinc-900">{formatCurrency(25)}</p>
               </div>
               <Link 
                 href="#"
@@ -74,7 +74,7 @@ export default async function ResultCheckersPage() {
             <div className="flex items-center justify-between mt-auto">
               <div>
                 <span className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">Price</span>
-                <p className="text-lg font-black text-zinc-900">{formatCurrency(30)}</p>
+                <p className="text-lg font-black text-zinc-900">{formatCurrency(20)}</p>
               </div>
               <Link 
                 href="#"

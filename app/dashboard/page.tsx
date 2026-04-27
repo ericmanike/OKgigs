@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   const placed   = recentOrdersRaw.filter((o: any) => o.status === "placed").length;
   const processing = recentOrdersRaw.filter((o: any) => o.status === "processing").length;
 
-  
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
       {/* Stat Cards */}
@@ -189,7 +189,7 @@ export default async function DashboardPage() {
       </div>
 
        */}
-
+       
        <div className="w-full flex justify-center">
 
      
