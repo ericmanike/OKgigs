@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
+import Transaction from "@/models/Transaction";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -12,7 +13,7 @@ export async function POST(req:NextRequest){
     try {
         await dbConnect();
 
-        const {email , amount} = await req.json();
+        const {email , amount, reference} = await req.json();
 
         const user = await User.findOne({email});
         if(!user){
@@ -22,6 +23,18 @@ export async function POST(req:NextRequest){
         user.walletBalance += amount;
         await user.save();
   
+        if (reference) {
+            await Transaction.create({
+                user: user._id,
+                transactionType: 'credit',
+                type: 'topup',
+                amount: amount,
+                reference: reference,
+                description: `Wallet top-up of GH₵${amount}`,
+                status: 'success'
+            });
+        }
+
         console.log("User wallet balance updated", user.walletBalance)
 
     } catch (error) {

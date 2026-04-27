@@ -73,6 +73,7 @@ function topUpwallet() {
                                 body: JSON.stringify({
                                     email: session?.user?.email!,
                                     amount,
+                                    reference,
                                 }),
                             });
 

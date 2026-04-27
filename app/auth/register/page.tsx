@@ -115,7 +115,7 @@ export default function RegisterPage() {
                                 />
                             </svg>
                         )}
-                        {googleLoading ? "Connecting..." : "Continue with Google"}
+                        {googleLoading ? "Please wait..." : "Continue with Google"}
                     </button>
 
                     <div className="relative my-6">
@@ -123,7 +123,7 @@ export default function RegisterPage() {
                             <span className="w-full border-t border-slate-200"></span>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-slate-500">Or register with email</span>
+                            <span className="bg-white px-2 text-slate-500">Or </span>
                         </div>
                     </div>
 
@@ -143,7 +143,7 @@ export default function RegisterPage() {
                                 value={formData.name}
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
-                                placeholder="John Doe"
+                                placeholder="Your Name"
                             />
                         </div>
 
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 text-black rounded-lg border border-slate-300 bg-white/10 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
-                                placeholder="john@example.com"
+                                placeholder="your email @gmail.com"
                             />
                         </div>
 

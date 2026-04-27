@@ -28,6 +28,8 @@ export default withAuth(
         const token = req.nextauth.token;
         const role = token?.role;
         const pathname = req.nextUrl.pathname;
+       
+
 
         // 1. Protect Admin Routes: Redirect non-admins to dashboard
         if (pathname.startsWith("/admin") && role !== "admin") {

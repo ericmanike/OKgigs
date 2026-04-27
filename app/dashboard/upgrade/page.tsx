@@ -17,8 +17,8 @@ export default async function UpgradePage() {
   const benefits = [
     {
       icon: Zap,
-      title: "Special Pricing",
-      desc: "Get access to lower rates on all data bundles regardless of volume.",
+      title: "Make Profit",
+      desc: ".",
       color: "bg-blue-500",
     },
     {
@@ -39,13 +39,13 @@ export default async function UpgradePage() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-400">
       {/* Hero */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 ">
           <Gem size={14} className="text-amber-600" />
-          <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Premium Access</span>
+          <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Free  Access</span>
         </div>
         <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Level Up Your Experience</h2>
         <p className="text-zinc-500 max-w-md mx-auto">
-          Join our inner circle of agents and enjoy exclusive rates, faster delivery, and dedicated support.
+          Join our inner circle of agents and enjoy    
         </p>
       </div>
 
@@ -56,11 +56,11 @@ export default async function UpgradePage() {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3">
               <Crown className="text-amber-400" size={32} />
-              <span className="text-2xl font-black tracking-tight">Become a Premium Agent</span>
+              <span className="text-2xl font-black tracking-tight">Become a  Agent</span>
             </div>
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Lifetime access to agent rates, lower prices
+                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Make profit  from reselling  data bundles  
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
                 <CheckCircle size={16} className="text-amber-400 shrink-0" /> No monthly subscription
@@ -72,8 +72,8 @@ export default async function UpgradePage() {
           </div>
           <div className="flex flex-col items-center gap-4 shrink-0">
             <div className="text-center">
-              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1"> One time payment</p>
-              <p className="text-4xl font-black text-white">{formatCurrency(30)}</p>
+              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1"> No payment  required</p>
+              <p className="text-4xl font-black text-white"> 100% FREE</p>
             </div>
             <div className="w-full min-w-[200px]">
               <BecomeAgent />

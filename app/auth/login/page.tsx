@@ -108,7 +108,7 @@ export default function LoginPage() {
                             <span className="w-full border-t border-slate-200"></span>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-slate-500">Or continue with email</span>
+                            <span className="bg-white px-2 text-slate-500">Or </span>
                         </div>
                     </div>
 
@@ -174,7 +174,7 @@ export default function LoginPage() {
                     <p className="text-center mt-6 text-sm text-slate-500">
                         Don't have an account?{" "}
                         <Link href="/auth/register" className="text-slate-800 hover:underline font-bold">
-                            Create one
+                            Create an Account
                         </Link>
                     </p>
                 </CardContent>

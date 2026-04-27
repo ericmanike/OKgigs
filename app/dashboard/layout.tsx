@@ -19,9 +19,9 @@ import DashboardWelcomeModal from "@/components/ui/DashboardWelcomeModal";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/quick-actions", label: "Quick Actions", icon: Zap, exact: false },
+  { href: "/dashboard/transactions", label: "Transactions", icon: Zap, exact: false },
   { href: "/dashboard/orders", label: "Orders History", icon: History, exact: false },
-  { href: "/dashboard/upgrade", label: "Premium Upgrade", icon: Crown, exact: false },
+  { href: "/dashboard/upgrade", label: "Become Agent", icon: Crown, exact: false },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -135,28 +135,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           )}
 
-          {/* My Store (agents only) */}
-          {isAgent && (
-            <Link
-              href="/dashboard/store"
-              onClick={() => setSidebarOpen(false)}
-              className={clsx(
-                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap",
-                isActive("/dashboard/store", false)
-                  ? "bg-[#E42320] text-white shadow-md shadow-[#E42320]/20"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
-              )}
-            >
-              <span className={clsx(
-                "flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0",
-                isActive("/dashboard/store", false) ? "bg-white/15" : "bg-zinc-100"
-              )}>
-                <ShoppingBag size={18} strokeWidth={2} />
-              </span>
-              My Store
-            </Link>
-          )}
-
           {/* Quick Actions, Orders, Upgrade */}
           {navItems.slice(1).map((item) => (
             <Link
@@ -179,6 +157,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {item.label}
             </Link>
           ))}
+
+
+
+          {/* My Store (agents only) */}
+          {isAgent && (
+            <Link
+              href="/dashboard/store"
+              onClick={() => setSidebarOpen(false)}
+              className={clsx(
+                "flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap",
+                isActive("/dashboard/store", false)
+                  ? "bg-[#E42320] text-white shadow-md shadow-[#E42320]/20"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+              )}
+            >
+              <span className={clsx(
+                "flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0",
+                isActive("/dashboard/store", false) ? "bg-white/15" : "bg-zinc-100"
+              )}>
+                <ShoppingBag size={18} strokeWidth={2} />
+              </span>
+              My Data Shop
+            </Link>
+          )}
+
+
+
+
+
+
         </div>
       </aside>
 

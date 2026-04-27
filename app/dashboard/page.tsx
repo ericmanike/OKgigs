@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
-        <Card className="overflow-hidden border-zinc-200/80 h-full">
+        <Card className="overflow-hidden  h-full">
           <CardContent className="p-5 h-full flex flex-col">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
         </Card>
 
         <Link href="/dashboard/orders" className="group h-full">
-          <Card className="overflow-hidden border-zinc-200/80 hover:border-slate-300 hover:shadow-sm transition-all duration-200 h-full">
+          <Card className="overflow-hidden   transition-all duration-200 h-full">
             <CardContent className="p-5 h-full flex flex-col">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center shrink-0">
@@ -99,37 +99,71 @@ export default async function DashboardPage() {
       {/* Navigation hint card */}
       <div className="rounded-2xl border border-zinc-200/80 bg-white/60 p-5">
         <p className="text-zinc-600 text-sm">
-          Use the menu on the left to jump to <strong>Quick Actions</strong> or{" "}
-          <strong>Orders History</strong>.
+           Buy Airtime, Data, Result Checker or register for AFA   Using  the buttons below
         </p>
         <div className="flex flex-wrap gap-2 mt-4">
           <Link
-            href="/dashboard/quick-actions"
+            href="/dashboard/transactions"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E42320] text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            Quick Actions <ArrowRight size={14} />
+            Transactions <ArrowRight size={14} />
           </Link>
           <Link
-            href="/dashboard/orders"
+            href="/dashboard/result-checkers"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-200 text-zinc-700 text-sm font-medium hover:bg-zinc-50 transition-colors"
           >
-            Orders History <ArrowRight size={14} />
-          </Link>
+             Buy a Result Checker - WASSCE & BECE   <ArrowRight size={14} />
+          </Link> 
         </div>
       </div>
 
-      {/* Premium Upgrade CTA */}
+       <div>
+        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+          Available Services
+        </p>
+        <div className="grid  grid-cols-4 gap-3">
+          {[
+            { name: "MTN", bg: "#FFCC00", text: "#1a1200", letter: "M", network: "MTN" },
+            { name: "Telecel", bg: "#E60000", text: "#ffffff", letter: "T", network: "Telecel" },
+            { name: "AirtelTigo", bg: "#0077C8", text: "#ffffff", letter: "A", network: "AirtelTigo" },
+            {name:"AFA",bg:"#109f12db",text:"#FFFFFF",letter:"A",network:"AFA"},
+            {name:"Result Checker",bg:"#3905f5ff",text:"#FFFFFF",letter:"R",network:"Result Checker"}
+          ].map((net) => (
+            <Link
+              key={net.network}
+              href={`${net.network =="Result Checker" ? '/dashboard/result-checkers' : `/buy?network=${net.network}`}`}
+              className="group rounded-2xl overflow-hidden border border-zinc-200/80 hover:-translate-y-1 hover:shadow-md transition-all duration-200"
+            >
+              <div
+                className="p-4 flex flex-col items-center gap-2 text-center"
+                style={{ backgroundColor: net.bg }}
+              >
+                <div
+                  className="w-6 h-6 text-[10px] rounded-full flex items-center justify-center font-black text-lg shadow"
+                  style={{ backgroundColor: "rgba(0,0,0,0.15)", color: net.text }}
+                >
+                  {net.letter}
+                </div>
+                <span className="text-sm font-bold" style={{ color: net.text }}>{net.name}</span>
+       
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Premium Upgrade CTA
       <div className="bg-zinc-900 rounded-2xl p-6 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-amber-400/10 blur-[80px] rounded-full -mr-10 -mt-10" />
         <div className="relative flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="space-y-3 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2">
               <Crown className="text-amber-400" size={22} />
-              <span className="text-lg font-black tracking-tight">Upgrade to Premium Agent</span>
+              <span className="text-lg font-black tracking-tight">Become An Agent</span>
             </div>
             <ul className="space-y-1.5">
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={14} className="text-amber-400 shrink-0" /> Lifetime access to agent rates, lower prices and more
+                <CheckCircle size={14} className="text-amber-400 shrink-0" /> Make profit from selling data bundles
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
                 <CheckCircle size={14} className="text-amber-400 shrink-0" /> No monthly subscription
@@ -141,8 +175,8 @@ export default async function DashboardPage() {
           </div>
           <div className="flex flex-col items-center gap-3 shrink-0">
             <div className="text-center">
-              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-0.5">One-time</p>
-              <p className="text-3xl font-black text-white">{formatCurrency(30)}</p>
+              <p className="text-zinc-400 text-sm font-bold uppercase tracking-widest mb-0.5">Free Registration</p>
+              <p className="text-3xl font-black text-white">{formatCurrency(0.00)}</p>
             </div>
             <div className="w-full min-w-[160px]">
               <BecomeAgent />
@@ -151,39 +185,16 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Buy Data Bundles */}
-      <div>
-        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-          Buy Data Bundles
-        </p>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { name: "MTN", bg: "#FFCC00", text: "#1a1200", letter: "M", network: "MTN" },
-            { name: "Telecel", bg: "#E60000", text: "#ffffff", letter: "T", network: "Telecel" },
-            { name: "AirtelTigo", bg: "#0077C8", text: "#ffffff", letter: "A", network: "AirtelTigo" },
-          ].map((net) => (
-            <Link
-              key={net.network}
-              href={`/buy?network=${net.network}`}
-              className="group rounded-2xl overflow-hidden border border-zinc-200/80 hover:-translate-y-1 hover:shadow-md transition-all duration-200"
-            >
-              <div
-                className="p-4 flex flex-col items-center gap-2 text-center"
-                style={{ backgroundColor: net.bg }}
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow"
-                  style={{ backgroundColor: "rgba(0,0,0,0.15)", color: net.text }}
-                >
-                  {net.letter}
-                </div>
-                <span className="text-xs font-bold" style={{ color: net.text }}>{net.name}</span>
-                <span className="text-[10px] font-medium opacity-70" style={{ color: net.text }}>Buy Data</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+       */}
+
+       <div className="w-full flex justify-center">
+
+      <button className="bg-red-600  text-white hover:bg-red-700 rounded-md p-2.5  px-10 ">
+       <a href="/dashboard/upgrade"> Create Your Data Shop </a>
+ 
+      </button>
+       </div>
+  
     </div>
   );
 }
