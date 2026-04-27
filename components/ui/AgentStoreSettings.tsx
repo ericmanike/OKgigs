@@ -18,6 +18,7 @@ export default function AgentStoreSettings() {
     const [saving, setSaving] = useState(false);
     const [totalSalesCount, setTotalSalesCount] = useState(0);
     const [totalProfit, setTotalProfit] = useState(0);
+    const [walletBalance, setWalletBalance] = useState(0);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
     const [copied, setCopied] = useState(false);
     const [withdrawing, setWithdrawing] = useState(false);
@@ -53,6 +54,9 @@ export default function AgentStoreSettings() {
                     setBundleProfits(store.bundleProfits || {});
                     setTotalSalesCount(store.totalSalesCount || 0);
                     setTotalProfit(store.totalProfit || 0);
+                    if (store.walletBalance !== undefined) {
+                        setWalletBalance(store.walletBalance);
+                    }
                 }
             }
         } catch (error) {
@@ -177,13 +181,24 @@ export default function AgentStoreSettings() {
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                            <TrendingUp size={13} />
+                    <CardContent className="p-6 flex flex-col justify-center gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                                <TrendingUp size={13} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-zinc-500">Total Store Sales</p>
+                                <h3 className="text-sm font-black text-zinc-900">{totalSalesCount}</h3>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-zinc-500">Total Store Sales</p>
-                            <h3 className="text-sm font-black text-zinc-900">{totalSalesCount}</h3>
+                        <div className="border-t border-zinc-100 pt-4 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                <Wallet size={13} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-zinc-500">Wallet Balance</p>
+                                <h3 className="text-sm font-black text-zinc-900">{formatCurrency(walletBalance)}</h3>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

@@ -105,7 +105,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
             (window as any).PaystackPop.setup({
                 key: paystackKey,
-                email: 'guest@megagigs.net',
+                email: 'guestShop@megagigs.net',
                 currency: 'GHS',
                 amount: Math.round(total * 100),
                 ref: reference,
@@ -115,25 +115,23 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                 callback: function (response: any) {
                     (async () => {
                         try {
-                            const verifyResponse = await fetch('/api/orders', {
+                            const verifyResponse = await fetch('/api/agent/purchase', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    network: selectedNetwork,
-                                    bundleName: selectedBundle.name.replace(/GB|MB/g, ''),
-                                    price: selectedBundle.price,
-                                    phoneNumber,
-                                    reference,
-                                    agentId: storeData?.agentId,
-                                    agentProfit: selectedBundle?.profit
+                                     agentId: storeData.agentId,
+                                     bundleId: selectedBundle._id,
+                                     phoneNumber,
+                                     reference,
+                                   
                                 }),
                             });
 
                             if (verifyResponse.ok) {
                                 setMessage("Payment successful! Your data will arrive shortly.");
                                 setTimeout(() => {
-                                    router.push('/');
-                                }, 3000);
+                                    router.push(`/store/${slug}/track-order?ref=${phoneNumber}`);
+                                }, 500);
                             } else {
                                 setMessage("Payment verification failed. Please contact support.");
                             }
@@ -152,40 +150,40 @@ export default function StoreFrontend({ slug }: { slug: string }) {
         }
     };
 
-    const handleWalletPurchase = async () => {
-        if (phoneNumber.length !== 10) {
-            alert("Valid Phone number is required");
-            return;
-        }
+    // const handleWalletPurchase = async () => {
+    //     if (phoneNumber.length !== 10) {
+    //         alert("Valid Phone number is required");
+    //         return;
+    //     }
 
-        setLoading(true);
-        try {
-            const res = await fetch('/api/agent/purchase', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    agentId: storeData.agentId,
-                    bundleId: selectedBundle._id,
-                    phoneNumber
-                }),
-            });
+    //     setLoading(true);
+    //     try {
+    //         const res = await fetch('/api/agent/purchase', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({
+    //                 agentId: storeData.agentId,
+    //                 bundleId: selectedBundle._id,
+    //                 phoneNumber
+    //             }),
+    //         });
 
-            const data = await res.json();
-            if (res.ok) {
-                setMessage("Order placed successfully! Redirecting...");
-                setTimeout(() => {
-                    router.push('/dashboard');
-                }, 2000);
-            } else {
-                alert(data.message || "Wallet purchase failed");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("An error occurred during wallet purchase.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         const data = await res.json();
+    //         if (res.ok) {
+    //             setMessage("Order placed successfully! Redirecting...");
+    //             setTimeout(() => {
+    //                 router.push('/dashboard');
+    //             }, 2000);
+    //         } else {
+    //             alert(data.message || "Wallet purchase failed");
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert("An error occurred during wallet purchase.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     if (loadingStore) {
         return (
@@ -371,20 +369,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                 {loading ? <Loader2 className="animate-spin" size={24} /> : "Pay Now"}
                             </button>
 
-                            {session && (
-                                <button
-                                    onClick={handleWalletPurchase}
-                                    disabled={loading || phoneNumber.length !== 10}
-                                    className="w-full py-2 bg-green-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer text-lg mt-3"
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={24} /> : (
-                                        <>
-                                            <Wallet size={20} />
-                                            Buy with Wallet
-                                        </>
-                                    )}
-                                </button>
-                            )}
+                           
                         </CardContent>
                     </Card>
                 </div>

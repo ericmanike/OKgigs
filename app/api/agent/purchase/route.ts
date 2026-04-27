@@ -23,9 +23,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const { bundleId, phoneNumber } = await req.json();
+        const { bundleId, phoneNumber, agentId } = await req.json();
 
-        if (!bundleId || !phoneNumber) {
+        if (!bundleId || !phoneNumber || !agentId ) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
@@ -37,14 +37,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
         }
 
-        // Get StoreBundle details (custom price and base price)
-        const storeBundle = await StoreBundle.findOne({ bundle: bundleId });
+        // Get StoreBundle details (custom price and base price) for the specific agent
+        const storeBundle = await StoreBundle.findOne({ bundle: bundleId, agent: agentId });
         console.log('StoreBundle:', storeBundle);
         if (!storeBundle) {
             return NextResponse.json({ message: "Bundle not found in this store" }, { status: 404 });
         }
 
-         const agentId = storeBundle.agent;
+        // agentId is already provided, but we can also use storeBundle.agent just to be safe
+
+         console.log('Agent ID:', agentId);
         // Get the real bundle details for Dakazi
         const bundle = await Bundle.findById(bundleId);
         if (!bundle || !bundle.isActive) {
@@ -57,6 +59,7 @@ export async function POST(req: Request) {
 
         // Get agent  
         const agent = await User.findById(agentId);
+        console.log('Agent:', agent);
         if (!agent) {
             return NextResponse.json({ message: "No Shop found" }, { status: 404 });
         }
@@ -72,13 +75,15 @@ export async function POST(req: Request) {
         }
 
         
-         const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY!;
-    const SPENDLESS_API_KEY = process.env.SPENDLESS_API_KEY!;
+     const DAKAZI_API_KEY=process.env.DAKAZI_API_KEY!;
+    const SPENDLESS_API_KEY=process.env.SPENDLESS_API_KEY!;
 
-    if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
-        console.log("API keys not found")
-      return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
-    }
+    // if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
+    //     console.log("API keys not found")
+    //     console.log("DAKAZI_API_KEY", DAKAZI_API_KEY);
+    //     console.log("SPENDLESS_API_KEY", SPENDLESS_API_KEY);
+    //   return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
+    // }
 
       
         const network = bundle.network;
@@ -109,15 +114,20 @@ export async function POST(req: Request) {
             price: customPrice,
             originalPrice: basePrice,
             phoneNumber: phoneNumber,
+            payment_id: reference,
             status: 'processing',
         });
 
+        console.log("Order created", order)
 
-         const  profitUser = AgentStore.findOneAndUpdate(
+
+         const profitUser = await AgentStore.findOneAndUpdate(
             {user:agentId},
-            {$inc:{totalProfit:profit}},
+            {$inc:{totalProfit:profit, totalSalesCount: 1}},
             {new:true}
          )
+
+         console.log("Agent profit updated", profitUser)
  
          if (!profitUser) {
             console.log("Profit user not found")
@@ -125,7 +135,10 @@ export async function POST(req: Request) {
         }
 
 
-        if (!DAKAZI_API_KEY || SPENDLESS_API_KEY){
+        if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY){
+            console.log("DAKAZI_API_KEY", DAKAZI_API_KEY);
+        console.log("SPENDLESS_API_KEY", SPENDLESS_API_KEY);
+            console.log("API keys not found")
           return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
         }
 
@@ -143,19 +156,20 @@ export async function POST(req: Request) {
         const provider = providerDoc?.value || "dakazina";
 
 
-        let response;
+        // let response;
 
-        if (provider === "dakazina") {
-          response = await handleDakazina(order, data, DAKAZI_API_KEY);
-        } else if (provider === "spendless") {
-          response = await handleSpendless(order, data, SPENDLESS_API_KEY);
-        }
+        // if (provider === "dakazina") {
+        //   response = await handleDakazina(order, data, DAKAZI_API_KEY);
+        // } else if (provider === "spendless") {
+        //   response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+        // }
         
             
-            return NextResponse.json(
-              { message: "Order created successfully", response },
-              { status: 201 }
-            );
+        //     return NextResponse.json(
+        //       { message: "Order created successfully", response },
+        //       { status: 201 }
+        //     );
+        return NextResponse.json({ message: "Order created successfully" }, { status: 201 });
         
     } catch (error: any) {
         console.error("Agent wallet purchase error:", error);

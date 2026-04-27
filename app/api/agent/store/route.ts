@@ -5,6 +5,7 @@ import dbConnect from '@/lib/mongoose';
 import AgentStore from '@/models/AgentStore';
 import StoreBundle from '@/models/StoreBundle';
 import Bundle from '@/models/Bundle';
+import User from '@/models/User';
 
 export async function GET(req: Request) {
     try {
@@ -29,7 +30,9 @@ export async function GET(req: Request) {
             bundleProfits[cb.bundle.toString()] = cb.customPrice - cb.basePrice;
         });
 
-        return NextResponse.json({ ...store, bundleProfits });
+        const user = await User.findById(session.user.id).select('walletBalance').lean();
+
+        return NextResponse.json({ ...store, bundleProfits, walletBalance: user?.walletBalance || 0 });
     } catch (error: any) {
         console.error("Store GET Error:", error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });

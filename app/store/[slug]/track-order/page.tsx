@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { ArrowRight, Search, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft, Phone } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type TrackOrderResult = {
   transaction_id: string;
@@ -20,14 +21,18 @@ const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; c
   failed: { label: "Failed", icon: XCircle, className: "text-red-600 bg-red-50" },
   reversed: { label: "Reversed", icon: XCircle, className: "text-amber-600 bg-amber-50" },
   pending: { label: "Pending", icon: Clock, className: "text-amber-600 bg-amber-50" },
+  processing: { label: "Processing", icon: Clock, className: "text-blue-600 bg-blue-50" },
+  placed: { label: "Placed", icon: Clock, className: "text-indigo-600 bg-indigo-50" },
 };
 
 export default function TrackOrderPage() {
+  const router = useRouter();
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<TrackOrderResult[]>([]);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,15 +61,26 @@ export default function TrackOrderPage() {
     }
   };
 
+    useEffect(() => {
+      
+      const phone = searchParams.get("ref");
+      if (phone) {
+        setPhone(phone);
+        handleTrack({ preventDefault: () => { } } as React.FormEvent);
+      } else{
+        console.log("Phone number not reader")
+      }
+    }, [phone]);
+
   return (
     <div className="min-h-screen bg-linear-to-b from-zinc-50 to-white pt-24 md:pt-28 pb-12 px-4">
       <div className="max-w-lg mx-auto">
-        <Link
-          href="/"
+        <button
+          onClick={() => router.back()}
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft size={16} /> Back to home
-        </Link>
+        </button>
 
         <div className="rounded-2xl bg-white border border-slate-200/80 shadow-lg shadow-slate-200/50 overflow-hidden">
           {/* Header */}
@@ -156,15 +172,7 @@ export default function TrackOrderPage() {
           </div>
         </div>
 
-        <p className="text-center text-slate-500 text-sm mt-6">
-          <Link href="/buy" className="text-[#E42320] font-medium hover:underline">
-            Place a new order
-          </Link>
-          {" · "}
-          <Link href="/" className="text-[#E42320] font-medium hover:underline">
-            Home
-          </Link>
-        </p>
+
       </div>
     </div>
   );
