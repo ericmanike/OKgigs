@@ -76,6 +76,7 @@ export async function POST(req: Request) {
     const SPENDLESS_API_KEY = process.env.SPENDLESS_API_KEY!;
 
     if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
+        console.log("API keys not found")
       return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
     }
 
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
         );
 
         if (!updatedAgent) {
+            console.log("Agent not found")
             return NextResponse.json({ message: "Transaction failed: Insufficient agent balance" }, { status: 400 });
         }
 
@@ -109,6 +111,18 @@ export async function POST(req: Request) {
             phoneNumber: phoneNumber,
             status: 'processing',
         });
+
+
+         const  profitUser = AgentStore.findOneAndUpdate(
+            {user:agentId},
+            {$inc:{totalProfit:profit}},
+            {new:true}
+         )
+ 
+         if (!profitUser) {
+            console.log("Profit user not found")
+            return NextResponse.json({ message: "Transaction failed: Insufficient agent balance" }, { status: 400 });
+        }
 
 
         if (!DAKAZI_API_KEY || SPENDLESS_API_KEY){
