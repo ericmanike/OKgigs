@@ -454,7 +454,6 @@ export default function AgentStoreSettings() {
                 onClose={() => setIsWithdrawModalOpen(false)}
                 maxAmount={totalProfit}
                 onSuccess={(amount) => {
-                    setTotalProfit(prev => prev - amount);
                     setMessage({ type: 'success', text: `Withdrawal request for ${formatCurrency(amount)} submitted! Your balance will update once approved.` });
                 }}
             />

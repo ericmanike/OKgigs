@@ -49,12 +49,17 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ error: 'Withdrawal already processed' }, { status: 400 });
         }
 
-        if (status === 'rejected') {
-            // Refund the amount to the agent's store profit
-            await AgentStore.findOneAndUpdate(
-                { user: withdrawal.agent },
-                { $inc: { totalProfit: withdrawal.amount } }
+        if (status === 'approved') {
+            // Atomically check balance and deduct to prevent double deductions or race conditions
+            const updatedStore = await AgentStore.findOneAndUpdate(
+                { user: withdrawal.agent, totalProfit: { $gte: withdrawal.amount } },
+                { $inc: { totalProfit: -withdrawal.amount } },
+                { new: true }
             );
+
+            if (!updatedStore) {
+                return NextResponse.json({ error: 'Agent has insufficient profit to approve this withdrawal.' }, { status: 400 });
+            }
         }
 
         withdrawal.status = status;

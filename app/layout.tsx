@@ -4,8 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/providers/AuthProvider";
 import Navbar from "@/components/layout/Navbar";
 import WhatsAppWidget from "@/components/layout/WhatsAppWidget";
-import Link from "next/link";
-import { Send } from "lucide-react";
+import ContactDeveloper from "@/components/ui/ContactDeveloper";
 
 
 const geistSans = Geist({
@@ -95,9 +94,9 @@ export default function RootLayout({
           <Navbar />
           <main className="min-h-screen z-0">
             {children} 
-            <div className="w-full  flex justify-center  py-5"><Link href="https://ericmanike.tech" target="_blank" className="text-center text-zinc-700 text-sm text-3xl  hover:text-zinc-900  flex  justify-center  items-center gap-2 hover:text-[16px] transition-all duration-200 w-fit"> Contact <span className="font-bold"> Developer </span>  <Send  size={14}/></Link> </div> 
+            <ContactDeveloper />
           </main>  
-          <WhatsAppWidget />
+          <WhatsAppWidget /> 
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

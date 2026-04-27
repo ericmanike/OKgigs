@@ -86,7 +86,7 @@ export default function Navbar() {
                         href="https://whatsapp.com/channel/0029VbBcIbS7T8beipl8aZ1x"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 bg-[#E42320] text-white  px-2 md:px-5 py-2 md:py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+                        className="flex items-center justify-center gap-2 bg-[#E42320] text-white rounded-full px-2 md:px-5 py-2 md:py-3 text-sm font-medium hover:opacity-90 transition-opacity"
                     >
                         <FaWhatsapp size={13} /> Join us
                     </Link>

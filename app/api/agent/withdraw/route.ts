@@ -36,10 +36,8 @@ export async function POST(req: Request) {
             status: 'pending'
         });
 
-        // Deduct from agent store profit immediately to prevent double withdrawal
-        // If the request is rejected, the admin should refund it manually or we can automate it
-        store.totalProfit -= amount;
-        await store.save();
+        // Profit will be deducted when admin approves
+
 
         return NextResponse.json({ 
             message: 'Withdrawal request submitted successfully',
