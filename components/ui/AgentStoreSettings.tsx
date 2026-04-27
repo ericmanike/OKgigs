@@ -215,10 +215,10 @@ export default function AgentStoreSettings() {
                         </div>
                         <button 
                             onClick={() => setIsWithdrawModalOpen(true)}
-                            disabled={totalProfit <= 0 || withdrawing}
+                            disabled={totalProfit < 25 || withdrawing}
                             className={clsx(
-                                "px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-500 transition-colors flex items-center gap-2 self-center w-full",
-                                (totalProfit != 0 || withdrawing) && "opacity-50 cursor-not-allowed"
+                                "px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-500 transition-colors flex items-center gap-2 self-center w-full justify-center",
+                                (totalProfit < 25 || withdrawing) && "opacity-50 cursor-not-allowed"
                             )}
                         >
                             {withdrawing ? <Loader2 className="animate-spin" size={16} /> : <DownloadCloud size={13} />}
@@ -235,7 +235,7 @@ export default function AgentStoreSettings() {
                             <Store className="text-blue-600" size={20} />
                         </div>
                         <div>
-                            <CardTitle>My Store Setup</CardTitle>
+                            <CardTitle>My Shop Setup</CardTitle>
                             <CardDescription>Configure your personal data store</CardDescription>
                         </div>
                     </div>

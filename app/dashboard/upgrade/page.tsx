@@ -18,7 +18,7 @@ export default async function UpgradePage() {
     {
       icon: Zap,
       title: "Make Profit",
-      desc: ".",
+      desc: "Set your own custom prices on data bundles and keep the profit margin from every sale in your store.",
       color: "bg-blue-500",
     },
     {
@@ -66,8 +66,10 @@ export default async function UpgradePage() {
                 <CheckCircle size={16} className="text-amber-400 shrink-0" /> No monthly subscription
               </li>
               <li className="flex items-center gap-2 text-zinc-300 text-sm">
-                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Get a personalized store and  dashboard
+                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Get a personalized store and dashboard
               </li>
+              <li className="flex items-center gap-2 text-zinc-300 text-sm">
+                <CheckCircle size={16} className="text-amber-400 shrink-0" /> Withdraw your profit when it's atleast GHS 25 </li>
             </ul>
           </div>
           <div className="flex flex-col items-center gap-4 shrink-0">

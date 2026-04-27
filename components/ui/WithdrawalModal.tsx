@@ -26,8 +26,8 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
         setError(null);
 
         const val = parseFloat(amount);
-        if (isNaN(val) || val <= 0) {
-            setError("Please enter a valid amount.");
+        if (isNaN(val) || val < 25) {
+            setError("Minimum withdrawal amount is GH₵ 25.00.");
             return;
         }
 
@@ -74,7 +74,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+            <div className="bg-white w-full max-w-md rounded-[1rem  ]  overflow-hidden animate-in zoom-in duration-300">
                 <div className="bg-black text-white p-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/10 rounded-xl">
@@ -108,10 +108,12 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                                 className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none font-bold text-2xl"
                                 placeholder="0.00"
                                 required
+                                min={25}
                                 max={maxAmount}
                             />
                         </div>
                     </div>
+                    
 
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider pl-1 font-mono">
@@ -123,7 +125,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                                 type="tel"
                                 value={phoneNumber}
                                 onChange={e => setPhoneNumber(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none"
+                                className="w-full pl-12 pr-4 py-2 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none"
                                 placeholder="024 XXX XXXX"
                                 required
                             />
@@ -149,10 +151,11 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
 
                     <div className="pt-4">
                         <button
-                            type="submit"
+                            type="submit" 
                             disabled={loading || !amount || !phoneNumber || !momoName}
-                            className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-[1.5rem] font-black text-lg transition-all shadow-xl hover:shadow-green-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-1xl font-black text-lg transition-all  hover:shadow-green-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                         >
+
                             {loading ? <Loader2 className="animate-spin" /> : <Wallet size={20} />}
                             Submit Request
                         </button>
