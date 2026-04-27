@@ -113,6 +113,7 @@ export default async function DashboardPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-200 text-zinc-700 text-sm font-medium hover:bg-zinc-50 transition-colors"
           >
              Buy a Result Checker - WASSCE & BECE   <ArrowRight size={14} />
+             
           </Link> 
         </div>
       </div>
