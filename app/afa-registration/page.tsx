@@ -1,17 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useForm, ValidationError } from '@formspree/react';
-import {
+import { CheckCircle2, Loader2 } from 'lucide-react';
 
-  CheckCircle2,
-} from 'lucide-react';
-
-export default function AgentsPage() {
-  const [state, handleFormspreeSubmit] = useForm("xykpwyje"); // Updated with your active working ID
+export default function AfaRegistrationPage() {
+  const [succeeded, setSucceeded] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  if (state.succeeded) {
+  if (succeeded) {
     return (
       <div className="max-w-6xl mx-auto px-4 md:pt-28 pt-24 pb-16">
         <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm text-center max-w-2xl mx-auto">
@@ -36,204 +34,145 @@ export default function AgentsPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Client-side validation
     const form = e.currentTarget;
     const formData = new FormData(form);
     const nextErrors: Record<string, string> = {};
 
-    if (!formData.get('name')) nextErrors.name = 'Full name is required';
-    if (!formData.get('phone')) nextErrors.phone = 'Phone number is required';
-    if (!formData.get('idType')) nextErrors.idType = 'ID type is required';
-    if (!formData.get('idNumber')) nextErrors.idNumber = 'ID number is required';
-    if (!formData.get('location')) nextErrors.location = 'Location is required';
-    if (!formData.get('region')) nextErrors.region = 'Region is required';
-    if (!formData.get('dateOfBirth')) nextErrors.dateOfBirth = 'Date of birth is required';
-    if (!formData.get('occupation')) nextErrors.occupation = 'Occupation is required';
-    if (!formData.get('agentContact')) nextErrors.agentContact = 'Agent Contact is required';
+    const full_name = formData.get('full_name') as string;
+    const phone = formData.get('phone') as string;
+    const ghana_card = formData.get('ghana_card') as string;
+    const location = formData.get('location') as string;
+
+    if (!full_name) nextErrors.full_name = 'Full name is required';
+    if (!phone) nextErrors.phone = 'Phone number is required';
+    if (!ghana_card) nextErrors.ghana_card = 'Ghana card number is required';
+    if (!location) nextErrors.location = 'Location is required';
 
     setErrors(nextErrors);
 
-    if (Object.keys(nextErrors).length === 0) {
-      await handleFormspreeSubmit(e);
+    if (Object.keys(nextErrors).length > 0) {
+      return;
     }
+
+    setSubmitting(true);
+    setErrorMsg(null);
+
+    // try {
+    //   const res = await fetch('/api/spendless/afa', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ full_name, phone, ghana_card, location })
+    //   });
+
+    //   const data = await res.json();
+
+    //   if (res.ok && data.status !== 'error') {
+    //     setSucceeded(true);
+    //   } else {
+    //     setErrorMsg(data.message || 'An error occurred during submission.');
+    //   }
+    // } catch (error) {
+    //   setErrorMsg('Failed to connect to the server. Please check your internet connection.');
+    // } finally {
+    //   setSubmitting(false);
+    // }
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:pt-28 pt-24 pb-16 space-y-10">
-      <section
-        id="apply"
-        className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm"
-      >
-        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+      <section className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto">
+        <div className="flex items-center justify-between gap-3 mb-8 flex-wrap border-b border-slate-100 pb-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               AFA Registration
             </h2>
-            <div className="text-sm text-slate-600">
-              Fill out the form below to register for AFA Package
-              <br />
-              <h2 className="text-lg font-bold text-slate-600 mt-2">Registration Fee is 15 GHS</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Fill out the form below to register for the AFA Package
+            </p>
+            <div className="mt-3 inline-flex px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest rounded-lg">
+              Registration Fee is 15 GHS
             </div>
           </div>
         </div>
 
-        {state.errors && (
+        {errorMsg && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm font-medium text-center">
-            Submission failed. Please check your Formspree ID or internet connection.
+            {errorMsg}
           </div>
         )}
 
-        <form className="grid md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {Object.keys(errors).length > 0 && (
-            <div className="md:col-span-2 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm font-medium text-center">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm font-medium text-center">
               Please fill in all required fields to continue.
             </div>
           )}
 
-          <div className="space-y-1">
-            <label htmlFor="name" className="text-sm font-medium text-slate-700">Full name</label>
+          <div className="space-y-1.5">
+            <label htmlFor="full_name" className="text-sm font-bold text-slate-700">Full Name</label>
             <input
-              id="name"
-              name="name"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="Ama Mensah"
+              id="full_name"
+              name="full_name"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all font-medium bg-slate-50/50"
+              placeholder="e.g. Ama Mensah"
             />
-            {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
-            <ValidationError prefix="Name" field="name" errors={state.errors} />
+            {errors.full_name && <p className="text-xs text-red-500 font-bold mt-1">{errors.full_name}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone number</label>
+          <div className="space-y-1.5">
+            <label htmlFor="phone" className="text-sm font-bold text-slate-700">Phone Number</label>
             <input
               id="phone"
               name="phone"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="054XXXXXXX"
+              type="tel"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all font-medium bg-slate-50/50"
+              placeholder="e.g. 054XXXXXXX"
             />
-            {errors.phone && <p className="text-xs text-red-500 font-medium">{errors.phone}</p>}
-            <ValidationError prefix="Phone" field="phone" errors={state.errors} />
+            {errors.phone && <p className="text-xs text-red-500 font-bold mt-1">{errors.phone}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label htmlFor="idType" className="text-sm font-medium text-slate-700">ID Type</label>
-            <select
-              id="idType"
-              name="idType"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 bg-white transition-all font-medium"
-            >
-              <option value="">Select ID Type</option>
-              <option value="Ghana Card">Ghana Card</option>
-              <option value="Voters ID">Voters ID</option>
-              <option value="Passport">Passport</option>
-              <option value="Drivers License">Drivers License</option>
-            </select>
-            {errors.idType && <p className="text-xs text-red-500 font-medium">{errors.idType}</p>}
-            <ValidationError prefix="ID Type" field="idType" errors={state.errors} />
-          </div>
-
-          <div className="space-y-1">
-            <label htmlFor="idNumber" className="text-sm font-medium text-slate-700">ID Number</label>
+          <div className="space-y-1.5">
+            <label htmlFor="ghana_card" className="text-sm font-bold text-slate-700">Ghana Card Number</label>
             <input
-              id="idNumber"
-              name="idNumber"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="GHA-XXXXXXXXX-X"
+              id="ghana_card"
+              name="ghana_card"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all font-medium bg-slate-50/50"
+              placeholder="e.g. GHA-XXXXXXXXX-X"
             />
-            {errors.idNumber && <p className="text-xs text-red-500 font-medium">{errors.idNumber}</p>}
-            <ValidationError prefix="ID Number" field="idNumber" errors={state.errors} />
+            {errors.ghana_card && <p className="text-xs text-red-500 font-bold mt-1">{errors.ghana_card}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label htmlFor="location" className="text-sm font-medium text-slate-700">Location</label>
+          <div className="space-y-1.5">
+            <label htmlFor="location" className="text-sm font-bold text-slate-700">Location</label>
             <input
               id="location"
               name="location"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="City/Town name"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all font-medium bg-slate-50/50"
+              placeholder="e.g. Accra"
             />
-            {errors.location && <p className="text-xs text-red-500 font-medium">{errors.location}</p>}
-            <ValidationError prefix="Location" field="location" errors={state.errors} />
+            {errors.location && <p className="text-xs text-red-500 font-bold mt-1">{errors.location}</p>}
           </div>
-
-          <div className="space-y-1">
-            <label htmlFor="region" className="text-sm font-medium text-slate-700">Region</label>
-            <select
-              id="region"
-              name="region"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 bg-white transition-all font-medium"
-            >
-              <option value="">Select Region</option>
-              <option value="Greater Accra">Greater Accra</option>
-              <option value="Ashanti">Ashanti</option>
-              <option value="Western">Western</option>
-              <option value="Central">Central</option>
-              <option value="Eastern">Eastern</option>
-              <option value="Northern">Northern</option>
-              <option value="Upper East">Upper East</option>
-              <option value="Upper West">Upper West</option>
-              <option value="Volta">Volta</option>
-              <option value="Bono">Bono</option>
-              <option value="Bono East">Bono East</option>
-              <option value="Ahafo">Ahafo</option>
-              <option value="Savannah">Savannah</option>
-              <option value="North East">North East</option>
-              <option value="Oti">Oti</option>
-              <option value="Western North">Western North</option>
-            </select>
-            {errors.region && <p className="text-xs text-red-500 font-medium">{errors.region}</p>}
-            <ValidationError prefix="Region" field="region" errors={state.errors} />
-          </div>
-
-          <div className="space-y-1">
-            <label htmlFor="dateOfBirth" className="text-sm font-medium text-slate-700">Date of birth</label>
-            <input
-              id="dateOfBirth"
-              name="dateOfBirth"
-              type="date"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-            />
-            {errors.dateOfBirth && <p className="text-xs text-red-500 font-medium">{errors.dateOfBirth}</p>}
-            <ValidationError prefix="DOB" field="dateOfBirth" errors={state.errors} />
-          </div>
-
-          <div className="space-y-1">
-            <label htmlFor="occupation" className="text-sm font-medium text-slate-700">Occupation</label>
-            <input
-              id="occupation"
-              name="occupation"
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="Your current work"
-            />
-            {errors.occupation && <p className="text-xs text-red-500 font-medium">{errors.occupation}</p>}
-            <ValidationError prefix="Occupation" field="occupation" errors={state.errors} />
-          </div>
-
-
-          <div className="space-y-1">
-            <label htmlFor="agentContact" className="text-sm font-medium text-slate-700">Agent Contact</label>
-            <input
-              id="agentContact"
-              name="agentContact"
-              className="w-full col-span-2 px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
-              placeholder="Agent Contact"
-            />
-            {errors.agentContact && <p className="text-xs text-red-500 font-medium">{errors.agentContact}</p>}
-            <ValidationError prefix="Agent Contact" field="agentContact" errors={state.errors} />
-          </div>
-
-
 
           <button
             type="submit"
-            disabled={state.submitting}
-            className=" md:col-span-2 w-full px-6 py-4 rounded-lg bg-slate-600 hover:bg-slate-700 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-md hover:shadow-lg active:scale-[0.98]"
+            disabled={submitting}
+            className="w-full mt-6 px-6 py-4 rounded-xl bg-slate-800 hover:bg-slate-900 disabled:opacity-60 text-white font-bold transition-all flex items-center gap-2 justify-center shadow-lg hover:shadow-xl active:scale-[0.98]"
           >
-            {state.submitting ? 'Submitting...' : 'Submit Registration'}
-            <CheckCircle2 size={18} />
+            {submitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Submit Registration
+                <CheckCircle2 size={18} />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="mt-6 text-sm text-slate-600 flex items-center justify-center gap-2 border-t border-slate-100 pt-6">
+        <div className="mt-8 text-sm font-medium text-slate-500 flex items-center justify-center gap-1.5 border-t border-slate-100 pt-6">
           Need help? Reach us at{' '}
           <a
             className="text-slate-800 font-bold hover:underline"
@@ -246,6 +185,3 @@ export default function AgentsPage() {
     </div>
   );
 }
-
-
-
