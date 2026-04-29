@@ -4,7 +4,6 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Setting from "@/models/Setting";
-import SystemLog from "@/models/SystemLog";
 import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
 import { createOrder } from "@/lib/orderService";
 import Transaction from "@/models/Transaction";
@@ -119,9 +118,9 @@ export async function POST(req: Request) {
     
     const order = await createOrder(session, data);
 
-    if (session?.user?.id) {
+    
         await Transaction.create({
-            user: session.user.id,
+            user: session?.user?.id || 'Guest',
             transactionType: 'debit',
             type: 'purchase',
             amount: total,
@@ -129,7 +128,7 @@ export async function POST(req: Request) {
             description: `Purchase of ${network} ${bundleName}GB for ${phoneNumber} via Paystack`,
             status: 'success'
         });
-    }
+    
 
 
 
