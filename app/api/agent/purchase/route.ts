@@ -195,11 +195,11 @@ export async function POST(req: Request) {
 
         let response;
 
-        // if (provider === "dakazina") {
-        //   response = await handleDakazina(order, data, DAKAZI_API_KEY);
-        // } else if (provider === "spendless") {
-        //   response = await handleSpendless(order, data, SPENDLESS_API_KEY);
-        // }
+        if (provider === "dakazina") {
+          response = await handleDakazina(order, data, DAKAZI_API_KEY);
+        } else if (provider === "spendless") {
+          response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+        }
         
             
             return NextResponse.json(
