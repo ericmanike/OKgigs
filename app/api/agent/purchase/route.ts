@@ -18,10 +18,9 @@ export async function POST(req: Request) {
 
 
     try {
+
         const session = await getServerSession(authOptions);
-        if (!session) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-        }
+      
 
         const { bundleId, phoneNumber, agentId, reference } = await req.json();
 
@@ -33,7 +32,7 @@ export async function POST(req: Request) {
 
         // Check if orders are closed
         const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
-        if (Boolean(ordersClosedDoc?.value) && session.user.role !== "admin") {
+        if (Boolean(ordersClosedDoc?.value) && session?.user?.role !== "admin") {
             return NextResponse.json({ message: "Orders are currently closed" }, { status: 403 });
         }
 
@@ -144,7 +143,7 @@ export async function POST(req: Request) {
 
         // Create initial order record
         const order = await Order.create({
-            user: session.user.id,
+            user: session?.user?.id,
             agent: agentId as mongoose.Types.ObjectId,
             transaction_id: reference,
             network: network,
