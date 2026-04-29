@@ -143,15 +143,15 @@ export async function POST(req: Request) {
 
         // Create initial order record
         const order = await Order.create({
-            user: session?.user?.id,
+            user: agentId as mongoose.Types.ObjectId,
             agent: agentId as mongoose.Types.ObjectId,
             transaction_id: reference,
             network: network,
-            bundleName: bundle.name,
+            bundleName: parseFloat(bundle.name.trim()).toString(),
             price: customPrice,
             originalPrice: basePrice,
             phoneNumber: phoneNumber,
-            payment_id: reference,
+            payment_id: reference,  
             status: 'processing',
         });
 
@@ -195,11 +195,11 @@ export async function POST(req: Request) {
 
         let response;
 
-        if (provider === "dakazina") {
-          response = await handleDakazina(order, data, DAKAZI_API_KEY);
-        } else if (provider === "spendless") {
-          response = await handleSpendless(order, data, SPENDLESS_API_KEY);
-        }
+        // if (provider === "dakazina") {
+        //   response = await handleDakazina(order, data, DAKAZI_API_KEY);
+        // } else if (provider === "spendless") {
+        //   response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+        // }
         
             
             return NextResponse.json(
