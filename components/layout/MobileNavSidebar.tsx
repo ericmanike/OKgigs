@@ -4,13 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Wifi, User, LayoutDashboard, X } from "lucide-react";
 import clsx from "clsx";
+import { useSession } from "next-auth/react";
 
-const navItems = [
-  { icon: Home, label: "Home", href: "/" },
-  { icon: Wifi, label: "Buy Data", href: "/buy" },
-  { icon: User, label: "Profile", href: "/profile" },
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-];
+
 
 type Props = {
   open: boolean;
@@ -19,6 +15,20 @@ type Props = {
 
 export default function MobileNavSidebar({ open, onClose }: Props) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+
+
+const navItems = [
+  { icon: Home, label: "Home", href: "/" },
+  { icon: Wifi, label: "Buy Data", href: "/buy" },
+  { icon: User, label: `${session ? "Profile" : "Login"}`, href: `${session ? "/profile" : "/auth/login"}` },
+  { icon: LayoutDashboard, label: `${session  ? "Dashboard" : "Create Account"}`, href: `${session ? "/dashboard" : "/auth/register"}` },
+];
+  
+
+
+
 
   return (
     <>
