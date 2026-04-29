@@ -33,7 +33,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     const [loadingStore, setLoadingStore] = useState(true);
     const [message, setMessage] = useState("");
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
-
+  const [email, setEmail] = useState(session?.user?.email || "");
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
 
     useEffect(() => {
@@ -105,7 +105,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
             (window as any).PaystackPop.setup({
                 key: paystackKey,
-                email: 'guestShop@megagigs.net',
+                email: email,
                 currency: 'GHS',
                 amount: Math.round(total * 100),
                 ref: reference,
@@ -150,40 +150,6 @@ export default function StoreFrontend({ slug }: { slug: string }) {
         }
     };
 
-    // const handleWalletPurchase = async () => {
-    //     if (phoneNumber.length !== 10) {
-    //         alert("Valid Phone number is required");
-    //         return;
-    //     }
-
-    //     setLoading(true);
-    //     try {
-    //         const res = await fetch('/api/agent/purchase', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({
-    //                 agentId: storeData.agentId,
-    //                 bundleId: selectedBundle._id,
-    //                 phoneNumber
-    //             }),
-    //         });
-
-    //         const data = await res.json();
-    //         if (res.ok) {
-    //             setMessage("Order placed successfully! Redirecting...");
-    //             setTimeout(() => {
-    //                 router.push('/dashboard');
-    //             }, 2000);
-    //         } else {
-    //             alert(data.message || "Wallet purchase failed");
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         alert("An error occurred during wallet purchase.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     if (loadingStore) {
         return (
@@ -217,11 +183,11 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                 <p className="text-zinc-500 text-sm">{storeData.description || 'Welcome to my data store! Grab the best bundles here.'}</p>
 
                 <div className="flex items-center justify-center gap-3 mt-6">
-                    <Link href={`/store/${slug}/track-order`} className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-700 rounded-lg text-sm hover:bg-zinc-200 font-medium transition-colors">
+                    <Link href={`/store/${slug}/track-order`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 font-bold transition-all shadow-md active:scale-95">
                         <Search size={16} />
                         Track Order
                     </Link>
-                    <a href="https://wa.me/233551043686" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100 font-medium transition-colors border border-green-100">
+                    <a href={`https://wa.me/${storeData.agentPhone}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-bold transition-all shadow-md active:scale-95">
                         <MessageCircle size={16} />
                         Contact Support
                     </a>
@@ -327,10 +293,23 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                     type="tel"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
                                     placeholder="024XXXXXXX"
                                     autoFocus
                                 />
+
+                                  <label className="text-sm font-medium text-black m-2 block">
+                                    Your Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    value={email || ''}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
+                                    placeholder="Your Email Address"
+                                    autoFocus
+                                />
+
                             </div>
 
                             <div className={clsx(
@@ -363,7 +342,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
                             <button
                                 onClick={handlePurchase}
-                                disabled={loading || phoneNumber.length !== 10}
+                                disabled={loading || phoneNumber.length !== 10 || !email}
                                 className="w-full py-2 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer text-lg"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={24} /> : "Pay Now"}

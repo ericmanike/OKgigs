@@ -21,16 +21,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
         }
 
+        const withdrawalAmount = Number(amount);
+        if (isNaN(withdrawalAmount) || withdrawalAmount < 25) {
+            return NextResponse.json({ error: 'Minimum withdrawal amount is GH₵ 25.00' }, { status: 400 });
+        }
+
         // Check if agent has enough profit
         const store = await AgentStore.findOne({ user: session.user.id });
-        if (!store || store.totalProfit < amount) {
+        if (!store || store.totalProfit < withdrawalAmount) {
             return NextResponse.json({ error: 'Insufficient profit balance' }, { status: 400 });
         }
 
         // Create withdrawal request
         const withdrawal = await Withdrawal.create({
             agent: session.user.id,
-            amount,
+            amount: withdrawalAmount,
             phoneNumber,
             momoName,
             status: 'pending'

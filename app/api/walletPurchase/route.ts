@@ -6,9 +6,16 @@ import Order from "@/models/Order";
 import User from "@/models/User";
 import Setting from "@/models/Setting";
 import Bundle from "@/models/Bundle";
+import mongoose from "mongoose";
+import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+import Transaction from "@/models/Transaction";
+
 
 
 export async function POST(req: Request) {
+    const mongoSession = await mongoose.startSession();
+    mongoSession.startTransaction();
+
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
@@ -60,25 +67,15 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
+        
         const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY;
+        const SPENDLESS_API_KEY = process.env.SPENDLESS_API_KEY
 
-        if (!DAKAZI_API_KEY) {
+        if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
             return NextResponse.json({ message: "Unexpected error occurred" }, { status: 500 });
         }
 
-        // Determine network ID
-        let networkId;
-        if (network === "MTN") {
-            networkId = 3;
-        } else if (network === "Telecel") {
-            networkId = 2;
-        } else if (network.startsWith("AT")) {
-            networkId = 4;
-        } else {
-            return NextResponse.json({ message: "Invalid network" }, { status: 400 });
-        }
-
-        console.log('Network ID:', networkId);
+        
 
         // Generate unique reference
         const reference = `wallet_${Date.now()}_${session.user.id}`;
@@ -90,12 +87,13 @@ export async function POST(req: Request) {
         }
 
 
-        // Deduct from wallet balance
 
-        const updatedUser = await User.findOneAndUpdate(
+
+        // Deduct from wallet balance
+const updatedUser = await User.findOneAndUpdate(
             { _id: session.user.id, walletBalance: { $gte: realPrice } },
             { $inc: { walletBalance: -realPrice } },
-            { new: true }
+            { new: true, session: mongoSession }
         );
 
         if (!updatedUser) {
@@ -105,72 +103,57 @@ export async function POST(req: Request) {
 
 
 
-
-
-
         console.log(`Deducted ${price} from wallet. New balance: ${updatedUser.walletBalance}`);
 
-        // Place order with Dakazi
-        const placeOrder = await fetch(
-            "https://reseller.dakazinabusinessconsult.com/api/v1/buy-data-package",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-api-key": `${DAKAZI_API_KEY}`,
-                },
-                body: JSON.stringify({
-                    recipient_msisdn: phoneNumber,
-                    network_id: networkId,
-                    shared_bundle: Number(bundleName),
-                    incoming_api_ref: reference
-                })
-            }
-
-        );
+        
 
 
-        const raw = await placeOrder.text();
-
-
-        let orderRes;
-        try {
-            orderRes = JSON.parse(raw);
-        } catch (error) {
-
-            await User.findByIdAndUpdate(session.user.id, {
-                $inc: { walletBalance: realPrice }
-            });
-            console.error('Failed to parse Dakazi response:', error);
-            return NextResponse.json({ message: "Failed to parse Dakazi response" }, { status: 500 });
-        }
-        console.log('Dakazi order response:', orderRes);
-
-        console.log(`Order placement response: ${placeOrder.status} - ${raw}`);
-        console.log('Order placement success:', placeOrder.ok, 'Order response status:', orderRes.status);
-
-
-
-        // user.walletBalance = Number(user.walletBalance) - Number(price);
-
-
-
-
-        if (orderRes.success !== true) {
-
-
-            return NextResponse.json({ message: "Order failed. Wallet refunded." }, { status: 500 });
-        }
+         
         // Create order record
-        const order = await Order.create({
+       const order = await Order.create([{
             user: session.user.id,
-            transaction_id: orderRes.transaction_code,
+            transaction_id: reference,
             network: network,
             bundleName: bundleName,
             price: realPrice,
+            payment_id:reference,
             phoneNumber: phoneNumber,
-            status: 'pending',
-        });
+            status: 'processing',
+        }], { session: mongoSession });
+
+        await Transaction.create([{
+            user: session.user.id,
+            transactionType: 'debit',
+            type: 'purchase',
+            amount: realPrice,
+            reference: reference,
+            description: `Wallet purchase of ${network} ${bundleName}GB for ${phoneNumber}`,
+            status: 'success'
+        }], { session: mongoSession });
+
+      const createdOrder = order[0];
+
+
+    const providerDoc = await Setting.findOne({ key: "provider" });
+    const provider = providerDoc?.value || "dakazina";
+  
+
+        // if(provider == 'dakazina'){
+        //     handleDakazina(createdOrder, {phoneNumber,reference,network,bundleName}, DAKAZI_API_KEY)
+
+        // } else if( provider == 'spendless'){
+        //     handleSpendless(createdOrder, {phoneNumber,reference,network,bundleName},SPENDLESS_API_KEY)
+
+        // } else if (provider == 'datamart'){
+        
+        // } else{
+        //     return NextResponse.json({message:'API provider not defined'})
+        // }
+
+
+
+
+         await mongoSession.commitTransaction();
 
         console.log('📦 New wallet order created:', order);
         return NextResponse.json({
@@ -180,7 +163,13 @@ export async function POST(req: Request) {
         }, { status: 201 });
 
     } catch (error) {
+        if( mongoSession.inTransaction()){
+        await mongoSession.abortTransaction();
+        }
         console.error("Wallet purchase error:", error);
         return NextResponse.json({ message: "Error processing wallet purchase" }, { status: 500 });
+    } finally {
+        await mongoSession.endSession();
     }
 }
+

@@ -224,6 +224,7 @@ export default function AgentStoreSettings() {
                             {withdrawing ? <Loader2 className="animate-spin" size={16} /> : <DownloadCloud size={13} />}
                             Withdraw
                         </button>
+                      {walletBalance >= 25 ? <span className="text-xs text-red-500">Minimum withdrawal amount is GHS25.00</span> : <span className="text-xs text-green-500">You can withdraw now</span>}
                     </CardContent>
                 </Card>
             </div>
@@ -242,7 +243,8 @@ export default function AgentStoreSettings() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {message && (
-                        <div className={clsx("p-3 rounded-lg text-sm font-medium", message.type === 'success' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
+                        <div className={clsx("p-3 rounded-lg text-sm font-medium",
+                         message.type === 'success' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
                             {message.text}
                         </div>
                     )}
@@ -283,14 +285,14 @@ export default function AgentStoreSettings() {
 
                     {slug && (
                         <div className="pt-2 flex flex-wrap items-center gap-3">
-                            <Link href={`/store/${slug}`} target="_blank" className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm hover:bg-blue-100 font-medium transition-colors">
+                            <Link href={`/store/${slug}`} target="_blank" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 font-bold transition-all shadow-md active:scale-95">
                                 <LinkIcon size={16} />
                                 View Store
                             </Link>
 
                             <button
                                 onClick={handleWhatsAppShare}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm hover:bg-green-100 font-medium transition-colors border border-green-200"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-bold transition-all shadow-md active:scale-95"
                             >
                                 <MessageCircle size={16} />
                                 Share on WhatsApp

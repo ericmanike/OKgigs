@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Crown, CheckCircle, Gem, Zap, Gift, Headphones } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import BecomeAgent from "@/components/ui/becomeAgent";
+import Link from "next/link";
 
 export const metadata = {
   title: "Premium Upgrade | MegaGigs Dashboard",
@@ -43,13 +44,20 @@ export default async function UpgradePage() {
           <Gem size={14} className="text-amber-600" />
           <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Free  Access</span>
         </div>
-        <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Level Up Your Experience</h2>
-        <p className="text-zinc-500 max-w-md mx-auto">
-          Join our inner circle of agents and enjoy    
-        </p>
+     
       </div>
+  {session.user.role === "admin" && (
 
-      {/* Main CTA Card */}
+    <div className="flex flex-col items-center justify-center ">
+    <h1 className="text-3xl font-black text-zinc-900 tracking-tight my-4"> Your shop is LIVE!</h1>
+    <span className="text-zinc-500 text-xs mb-4"> Share your link with friends and family </span>
+
+    <Link href="/dashboard/store" className="p-3  px-6 bg-blue-500 rounded-xl text-white"> Go to Your Store</Link>
+    </div>
+    
+  )}
+
+   {session.user.role === "user" &&   /* Main CTA Card */
       <div className="bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[100px] rounded-full -mr-20 -mt-20" />
         <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
@@ -82,7 +90,7 @@ export default async function UpgradePage() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Benefit Cards */}
       <div className="grid md:grid-cols-3 gap-6">

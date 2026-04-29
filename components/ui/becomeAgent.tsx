@@ -1,17 +1,24 @@
 'use client'
-import { Crown, Zap } from 'lucide-react'
+import { useState } from 'react';
+import { Crown, Zap, Loader2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation';
 
 import { formatCurrency } from '@/lib/utils'
 
 
 function BecomeAgent() {
+    const router = useRouter();
     const { data: session, update } = useSession()
 
     
 
   
+    const [loading, setLoading] = useState(false);
+    
     const handleCreateShop = async() => {
+        setLoading(true);
+        try {
           const res= await fetch('/api/registerAgent', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -22,12 +29,19 @@ function BecomeAgent() {
                             });
           if(res.ok){
             const data = await res.json();
-            console.log(data);
+            router.push('/dashboard/store');
+
+            
            
           }else{
             const data = await res.json();
           }
-           window.location.reload();
+          window.location.reload();
+        } catch (error) {
+            console.error("Failed to create shop:", error);
+        } finally {
+            setLoading(false);
+        }
     };
     
 
@@ -37,7 +51,7 @@ function BecomeAgent() {
     return (
         <button
             onClick={handleCreateShop}
-            disabled={isAgent}
+            disabled={isAgent || loading}
             className={`w-full group relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all overflow-hidden
                 ${isAgent
                     ? 'bg-gradient-to-r from-zinc-800 to-zinc-700 text-amber-400 border border-amber-400/30'
@@ -56,8 +70,17 @@ function BecomeAgent() {
                 </>
             ) : (
                 <>
-                    <Zap size={14} className="fill-current animate-pulse text-amber-800" />
-                    <span>Create shop • {formatCurrency(0.00)}</span>
+                    {loading ? (
+                        <>
+                            <Loader2 size={14} className="animate-spin text-amber-800" />
+                            <span>Creating shop...</span>
+                        </>
+                    ) : (
+                        <>
+                            <Zap size={14} className="fill-current animate-pulse text-amber-800" />
+                            <span>Create shop • {formatCurrency(0.00)}</span>
+                        </>
+                    )}
                 </>
             )}
         </button>

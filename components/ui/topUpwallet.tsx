@@ -115,8 +115,7 @@ function topUpwallet() {
         <>
             <RechargeModal isOpen={isOpen} handleTopUp={handleTopUp} setIsOpen={setIsOpen} setAmount={setAmount} amount={amount} />
             <button
-                onClick={() => { alert('Wallet top up will be available soon'); 
-                    return;
+                onClick={() => {
                     setIsOpen(true) }}
                
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto "

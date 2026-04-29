@@ -26,7 +26,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
         setError(null);
 
         const val = parseFloat(amount);
-        if (isNaN(val) || val < 25) {
+        if (isNaN(val) || !val) {
             setError("Minimum withdrawal amount is GH₵ 25.00.");
             return;
         }

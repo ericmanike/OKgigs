@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
+import Transaction from "@/models/Transaction";
 
 export async function POST(req: NextRequest) {
     try {
@@ -31,19 +32,38 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        // Add amount to user's wallet balance
-        user.walletBalance += amount;
-        await user.save();
+        // Atomically update user's wallet balance
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $inc: { walletBalance: amount } },
+            { new: true }
+        );
 
-        console.log(`Admin ${session.user.email} added ${amount} to ${user.email}'s wallet. New balance: ${user.walletBalance}`);
+        if (!updatedUser) {
+            return NextResponse.json({ message: "Failed to update user balance" }, { status: 500 });
+        }
+
+        const reference = `admin_topup_${Date.now()}_${updatedUser._id}`;
+        
+        await Transaction.create({
+            user: updatedUser._id,
+            transactionType: 'credit',
+            type: 'topup',
+            amount: amount,
+            reference: reference,
+            description: `Admin wallet top-up of GH₵${amount}`,
+            status: 'success'
+        });
+
+        console.log(`Admin ${session.user.email} added ${amount} to ${updatedUser.email}'s wallet. New balance: ${updatedUser.walletBalance}`);
 
         return NextResponse.json({
             message: "Balance topped up successfully",
             user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                walletBalance: user.walletBalance
+                id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                walletBalance: updatedUser.walletBalance
             }
         }, { status: 200 });
 

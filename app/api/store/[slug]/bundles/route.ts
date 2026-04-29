@@ -10,9 +10,25 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 
         const slug = (await params).slug;
 
-        const store = await AgentStore.findOne({ slug, isActive: true }).select('storeName description user');
+        const store = await AgentStore.findOne({ slug, isActive: true })
+            .populate('user', 'phone')
+            .select('storeName description user');
+            
         if (!store) {
             return NextResponse.json({ error: 'Store not found' }, { status: 404 });
+        }
+
+        // Format agent phone to international format for WhatsApp
+        let agentPhone = "233543442518"; // default fallback
+        const storeUser = store.user as any; // Cast to any to bypass TS ObjectId type restriction
+        
+        if (storeUser && storeUser.phone) {
+            let cleanPhone = storeUser.phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0') && cleanPhone.length === 10) {
+                agentPhone = '233' + cleanPhone.slice(1);
+            } else if (cleanPhone.length > 0) {
+                agentPhone = cleanPhone;
+            }
         }
 
         // Fetch all available bundles for agents
@@ -46,7 +62,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
             storeName: store.storeName,
             description: store.description,
             bundles: storeBundles,
-            agentId: store.user
+            agentId: store.user._id,
+            agentPhone: agentPhone
         });
     } catch (error) {
         console.error('Fetch store bundles error:', error);

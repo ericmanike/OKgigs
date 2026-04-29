@@ -39,6 +39,8 @@ export default function BuyContent() {
     const searchParams = useSearchParams();
     const initialNetwork = searchParams.get("network");
 
+ 
+
     const [step, setStep] = useState(1);
     const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork || "MTN");
     const [selectedBundle, setSelectedBundle] = useState<any>(null);
@@ -50,7 +52,8 @@ export default function BuyContent() {
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
-
+    
+    const [email, setEmail] = useState<string>(session?.user?.email || '');
 
     const loadPaystackScript = () => {
         const script = document.createElement('script')
@@ -70,14 +73,15 @@ export default function BuyContent() {
     // Auto-fill phone number from profile
     useEffect(() => {
         const fetchUserPhone = async () => {
-            if (session?.user && !phoneNumber) {
+            if (session?.user.email && !phoneNumber) {
                 try {
                     const res = await fetch('/api/profile/phone');
                     if (res.ok) {
                         const data = await res.json();
                         if (data.phone && data.phone.trim()) {
                             setPhoneNumber(data.phone.trim());
-                        }
+                            setEmail(session?.user?.email)
+                        } 
                     }
                 } catch (error) {
                     console.error('Error fetching phone:', error);
@@ -127,9 +131,10 @@ export default function BuyContent() {
 
     const handlePurchase = async () => {
 
-        if (phoneNumber.length < 10) {
-            alert("Valid Phone number is required")
-            return
+        if (phoneNumber.length < 10 || !email) {
+            alert("Valid Phone number and email are required")
+            setLoading(false);
+            return  
         }
 
         setLoading(true);
@@ -153,20 +158,15 @@ export default function BuyContent() {
             const tax = 0.02 * price
             let total = price + tax
 
-
-
-
-
-
             const handler = window.PaystackPop.setup({
                 key: paystackKey!,
-                email: session?.user?.email ||`${phoneNumber}@megagigs.net`,
+                email: email ||`${phoneNumber}@megagigs.net`,
                 currency: 'GHS',
                 amount: Math.round(total * 100), // Convert to kobo
 
                 ref: reference,
                 onClose: () => {
-
+                   
                 },
                 callback: function (response) {
                     (async () => {
@@ -257,13 +257,11 @@ export default function BuyContent() {
 
             setLoading(false);
 
-            setTimeout(() => {
                 if (session) {
                     router.push('/dashboard');
                 } else {
                     router.push('/');
                 }
-            }, 1000)
         }
     };
 
@@ -445,7 +443,7 @@ export default function BuyContent() {
                          
                             
                             </div>
-                            <div className="mb-6">
+                            <div className="mb-3">
                                 <label className="text-sm font-medium text-black mb-2 block">
                                     Phone Number
                                 </label>
@@ -453,8 +451,19 @@ export default function BuyContent() {
                                     type="tel"
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
                                     placeholder="024 XXX XXXX"
+                                    autoFocus
+                                />
+                                 <label className="text-sm font-medium text-black mb-2 block">
+                                    Your Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    value={email || ''}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
+                                    placeholder="Your Email Address"
                                     autoFocus
                                 />
                             </div>
@@ -489,22 +498,23 @@ export default function BuyContent() {
 
                             {message && <p className="text-center text-green-600 font-semibold">{message}</p>}
 
-                            <div className="space-y-3">
+                            <div className={`md:gap-2 ${session?.user.email ? 'md:grid-cols-2 md:gap-2 grid grid-cols-1'  : 'grid-cols-1'}` }>
                                 <button
                                     onClick={handlePurchase}
-                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
-                                    className="w-full py-3.5 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10 || !email )}
+                                    className="w-full py-2 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Pay with MoMo - Paystack"}
+                                    {loading ? <Loader2 className="animate-spin" size={10} /> : "Pay with MoMo - Paystack"}
                                 </button>
 
-                                {/* <button
+                             {session?.user.email &&    <button
                                     onClick={handleWalletPurchase}
-                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
-                                    className="w-full py-3.5 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10 || !email )}
+                                    className="w-full py-2 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : "Buy with Wallet"}
-                                </button> */}
+                                    {loading ? <Loader2 className="animate-spin" size={10} /> : "Buy with Wallet"}
+                                </button>
+                             }
 
                             </div>
                         </CardContent>

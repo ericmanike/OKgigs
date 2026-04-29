@@ -36,6 +36,12 @@ export default withAuth(
             return NextResponse.redirect(new URL("/dashboard", req.url));
         }
 
+        if (pathname.startsWith("/dashboard/store") && role == "user") {
+            return NextResponse.redirect(new URL("/dashboard/upgrade", req.url));
+        }
+ 
+       
+
         // 2. Orders closed: block buy flow for non-admins
         if (pathname.startsWith("/buy") && role !== "admin") {
             const ordersClosed = await getOrdersClosedFlag(req);

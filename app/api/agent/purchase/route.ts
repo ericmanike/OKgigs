@@ -9,7 +9,7 @@ import StoreBundle from "@/models/StoreBundle";
 import AgentStore from "@/models/AgentStore";
 import Bundle from "@/models/Bundle";
 import mongoose from "mongoose";
-import SystemLog from "@/models/SystemLog";
+import Transaction from "@/models/Transaction";
 import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
 
 
@@ -23,9 +23,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const { bundleId, phoneNumber, agentId } = await req.json();
+        const { bundleId, phoneNumber, agentId, reference } = await req.json();
 
-        if (!bundleId || !phoneNumber || !agentId ) {
+        if (!bundleId || !phoneNumber || !agentId || !reference) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
@@ -78,16 +78,43 @@ export async function POST(req: Request) {
      const DAKAZI_API_KEY=process.env.DAKAZI_API_KEY!;
     const SPENDLESS_API_KEY=process.env.SPENDLESS_API_KEY!;
 
-    // if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY) {
-    //     console.log("API keys not found")
-    //     console.log("DAKAZI_API_KEY", DAKAZI_API_KEY);
-    //     console.log("SPENDLESS_API_KEY", SPENDLESS_API_KEY);
-    //   return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
-    // }
-
       
         const network = bundle.network;
-        const reference = `agent_${Date.now()}_${session.user.id}`;
+        console.log(" bundle", bundle)
+        
+        // Prevent replay attacks
+        const existingOrder = await Order.findOne({ payment_id: reference });
+        if (existingOrder) {
+            return NextResponse.json({ message: "Duplicate transaction reference" }, { status: 409 });
+        }
+
+        const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+        if (!PAYSTACK_SECRET_KEY) {
+            return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
+        }
+
+        const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            },
+        });
+
+        const paystackData = await verifyResponse.json();
+
+        if (!paystackData.data || paystackData.data.status !== 'success') {
+            console.log('Payment verification failed');
+            return NextResponse.json({ message: "Payment verification failed" }, { status: 400 });
+        }
+
+        const { amount } = paystackData.data;
+        const tax = 0.02 * customPrice;
+        let total = customPrice + tax;
+        total = Math.round(total * 100) / 100;
+
+        if (amount / 100 !== Number(total)) {
+            console.log('Payment amount does not match');
+            return NextResponse.json({ message: "Payment amount does not match" }, { status: 400 });
+        }
 
 
         
@@ -103,6 +130,17 @@ export async function POST(req: Request) {
             console.log("Agent not found")
             return NextResponse.json({ message: "Transaction failed: Insufficient agent balance" }, { status: 400 });
         }
+
+        // Create transaction log for the agent
+        await Transaction.create({
+            user: agentId,
+            transactionType: 'debit',
+            type: 'purchase',
+            amount: customPrice,
+            reference: reference,
+            description: `Store sale deduction: ${network} ${bundle.name} for ${phoneNumber}`,
+            status: 'success'
+        });
 
         // Create initial order record
         const order = await Order.create({
@@ -145,7 +183,7 @@ export async function POST(req: Request) {
         
         const data = {
           network,
-          bundleName: bundle.name,
+          bundleName: parseFloat(bundle.name.trim()),
           price: customPrice,
           phoneNumber,
           reference,
@@ -156,21 +194,20 @@ export async function POST(req: Request) {
         const provider = providerDoc?.value || "dakazina";
 
 
-        // let response;
+        let response;
 
-        // if (provider === "dakazina") {
-        //   response = await handleDakazina(order, data, DAKAZI_API_KEY);
-        // } else if (provider === "spendless") {
-        //   response = await handleSpendless(order, data, SPENDLESS_API_KEY);
-        // }
+        if (provider === "dakazina") {
+          response = await handleDakazina(order, data, DAKAZI_API_KEY);
+        } else if (provider === "spendless") {
+          response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+        }
         
             
-        //     return NextResponse.json(
-        //       { message: "Order created successfully", response },
-        //       { status: 201 }
-        //     );
-        return NextResponse.json({ message: "Order created successfully" }, { status: 201 });
-        
+            return NextResponse.json(
+              { message: "Order created successfully", response },
+              { status: 201 }
+            );
+
     } catch (error: any) {
         console.error("Agent wallet purchase error:", error);
         return NextResponse.json({ message: error.message || "Error processing purchase" }, { status: 500 });
