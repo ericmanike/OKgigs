@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import BuyingModal from "@/components/ui/agentbuyingModal";
 
 
 
@@ -35,6 +36,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
   const [email, setEmail] = useState(session?.user?.email || "");
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
+    const [isBuyingModalOpen, setIsBuyingModalOpen] = useState(false);  
 
     useEffect(() => {
         const loadPaystackScript = () => {
@@ -79,9 +81,16 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
     // Update bundles when network or category changes
     useEffect(() => {
+
         if (storeData) {
             filterBundles(storeData.bundles, selectedNetwork, activeCategory);
         }
+        
+        setTimeout(() => {
+             setIsBuyingModalOpen(true);
+        }, 1000);
+
+
     }, [selectedNetwork, activeCategory, storeData]);
 
     const handlePurchase = async () => {
@@ -173,6 +182,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     return (
         <div className="w-full max-w-4xl mx-auto pb-12 pt-28 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Store Header */}
+            <BuyingModal isOpen={isBuyingModalOpen} onClose={() => setIsBuyingModalOpen(false)}  onConfirm={()=>{}} />
             <div className="text-center mb-8 bg-white p-6 rounded-[5px] shadow-lg">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Store className="text-blue-600" size={32} />
