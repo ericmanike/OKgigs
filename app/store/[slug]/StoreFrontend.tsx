@@ -47,6 +47,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
         };
         loadPaystackScript();
         fetchStoreData();
+        setIsBuyingModalOpen(true)
     }, [slug]);
 
     const fetchStoreData = async () => {
@@ -86,10 +87,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
             filterBundles(storeData.bundles, selectedNetwork, activeCategory);
         }
         
-        setTimeout(() => {
-             setIsBuyingModalOpen(true);
-        }, 1000);
-
+       
 
     }, [selectedNetwork, activeCategory, storeData]);
 
