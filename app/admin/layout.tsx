@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
 
   ShoppingBag,
+  Store,
   Users,
   Package,
   Megaphone,
@@ -21,6 +22,7 @@ import { useSession } from "next-auth/react";
 
 const navItems = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
+  { href: "/admin/stores", label: "Stores", icon: Store, exact: false },
   { href: "/admin/transactions", label: "Transactions", icon: History, exact: false },
   { href: "/admin/withdrawals", label: "Withdrawals", icon: Wallet, exact: false },
   { href: "/admin/users", label: "Users", icon: Users, exact: false },
