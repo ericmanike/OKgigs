@@ -69,6 +69,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
         }
     };
 
+    
     const filterBundles = (allBundles: any[], network: string, category: string) => {
         if (!allBundles) return;
         const filtered = allBundles.filter((b: any) => {

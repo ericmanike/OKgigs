@@ -4,3 +4,5 @@ export default async function AgentStorePage({ params }: { params: Promise<{ slu
     const slug = (await params).slug;
     return <StoreFrontend slug={slug} />;
 }
+
+
