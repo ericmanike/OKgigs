@@ -116,20 +116,8 @@ export async function POST(req: Request) {
         }
 
 
-        
 
-        // // Atomic update: Deduct from agent's wallet
-        // const updatedAgent = await User.findOneAndUpdate(
-        //     { _id: agentId, walletBalance: { $gte: customPrice } },
-        //     { $inc: { walletBalance: -customPrice } },
-        //     { new: true }
-        // );
-
-        // if (!updatedAgent) {
-        //     console.log("Agent not found")
-        //     return NextResponse.json({ message: "Transaction failed: Insufficient agent balance" }, { status: 400 });
-        // }
-
+     
         // Create transaction log for the agent
         await Transaction.create({
             user: agentId,

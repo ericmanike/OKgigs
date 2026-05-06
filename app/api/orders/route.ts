@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   
 
     if (!PAYSTACK_SECRET_KEY) {
-      //console.log('Paystack secret key not found')
+      console.log('Paystack secret key not found')
       return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
     }
 
@@ -118,9 +118,9 @@ export async function POST(req: Request) {
     
     const order = await createOrder(session, data);
 
-    
+    if(session?.user.id){
         await Transaction.create({
-            user: session?.user?.id || 'Guest',
+            user: session?.user?.id,  
             transactionType: 'debit',
             type: 'purchase',
             amount: total,
@@ -128,6 +128,7 @@ export async function POST(req: Request) {
             description: `Purchase of ${network} ${bundleName}GB for ${phoneNumber} via Paystack`,
             status: 'success'
         });
+    }
     
 
 
@@ -152,6 +153,7 @@ export async function POST(req: Request) {
 
 
   } catch (error) {
+    console.log('Error creating order:', error)
   
     return NextResponse.json({ message: "Error creating order" }, { status: 500 });
   }
