@@ -67,6 +67,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
         } finally {
             setLoadingStore(false);
         }
+
     };
 
     

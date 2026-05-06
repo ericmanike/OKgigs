@@ -63,15 +63,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "No Shop found" }, { status: 404 });
         }
 
-        // // Check wallet balance (deduct the custom price set by agent)
-        // if (agent.walletBalance < customPrice) {
-        //     console.log('Insufficient wallet balance');
-        //     return NextResponse.json({
-        //         message: "Insufficient wallet balance",
-        //         balance: agent.walletBalance,
-        //         required: customPrice
-        //     }, { status: 400 });
-        // }
+      
 
         
      const DAKAZI_API_KEY=process.env.DAKAZI_API_KEY!;
@@ -119,6 +111,8 @@ export async function POST(req: Request) {
 
      
         // Create transaction log for the agent
+      
+      if(session?.user.id){ 
         await Transaction.create({
             user: agentId,
             transactionType: 'debit',
@@ -128,6 +122,7 @@ export async function POST(req: Request) {
             description: `Store sale deduction: ${network} ${bundle.name} for ${phoneNumber}`,
             status: 'success'
         });
+    }
 
         // Create initial order record
         const order = await Order.create({
