@@ -77,15 +77,7 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             accent="red"
           />
 
-          <NoticeItem
-            icon={<Clock size={15} className="text-amber-500 shrink-0 mt-0.5" />}
-            text={
-              <>
-                A typical transaction takes <strong>15–30 minutes</strong>. Network downtimes may occasionally cause delays.
-              </>
-            }
-            accent="amber"
-          />
+      
 
         
 
@@ -93,10 +85,20 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             icon={<CheckCircle size={15} className="text-green-500 shrink-0 mt-0.5" />}
             text={
               <>
-                after momo approval wait for  the transaction to be confirmed <strong>to ensure your order is created</strong>. 
+                after momo approval confirm payment by clicking on <strong>"I have made payment"</strong>. 
               </>
             }
             accent="green"
+          />
+
+              <NoticeItem
+            icon={<Clock size={15} className="text-amber-500 shrink-0 mt-0.5" />}
+            text={
+              <>
+                A typical transaction takes <strong>15–30 minutes</strong>. Network downtimes may occasionally cause delays.
+              </>
+            }
+            accent="amber"
           />
         </div>
 
