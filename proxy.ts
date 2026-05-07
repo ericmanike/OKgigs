@@ -43,7 +43,7 @@ export default withAuth(
        
 
         // 2. Orders closed: block buy flow for non-admins
-        if (pathname.startsWith("/buy") && role !== "admin") {
+        if (pathname.startsWith("/") && role !== "admin") {
             const ordersClosed = await getOrdersClosedFlag(req);
             if (ordersClosed) {
                 return NextResponse.redirect(new URL("/orders-closed", req.url));
