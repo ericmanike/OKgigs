@@ -10,7 +10,7 @@ import AgentStore from "@/models/AgentStore";
 import Bundle from "@/models/Bundle";
 import mongoose from "mongoose";
 import Transaction from "@/models/Transaction";
-import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+import { handleDakazina, handleSpendless, handleDatamart } from "@/components/providers/apiProviders";
 
 
 export async function POST(req: Request) {
@@ -182,6 +182,9 @@ export async function POST(req: Request) {
           response = await handleDakazina(order, data, DAKAZI_API_KEY);
         } else if (provider === "spendless") {
           response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+        } else if (provider === "datamart") {
+          const DATAMART_API_KEY = process.env.DATAMART_API_KEY || process.env.DATA_MART_API_KEY!;
+          response = await handleDatamart(order, data, DATAMART_API_KEY);
         }
         
             

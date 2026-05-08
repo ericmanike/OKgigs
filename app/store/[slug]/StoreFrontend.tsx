@@ -230,7 +230,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
                     {bundles.length === 0 ? (
                         <div className="text-center py-12 bg-white rounded-2xl border border-zinc-100">
-                            <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
+                            <p className="text-zinc-500">No bundles available for {selectedNetwork} (Out of Stock)</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">

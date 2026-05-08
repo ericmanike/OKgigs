@@ -27,6 +27,8 @@ export default withAuth(
         // req.nextauth.token is automatically populated by withAuth
         const token = req.nextauth.token;
         const role = token?.role;
+        console.log(token)
+        console.log(role)
         const pathname = req.nextUrl.pathname;
        
 

@@ -283,8 +283,8 @@ export default function AdminOrdersPage() {
           <div className="flex flex-wrap gap-3">
             {[
               { value: "dakazina", label: "Dakazina" },
-              { value: "spendless", label: "Spendless" }
-           
+              { value: "spendless", label: "Spendless" },
+              { value: "datamart", label: "Datamart" }
             ].map((provider) => (
               <label
                 key={provider.value}

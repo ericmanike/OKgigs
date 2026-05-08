@@ -7,7 +7,7 @@ import User from "@/models/User";
 import Setting from "@/models/Setting";
 import Bundle from "@/models/Bundle";
 import mongoose from "mongoose";
-import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+import { handleDakazina, handleSpendless, handleDatamart } from "@/components/providers/apiProviders";
 import Transaction from "@/models/Transaction";
 
 
@@ -138,17 +138,16 @@ const updatedUser = await User.findOneAndUpdate(
     const provider = providerDoc?.value || "dakazina";
   
 
-        // if(provider == 'dakazina'){
-        //     handleDakazina(createdOrder, {phoneNumber,reference,network,bundleName}, DAKAZI_API_KEY)
-
-        // } else if( provider == 'spendless'){
-        //     handleSpendless(createdOrder, {phoneNumber,reference,network,bundleName},SPENDLESS_API_KEY)
-
-        // } else if (provider == 'datamart'){
-        
-        // } else{
-        //     return NextResponse.json({message:'API provider not defined'})
-        // }
+        if (provider == 'dakazina') {
+            handleDakazina(createdOrder, {phoneNumber, reference, network, bundleName}, DAKAZI_API_KEY)
+        } else if (provider == 'spendless') {
+            handleSpendless(createdOrder, {phoneNumber, reference, network, bundleName}, SPENDLESS_API_KEY)
+        } else if (provider == 'datamart') {
+            const DATAMART_API_KEY = process.env.DATAMART_API_KEY || process.env.DATA_MART_API_KEY!;
+            handleDatamart(createdOrder, {phoneNumber, reference, network, bundleName}, DATAMART_API_KEY)
+        } else {
+            return NextResponse.json({message: 'API provider not defined'})
+        }
 
 
 

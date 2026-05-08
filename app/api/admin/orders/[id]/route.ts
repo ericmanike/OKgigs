@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongoose';
 import Order from '@/models/Order';
 import Setting from '@/models/Setting';
-import { handleDakazina, handleSpendless } from '@/components/providers/apiProviders';
+import { handleDakazina, handleSpendless, handleDatamart } from '@/components/providers/apiProviders';
 // Delete an order
 export async function DELETE(
   req: Request,
@@ -190,7 +190,20 @@ export async function PATCH(
       }
 
     } else if (provider?.value === "datamart") {
-
+      const DATAMART_API_KEY = process.env.DATAMART_API_KEY || process.env.DATA_MART_API_KEY;
+      if (!DATAMART_API_KEY) {
+        return NextResponse.json(
+          { error: "Datamart API key not configured" },
+          { status: 500 }
+        );
+      }
+      const data = {
+        network: order.network,
+        phoneNumber: order.phoneNumber,
+        bundleName: order.bundleName,
+        reference: order.transaction_id
+      };
+      orderResponse = await handleDatamart(order, data, DATAMART_API_KEY);
     }
 
 

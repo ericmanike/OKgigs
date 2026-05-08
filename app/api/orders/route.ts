@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Setting from "@/models/Setting";
-import { handleDakazina, handleSpendless } from "@/components/providers/apiProviders";
+import { handleDakazina, handleSpendless, handleDatamart } from "@/components/providers/apiProviders";
 import { createOrder } from "@/lib/orderService";
 import Transaction from "@/models/Transaction";
 
@@ -142,6 +142,9 @@ export async function POST(req: Request) {
       response = await handleDakazina(order, data, DAKAZI_API_KEY);
     } else if (provider === "spendless") {
       response = await handleSpendless(order, data, SPENDLESS_API_KEY);
+    } else if (provider === "datamart") {
+      const DATAMART_API_KEY = process.env.DATAMART_API_KEY || process.env.DATA_MART_API_KEY!;
+      response = await handleDatamart(order, data, DATAMART_API_KEY);
     }
 
     return NextResponse.json(

@@ -348,7 +348,7 @@ export default function BuyContent() {
                     
                     : bundles.length === 0 ? (
                         <div className="text-center py-12">
-                            <p className="text-zinc-500">No bundles available for {selectedNetwork}</p>
+                            <p className="text-zinc-500">No bundles available for {selectedNetwork} (Out of Stock)</p>
                         </div>
                     ):  
                        (
