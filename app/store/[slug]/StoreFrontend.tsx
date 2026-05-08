@@ -57,8 +57,26 @@ export default function StoreFrontend({ slug }: { slug: string }) {
             if (res.ok) {
                 const data = await res.json();
                 setStoreData(data);
+                let currentNetwork = selectedNetwork;
+                if (currentNetwork === "MTN") {
+                    const isVisible = (b: any) => b.network === "MTN" && (activeCategory !== 'promo' || b.audience === 'promo');
+                    if (!data.bundles.some(isVisible)) {
+                        const hasTelecel = data.bundles.some((b: any) => b.network === "Telecel" && (activeCategory !== 'promo' || b.audience === 'promo'));
+                        if (hasTelecel) {
+                            setSelectedNetwork("Telecel");
+                            currentNetwork = "Telecel";
+                        } else {
+                            const hasAirtelTigo = data.bundles.some((b: any) => b.network === "AirtelTigo" && (activeCategory !== 'promo' || b.audience === 'promo'));
+                            if (hasAirtelTigo) {
+                                setSelectedNetwork("AirtelTigo");
+                                currentNetwork = "AirtelTigo";
+                            }
+                        }
+                    }
+                }
+
                 // initial filter
-                filterBundles(data.bundles, selectedNetwork, activeCategory);
+                filterBundles(data.bundles, currentNetwork, activeCategory);
             } else {
                 setStoreData(null);
             }

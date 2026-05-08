@@ -49,6 +49,7 @@ export default function BuyContent() {
     const [bundles, setBundles] = useState<any[]>([]);
     const [loadingBundles, setLoadingBundles] = useState(false);
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
+    const [hasAutoSwitched, setHasAutoSwitched] = useState(false);
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
@@ -100,25 +101,30 @@ export default function BuyContent() {
                 const userRole = session?.user?.role || 'user'; // Default to user for visibility
 
                 // Filter bundles by selected network, active status, and audience
-                const filtered = data.filter((b: any) => {
-                    // Category filter (Promo vs All)
+                const isBundleVisible = (b: any) => {
+                    if (!b.isActive) return false;
                     if (activeCategory === 'promo' && b.audience !== 'promo') return false;
-
-                    // Basic filters
-                    if (b.network !== selectedNetwork || !b.isActive) return false;
-
-                    // Audience filter
-                    // If bundle is for agents, only agents (or admins) can see it
-                    if (b.audience === 'agent') {
-                        return userRole === 'agent' || userRole === 'admin';
-                    }
-
-                    // If bundle is for users (regular) or promo, everyone can see it
-                    if (b.audience == 'promo' && !session) {
-                        return false;
-                    }
+                    if (b.audience === 'agent') return userRole === 'agent' || userRole === 'admin';
+                    if (b.audience === 'promo' && !session) return false;
                     return true;
-                });
+                };
+
+                const filtered = data.filter((b: any) => b.network === selectedNetwork && isBundleVisible(b));
+
+                if (filtered.length === 0 && selectedNetwork === "MTN" && !initialNetwork && !hasAutoSwitched) {
+                    setHasAutoSwitched(true);
+                    const telecelBundles = data.filter((b: any) => b.network === "Telecel" && isBundleVisible(b));
+                    if (telecelBundles.length > 0) {
+                        setSelectedNetwork("Telecel");
+                        return;
+                    } else {
+                        const airtelTigoBundles = data.filter((b: any) => b.network === "AirtelTigo" && isBundleVisible(b));
+                        if (airtelTigoBundles.length > 0) {
+                            setSelectedNetwork("AirtelTigo");
+                            return;
+                        }
+                    }
+                }
 
                 setBundles(filtered);
             }

@@ -14,9 +14,7 @@ export async function GET() {
 
 
         await dbConnect();
-        const bundles = await Bundle.find({ isActive: true }).sort({ network: 1, price: 1 });
-      
-    
+        const bundles = await Bundle.find({}).sort({ network: 1, price: 1 });
 
 
         return NextResponse.json(bundles);
