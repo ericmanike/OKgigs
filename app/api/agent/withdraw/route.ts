@@ -22,8 +22,8 @@ export async function POST(req: Request) {
         }
 
         const withdrawalAmount = Number(amount);
-        if (isNaN(withdrawalAmount) || withdrawalAmount < 25) {
-            return NextResponse.json({ error: 'Minimum withdrawal amount is GH₵ 25.00' }, { status: 400 });
+        if (isNaN(withdrawalAmount) || withdrawalAmount < 100) {
+            return NextResponse.json({ error: 'Minimum withdrawal amount is GH₵ 100.00' }, { status: 400 });
         }
 
         // Check if agent has enough profit
