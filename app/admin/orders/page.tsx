@@ -20,15 +20,20 @@ export default function AdminOrdersPage() {
   const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState("dakazina");
   const [savingProvider, setSavingProvider] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [bundles, setBundles] = useState<any[]>([]);
+  const [newOrder, setNewOrder] = useState({ network: "MTN", bundleName: "", phoneNumber: "" });
 
   useEffect(() => {
     const fetchEverything = async () => {
       try {
-        const [ordersRes, statsRes, dakaziRes, ordersClosedRes] = await Promise.all([
+        const [ordersRes, statsRes, dakaziRes, ordersClosedRes, bundlesRes] = await Promise.all([
           fetch("/api/admin/orders"),
           fetch("/api/admin/stats"),
           fetch("/api/testingDakazi"),
           fetch("/api/admin/settings/orders-closed"),
+          fetch("/api/bundles"),
         ]);
 
         if (ordersRes.ok) setOrders(await ordersRes.json());
@@ -38,6 +43,10 @@ export default function AdminOrdersPage() {
           const data = await ordersClosedRes.json();
           setOrdersClosed(Boolean(data?.ordersClosed));
           if (data?.provider) setSelectedProvider(data.provider);
+        }
+        if (bundlesRes.ok) {
+          const data = await bundlesRes.json();
+          setBundles(data.filter((b: any) => b.isActive));
         }
       } catch (e) {
         console.error(e);
@@ -141,6 +150,36 @@ export default function AdminOrdersPage() {
       else alert("Failed to delete order");
     } catch {
       alert("Error deleting order");
+    }
+  };
+
+  const handleCreateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newOrder.network || !newOrder.bundleName || !newOrder.phoneNumber) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    setCreatingOrder(true);
+    try {
+      const res = await fetch("/api/admin/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setOrders([data.order, ...orders]);
+        setIsCreateModalOpen(false);
+        setNewOrder({ network: "MTN", bundleName: "", phoneNumber: "" });
+        alert("Order created successfully!");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert("Failed to create order: " + (data.message || "Unknown error"));
+      }
+    } catch {
+      alert("Error creating order");
+    } finally {
+      setCreatingOrder(false);
     }
   };
 
@@ -315,9 +354,17 @@ export default function AdminOrdersPage() {
 
       <Card className="border-zinc-200 bg-white overflow-hidden">
         <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white">
-          <h3 className="text-base font-semibold text-zinc-900">
-            All Orders <span className="text-zinc-400 font-normal text-sm">({filteredOrders.length})</span>
-          </h3>
+          <div className="flex items-center gap-4">
+            <h3 className="text-base font-semibold text-zinc-900">
+              All Orders <span className="text-zinc-400 font-normal text-sm">({filteredOrders.length})</span>
+            </h3>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            >
+              + Create Order
+            </button>
+          </div>
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
             <input
@@ -565,6 +612,73 @@ export default function AdminOrdersPage() {
           )}
         </div>
       </Card>
+
+      {/* Create Order Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-zinc-900">Create Order</h3>
+              <button onClick={() => setIsCreateModalOpen(false)} className="text-zinc-500 hover:text-zinc-900">
+                <XCircle size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleCreateOrder} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-1">Network</label>
+                <select
+                  value={newOrder.network}
+                  onChange={(e) => {
+                    setNewOrder({ ...newOrder, network: e.target.value, bundleName: "" });
+                  }}
+                  className="w-full border border-zinc-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
+                  required
+                >
+                  <option value="MTN">MTN</option>
+                  <option value="Telecel">Telecel</option>
+                  <option value="AT">AT</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-1">Bundle</label>
+                <select
+                  value={newOrder.bundleName}
+                  onChange={(e) => setNewOrder({ ...newOrder, bundleName: e.target.value })}
+                  className="w-full border border-zinc-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
+                  required
+                >
+                  <option value="">Select Bundle</option>
+                  {bundles
+                    .filter((b) => b.network === newOrder.network)
+                    .map((bundle) => (
+                      <option key={bundle._id} value={bundle.name.replace("GB", "")}>
+                        {bundle.name} - {formatCurrency(bundle.price)}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-1">Beneficiary Phone Number</label>
+                <input
+                  type="tel"
+                  value={newOrder.phoneNumber}
+                  onChange={(e) => setNewOrder({ ...newOrder, phoneNumber: e.target.value })}
+                  className="w-full border border-zinc-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. 024XXXXXXX"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={creatingOrder}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {creatingOrder ? "Processing..." : "Create Order"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
