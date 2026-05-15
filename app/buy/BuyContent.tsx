@@ -53,8 +53,6 @@ export default function BuyContent() {
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
-    
-    const [email, setEmail] = useState<string>(session?.user?.email || '');
 
     const loadPaystackScript = () => {
         const script = document.createElement('script')
@@ -81,7 +79,6 @@ export default function BuyContent() {
                         const data = await res.json();
                         if (data.phone && data.phone.trim()) {
                             setPhoneNumber(data.phone.trim());
-                            setEmail(session?.user?.email)
                         } 
                     }
                 } catch (error) {
@@ -137,8 +134,8 @@ export default function BuyContent() {
 
     const handlePurchase = async () => {
 
-        if (phoneNumber.length < 10 || !email) {
-            alert("Valid Phone number and email are required")
+        if (phoneNumber.length < 10 ) {
+            alert("Valid Phone number is required")
             setLoading(false);
             return  
         }
@@ -166,7 +163,7 @@ export default function BuyContent() {
 
             const handler = window.PaystackPop.setup({
                 key: paystackKey!,
-                email: email ||`${phoneNumber}@megagigs.net`,
+                email: `${phoneNumber}@megagigs.net`,
                 currency: 'GHS',
                 amount: Math.round(total * 100), // Convert to kobo
 
@@ -444,8 +441,8 @@ export default function BuyContent() {
                         <CardContent className="p-6">
 
                             <div className="text-red-900  bg-red-100 p-2 rounded-xl text-center text-sm mb-6 font-bold shadow-lg"> 
-                                <strong className="text-red-900 font-extrabold">Notice! </strong> After momo approval, click on I have made payment wait
-                                 for  payment to be confirmed to ensure your order is created
+                                <strong className="text-red-900 font-extrabold">Notice! </strong> After momo approval, click on I've completed payment  wait
+                                 for  payment to be verified to ensure your order is created
                          
                             
                             </div>
@@ -461,17 +458,7 @@ export default function BuyContent() {
                                     placeholder="024 XXX XXXX"
                                     autoFocus
                                 />
-                                 <label className="text-sm font-medium text-black mb-2 block">
-                                    Your Email Address
-                                </label>
-                                <input
-                                    type="email"
-                                    value={email || ''}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
-                                    placeholder="Your Email Address"
-                                    autoFocus
-                                />
+                              
                             </div>
 
                             <div className={clsx(
@@ -507,7 +494,7 @@ export default function BuyContent() {
                             <div className={`md:gap-2 ${session?.user.email ? 'md:grid-cols-2 md:gap-2 grid grid-cols-1'  : 'grid-cols-1'}` }>
                                 <button
                                     onClick={handlePurchase}
-                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10 || !email )}
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-2 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={10} /> : "Pay with MoMo - Paystack"}
@@ -515,7 +502,7 @@ export default function BuyContent() {
 
                              {session?.user.email &&    <button
                                     onClick={handleWalletPurchase}
-                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10 || !email )}
+                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
                                     className="w-full py-2 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={10} /> : "Buy with Wallet"}
