@@ -197,12 +197,16 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     }
 
     return (
-        <div className="w-full max-w-4xl mx-auto pb-12 pt-28 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-full max-w-4xl mx-auto pb-12 pt-8 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Store Header */}
             <BuyingModal isOpen={isBuyingModalOpen} onClose={() => setIsBuyingModalOpen(false)}  onConfirm={()=>{}} />
             <div className="text-center mb-8 bg-white p-6 rounded-[5px] shadow-lg">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Store className="text-blue-600" size={32} />
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-inner border-2 border-zinc-100 bg-zinc-50">
+                    <img 
+                        src={`https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(storeData.storeName)}`} 
+                        alt={`${storeData.storeName} Avatar`}
+                        className="w-full h-full object-cover"
+                    />
                 </div>
                 <h1 className="text-3xl font-black text-zinc-900 tracking-tight mb-2">
                     {storeData.storeName}
