@@ -34,7 +34,6 @@ export default function StoreFrontend({ slug }: { slug: string }) {
     const [loadingStore, setLoadingStore] = useState(true);
     const [message, setMessage] = useState("");
     const [activeCategory, setActiveCategory] = useState<'all' | 'promo'>('all');
-  const [email, setEmail] = useState(session?.user?.email || "");
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
     const [isBuyingModalOpen, setIsBuyingModalOpen] = useState(false);  
 
@@ -132,7 +131,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
             (window as any).PaystackPop.setup({
                 key: paystackKey,
-                email: email,
+                email: phoneNumber+"store@megagigs.net",  
                 currency: 'GHS',
                 amount: Math.round(total * 100),
                 ref: reference,
@@ -326,17 +325,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
                                     autoFocus
                                 />
 
-                                  <label className="text-sm font-medium text-black m-2 block">
-                                    Your Email Address
-                                </label>
-                                <input
-                                    type="email"
-                                    value={email || ''}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl border border-slate-900 bg-white text-black placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 text-lg tracking-wide"
-                                    placeholder="Your Email Address"
-                                    autoFocus
-                                />
+                               
 
                             </div>
 
@@ -370,7 +359,7 @@ export default function StoreFrontend({ slug }: { slug: string }) {
 
                             <button
                                 onClick={handlePurchase}
-                                disabled={loading || phoneNumber.length !== 10 || !email}
+                                disabled={loading || phoneNumber.length !== 10 }
                                 className="w-full py-2 text-white hover:bg-slate-700 bg-slate-600 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer text-lg"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={24} /> : "Pay Now"}
