@@ -27,16 +27,14 @@ function BecomeAgent() {
                                     
                                 }),
                             });
-          if(res.ok){
+          if (res.ok) {
             const data = await res.json();
-            router.push('/dashboard/store');
-
-            
-           
-          }else{
+            await update(); // This now securely fetches the new role from DB
+            window.location.href = '/dashboard/store';
+          } else {
             const data = await res.json();
+            console.error("Error creating shop:", data);
           }
-          window.location.reload();
         } catch (error) {
             console.error("Failed to create shop:", error);
         } finally {

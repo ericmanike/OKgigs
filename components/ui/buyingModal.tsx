@@ -1,6 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { AlertTriangle, Clock, CheckCircle, Shield, X } from "lucide-react"
+import { AlertTriangle, Clock, CheckCircle, Shield, X, Crown } from "lucide-react"
+import Link from "next/link"
 import { useState, useEffect } from "react"
 
 type Props = {
@@ -91,14 +92,16 @@ export default function BuyingModal({ isOpen, onClose, onConfirm }: Props) {
             accent="green"
           />
 
-              <NoticeItem
-            icon={<Clock size={15} className="text-amber-500 shrink-0 mt-0.5" />}
+            
+          
+          <NoticeItem
+            icon={<Crown size={15} className="text-blue-500 shrink-0 mt-0.5" />}
             text={
               <>
-                A typical transaction takes <strong>15–30 minutes</strong>. Network downtimes may occasionally cause delays.
+                Want to earn extra cash? <Link href="/dashboard/upgrade" className="text-blue-600 font-bold hover:underline">Sign up to become an agent for free!</Link>
               </>
             }
-            accent="amber"
+            accent="blue"
           />
         </div>
 

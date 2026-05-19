@@ -81,9 +81,13 @@ export const authOptions: NextAuthOptions = {
                 token.role = (user as any).role;
             }
 
-            // Support for updating the session (e.g. wallet balance or role change)
-            if (trigger === "update" && session) {
-                return { ...token, ...session };
+            // Support for updating the session securely from the DB
+            if (trigger === "update") {
+                await dbConnect();
+                const dbUser = await User.findById(token.id);
+                if (dbUser) {
+                    token.role = dbUser.role;
+                }
             }
 
             return token;

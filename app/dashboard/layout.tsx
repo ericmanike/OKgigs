@@ -11,6 +11,8 @@ import {
   Shield,
   X,
   Menu,
+  Wifi,
+  Users,
 } from "lucide-react";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
@@ -178,16 +180,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}>
                 <ShoppingBag size={18} strokeWidth={2} />
               </span>
-              My Data Shop
+              Manage Shop
             </Link>
           )}
-
-
-
-
-
-
-        </div>
+          
+          {/* Additional static links */}
+          <Link
+            href="/buy"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+          >
+            <span className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0 bg-zinc-100 text-[#E42320]">
+              <Wifi size={18} strokeWidth={2} />
+            </span>
+            Buy Data
+          </Link>
+          
+          <a
+            href="https://whatsapp.com/channel/0029VbBcIbS7T8beipl8aZ1x"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 whitespace-nowrap text-left text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98]"
+          >
+            <span className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors shrink-0 bg-[#25D366]/10 text-[#25D366]">
+              <Users size={18} strokeWidth={2} />
+            </span>
+            Join Community
+          </a>        </div>
       </aside>
 
       {/* Main content area */}

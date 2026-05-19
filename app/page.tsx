@@ -238,16 +238,18 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <button
-              onClick={() => handleCtaClick('/buy')}
+              onClick={() => handleCtaClick('/dashboard/upgrade')}
               className="w-full text-left cursor-pointer"
             >
               <div className="rounded-2xl bg-[#E42320] text-white p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-[#E42320]/95 transition-colors shadow-lg">
                 <div>
-                  <h2 className="text-lg md:text-xl font-bold">Ready to get your data?</h2>
-                  <p className="text-white/80 text-sm mt-1">A simple 3-step process. No delays, no hidden charges.</p>
+                  <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
+                    <span className="text-2xl"></span> Ready to earn extra cash?
+                  </h2>
+                  <p className="text-white/80 text-sm mt-1 font-medium">Start your own data business today. Become an agent for free!</p>
                 </div>
-                <span className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#E42320] font-semibold text-sm shrink-0">
-                  Place order <ArrowRight size={18} />
+                <span className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#E42320] font-bold text-sm shrink-0 shadow-sm hover:scale-105 transition-transform">
+                  Become an Agent <ArrowRight size={18} />
                 </span>
               </div>
             </button>

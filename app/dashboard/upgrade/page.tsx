@@ -46,7 +46,7 @@ export default async function UpgradePage() {
         </div>
      
       </div>
-  {session.user.role === "admin" && (
+  {session.user.role === "admin"  || session.user.role === "agent" && (
 
     <div className="flex flex-col items-center justify-center ">
     <h1 className="text-3xl font-black text-zinc-900 tracking-tight my-4"> Your shop is LIVE!</h1>

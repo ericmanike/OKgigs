@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
-import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle, DownloadCloud, Wifi, CheckCircle2, XCircle, Clock, ShoppingBag } from "lucide-react";
+import { Loader2, Save, Store, Link as LinkIcon, TrendingUp, Wallet, Copy, Check, MessageCircle, DownloadCloud, Wifi, CheckCircle2, XCircle, Clock, ShoppingBag, HelpCircle, ChevronDown } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import clsx from "clsx";
 import Link from "next/link";
 import WithdrawalModal from "./WithdrawalModal";
+import StoreGuideModal from "./StoreGuideModal";
 
 export default function AgentStoreSettings() {
     const [storeName, setStoreName] = useState("");
@@ -23,10 +24,15 @@ export default function AgentStoreSettings() {
     const [copied, setCopied] = useState(false);
     const [withdrawing, setWithdrawing] = useState(false);
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+    const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+    const [openNetworks, setOpenNetworks] = useState<Record<string, boolean>>({});
     const [storeOrders, setStoreOrders] = useState<any[]>([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
 
     useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem("megagigs_store_guide_seen") !== "true") {
+            setIsGuideModalOpen(true);
+        }
         fetchStoreData();
         fetchStoreOrders();
     }, []);
@@ -43,6 +49,12 @@ export default function AgentStoreSettings() {
                 // Agents use active bundles that are for agents
                 const availableBundles = data.filter((b: any) => b.isActive && b.audience === 'agent');
                 setBundles(availableBundles);
+                
+                // Initialize the first network as open
+                const uniqueNetworks = Array.from(new Set(availableBundles.map((b: any) => b.network))) as string[];
+                if (uniqueNetworks.length > 0) {
+                    setOpenNetworks({ [uniqueNetworks[0]]: true });
+                }
             }
 
             if (storeRes.ok) {
@@ -87,6 +99,10 @@ export default function AgentStoreSettings() {
             ...prev,
             [bundleId]: isNaN(val) ? 0 : val
         }));
+    };
+
+    const toggleNetwork = (network: string) => {
+        setOpenNetworks(prev => ({ ...prev, [network]: !prev[network] }));
     };
 
     const handleSave = async () => {
@@ -191,15 +207,7 @@ export default function AgentStoreSettings() {
                                 <h3 className="text-sm font-black text-zinc-900">{totalSalesCount}</h3>
                             </div>
                         </div>
-                        <div className="border-t border-zinc-100 pt-4 flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-                                <Wallet size={13} />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-zinc-500">Wallet Balance</p>
-                                <h3 className="text-sm font-black text-zinc-900">{formatCurrency(walletBalance)}</h3>
-                            </div>
-                        </div>
+                        
                     </CardContent>
                 </Card>
                 <Card>
@@ -231,14 +239,23 @@ export default function AgentStoreSettings() {
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                            <Store className="text-blue-600" size={20} />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                <Store className="text-blue-600" size={20} />
+                            </div>
+                            <div>
+                                <CardTitle>My Shop Setup</CardTitle>
+                                <CardDescription>Configure your personal data store</CardDescription>
+                            </div>
                         </div>
-                        <div>
-                            <CardTitle>My Shop Setup</CardTitle>
-                            <CardDescription>Configure your personal data store</CardDescription>
-                        </div>
+                        <button 
+                            onClick={() => setIsGuideModalOpen(true)}
+                            className="flex items-center gap-1.5 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                            <HelpCircle size={16} />
+                            <span className="hidden sm:inline">How it works</span>
+                        </button>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -308,45 +325,80 @@ export default function AgentStoreSettings() {
                     <CardDescription>Determine your profit over the base price for each bundle</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-zinc-50 text-zinc-500">
-                                <tr>
-                                    <th className="px-4 py-3 rounded-l-lg">Network</th>
-                                    <th className="px-4 py-3">Bundle</th>
-                                    <th className="px-4 py-3">Base Price</th>
-                                    <th className="px-4 py-3">Your Profit (GHS)</th>
-                                    <th className="px-4 py-3 rounded-r-lg">Final Price</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {bundles.map(bundle => {
-                                    const profit = bundleProfits[bundle._id] || 0;
-                                    const finalPrice = bundle.price + profit;
-                                    return (
-                                        <tr key={bundle._id}>
-                                            <td className="px-4 py-3 font-medium">{bundle.network}</td>
-                                            <td className="px-4 py-3">{bundle.name}</td>
-                                            <td className="px-4 py-3">{formatCurrency(bundle.price)}</td>
-                                            <td className="px-4 py-3">
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.5"
-                                                    value={profit}
-                                                    onChange={e => handleProfitChange(bundle._id, e.target.value)}
-                                                    className="w-24 px-2 py-1 rounded border focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="0.00"
-                                                />
-                                            </td>
-                                            <td className="px-4 py-3 font-bold text-zinc-900">
-                                                {formatCurrency(finalPrice)}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                    <div className="space-y-4">
+                        {Array.from(new Set(bundles.map(b => b.network))).map(network => {
+                            const networkBundles = bundles.filter(b => b.network === network);
+                            const isOpen = openNetworks[network as string];
+                            
+                            return (
+                                <div key={network as string} className="border border-zinc-200 rounded-xl overflow-hidden bg-white">
+                                    <button 
+                                        onClick={() => toggleNetwork(network as string)}
+                                        className="w-full flex items-center justify-between p-4 bg-zinc-50 hover:bg-zinc-100 transition-colors border-b border-transparent"
+                                    >
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <span className="font-bold text-zinc-900">{network as string} Bundles</span>
+                                            <span className="text-xs font-semibold text-zinc-500 bg-zinc-200/80 px-2.5 py-0.5 rounded-full">
+                                                {networkBundles.length}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-md uppercase tracking-wider hidden sm:inline-block">
+                                                Set your own price
+                                            </span>
+                                        </div>
+                                        <ChevronDown className={clsx("text-zinc-500 transition-transform duration-300", isOpen && "rotate-180")} size={20} />
+                                    </button>
+                                    
+                                    <div 
+                                        className={clsx(
+                                            "overflow-hidden transition-all duration-300 ease-in-out",
+                                            isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                                        )}
+                                    >
+                                        <div className="overflow-x-auto border-t border-zinc-200">
+                                            <table className="w-full text-sm text-left">
+                                                <thead className="bg-white text-zinc-500 border-b border-zinc-100">
+                                                    <tr>
+                                                        <th className="px-4 py-3 font-semibold">Bundle</th>
+                                                        <th className="px-4 py-3 font-semibold">Base Price</th>
+                                                        <th className="px-4 py-3 font-semibold">Your Profit (GHS)</th>
+                                                        <th className="px-4 py-3 font-semibold">Final Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-zinc-100">
+                                                    {networkBundles.map(bundle => {
+                                                        const profit = bundleProfits[bundle._id] || 0;
+                                                        const finalPrice = bundle.price + profit;
+                                                        return (
+                                                            <tr key={bundle._id} className="hover:bg-zinc-50/50 transition-colors">
+                                                                <td className="px-4 py-3 font-medium text-zinc-900">{bundle.name}</td>
+                                                                <td className="px-4 py-3 text-zinc-600">{formatCurrency(bundle.price)}</td>
+                                                                <td className="px-4 py-3">
+                                                                    <div className="relative w-24">
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            step="0.5"
+                                                                            value={profit}
+                                                                            onChange={e => handleProfitChange(bundle._id, e.target.value)}
+                                                                            className="w-full pl-6 pr-2 py-1.5 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-shadow font-medium"
+                                                                            placeholder="0.00"
+                                                                        />
+                                                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs font-semibold">₵</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-3 font-bold text-slate-900">
+                                                                    {formatCurrency(finalPrice)}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     <div className="mt-6 flex justify-end">
@@ -458,6 +510,11 @@ export default function AgentStoreSettings() {
                 onSuccess={(amount) => {
                     setMessage({ type: 'success', text: `Withdrawal request for ${formatCurrency(amount)} submitted! Your balance will update once approved.` });
                 }}
+            />
+
+            <StoreGuideModal 
+                isOpen={isGuideModalOpen} 
+                onClose={() => setIsGuideModalOpen(false)} 
             />
         </div>
     );

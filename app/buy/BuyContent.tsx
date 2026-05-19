@@ -52,7 +52,21 @@ export default function BuyContent() {
     const [hasAutoSwitched, setHasAutoSwitched] = useState(false);
     const { data: session } = useSession()
     const [message, setMessage] = useState("")
+    const [walletBalance, setWalletBalance] = useState<number | null>(null);
     const networkConfig = NETWORKS.find(n => n.id === selectedNetwork);
+
+    useEffect(() => {
+        if (session?.user?.id) {
+            fetch('/api/wallet/balance')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.balance !== undefined) {
+                        setWalletBalance(data.balance);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch wallet balance:", err));
+        }
+    }, [session]);
 
     const loadPaystackScript = () => {
         const script = document.createElement('script')
@@ -500,14 +514,22 @@ export default function BuyContent() {
                                     {loading ? <Loader2 className="animate-spin" size={10} /> : "Pay with MoMo - Paystack"}
                                 </button>
 
-                             {session?.user.email &&    <button
-                                    onClick={handleWalletPurchase}
-                                    disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
-                                    className="w-full py-2 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={10} /> : "Buy with Wallet"}
-                                </button>
-                             }
+                             {session?.user.email && (
+                                <div className="flex flex-col w-full mt-4 md:mt-2">
+                                    <button
+                                        onClick={handleWalletPurchase}
+                                        disabled={loading || (phoneNumber.length !== 10) || (walletBalance !== null && walletBalance < selectedBundle?.price)}
+                                        className="w-full py-2 text-white hover:bg-green-700 bg-green-600 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cursor-pointer"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={10} /> : `Buy with Wallet ${walletBalance !== null ? `(${formatCurrency(walletBalance)})` : ''}`}
+                                    </button>
+                                    {walletBalance !== null && selectedBundle && walletBalance < selectedBundle.price && (
+                                        <Link href="/dashboard" className="text-red-500 text-xs text-center font-bold mt-2 hover:underline flex items-center justify-center gap-1">
+                                            Insufficient balance. Top up your wallet here.
+                                        </Link>
+                                    )}
+                                </div>
+                             )}
 
                             </div>
                         </CardContent>

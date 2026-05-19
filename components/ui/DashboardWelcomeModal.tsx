@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { X, Phone, CheckCircle, ChevronRight } from "lucide-react";
-
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 const STORAGE_KEY = "okgigs_welcome_dismissed";
 
 export default function DashboardWelcomeModal() {
@@ -11,7 +12,9 @@ export default function DashboardWelcomeModal() {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState("");
-    const [step, setStep] = useState<"phone">("phone");
+
+    const { data: session } = useSession();
+    const router = useRouter();
 
     // Check phone then decide whether to show modal
     useEffect(() => {
@@ -24,9 +27,10 @@ export default function DashboardWelcomeModal() {
                 if (res.ok) {
                     const data = await res.json();
                     // If phone already saved, don't show the modal
-                    if (data.phone) {
+                    if (data.phone  && session?.user.role == "agent") {
+                    
                         return;
-                    }
+                    } 
                 }
             } catch {
                 // silently fall through
@@ -64,6 +68,11 @@ export default function DashboardWelcomeModal() {
                 setSaved(true);
                 // Dismiss modal after a short pause
                 setTimeout(() => handleDontShowAgain(), 1500);
+                if(session?.user.role !== "agent") {
+                    router.push("/dashboard");
+                } else {
+                    router.push("/dashboard/store");
+                }
             } else {
                 const data = await res.json();
                 setError(data.message || "Failed to save phone number.");
@@ -87,41 +96,48 @@ export default function DashboardWelcomeModal() {
 
             {/* Modal */}
             <div className="relative bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-                {/* Top gradient bar */}
-                <div className="h-1.5 w-full bg-linear-to-r from-[#E42320] via-amber-400 to-amber-500" />
-
-                {/* Close button */}
-                <button
-                    type="button"
-                    onClick={handleDismiss}
-                    className="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors z-10"
-                    aria-label="Close"
-                >
-                    <X size={18} />
-                </button>
+                {/* Header */}
+                <div className="bg-gradient-to-r from-slate-900 to-slate-700 px-7 pt-7 pb-6 relative">
+                    <button
+                        type="button"
+                        onClick={handleDismiss}
+                        className="absolute top-4 right-4 p-1.5 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors z-10"
+                        aria-label="Close"
+                    >
+                        <X size={18} />
+                    </button>
+                    
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                                Welcome to Mega Gigs
+                            </p>
+                            {session?.user.role !== "agent" && (
+                                <a href="/dashboard/upgrade" className="inline-flex items-center gap-1.5 text-[18px] font-black bg-white/10 text-white border border-white/20 hover:bg-white/20 px-2.5 py-1 rounded-md transition-colors w-full shadow-sm">
+                                    <span className="text-[11px]"></span> BECOME AN AGENT NOW FOR FREE
+                                </a>
+                            )}
+                        </div>
+                        
+                        <div className="space-y-0.5">
+                            <h2 className="text-lg font-black text-white leading-snug">
+                                One quick thing
+                            </h2>
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                                Save your  number  so we can  offer you the best  of our services 
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 {/* ── Phone Collection ── */}
                 <div className="p-7 space-y-6">
-                    {/* Header */}
-                    <div className="space-y-1">
-                        <p className="text-xs font-bold uppercase tracking-widest text-[#E42320]">
-                            Welcome to MEGA GIGS 👋
-                        </p>
-                        <h2 className="text-2xl font-black text-zinc-900 leading-snug">
-                            One quick thing<br />before you start
-                        </h2>
-                        <p className="text-sm text-zinc-500 leading-relaxed">
-                            Add your MoMo number so we can deliver your data instantly after every purchase.
-                        </p>
-                    </div>
 
                     {/* Phone input */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-semibold text-zinc-600 uppercase tracking-wide">
-                            Mobile Money Number
-                        </label>
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-zinc-200 focus-within:border-[#E42320] transition-colors bg-zinc-50">
-                            <Phone size={18} className="text-zinc-400 shrink-0" />
+                    <div className="space-y-1.5 pt-2">
+                        
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-zinc-200 focus-within:border-[#E42320] transition-colors bg-zinc-50 shadow-inner">
+                            <Phone size={14} className="text-zinc-400 shrink-0" />
                             <input
                                 type="tel"
                                 placeholder="e.g. 0244123456"
@@ -130,7 +146,7 @@ export default function DashboardWelcomeModal() {
                                     setPhone(e.target.value);
                                     setError("");
                                 }}
-                                className="flex-1 bg-transparent text-sm text-zinc-900 placeholder-zinc-400 outline-none"
+                                className="flex-1 bg-transparent text-[13px] font-medium text-zinc-900 placeholder-zinc-400 outline-none"
                                 onKeyDown={(e) => e.key === "Enter" && handleSavePhone()}
                             />
                         </div>
@@ -150,10 +166,10 @@ export default function DashboardWelcomeModal() {
                             type="button"
                             onClick={handleSavePhone}
                             disabled={saving || saved}
-                            className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-[#E42320] text-white font-bold text-sm hover:bg-[#c71e1b] active:scale-[0.98] transition-all disabled:opacity-60"
+                            className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 active:scale-[0.98] transition-all disabled:opacity-60 shadow-md"
                         >
-                            {saving ? "Saving…" : saved ? "Saved ✓" : "Save My Number"}
-                            {!saving && !saved && <ChevronRight size={16} />}
+                            {saving ? "Saving…" : saved ? "Saved ✓" : "Save and Continue"}
+                         
                         </button>
 
                         <button
@@ -165,14 +181,9 @@ export default function DashboardWelcomeModal() {
                         </button>
                     </div>
 
-                    {/* Don't show again */}
-                    <button
-                        type="button"
-                        onClick={handleDontShowAgain}
-                        className="w-full text-center text-sm font-medium text-zinc-400 hover:text-zinc-600 transition-colors pt-1"
-                    >
-                        Don&apos;t show this again
-                    </button>
+
+
+                 
                 </div>
 
             </div>
