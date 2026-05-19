@@ -505,7 +505,7 @@ export default function BuyContent() {
 
                             {message && <p className="text-center text-green-600 font-semibold">{message}</p>}
 
-                            <div className={`md:gap-2 ${session?.user.email ? 'md:grid-cols-2 md:gap-2 grid grid-cols-1'  : 'grid-cols-1'}` }>
+                            <div className={`md:gap-2 ${session?.user.email ? 'md:gap-2 grid grid-cols-1'  : 'grid-cols-1'}` }>
                                 <button
                                     onClick={handlePurchase}
                                     disabled={loading || (phoneNumber.length < 10 || phoneNumber.length > 10)}
