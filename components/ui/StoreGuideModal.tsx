@@ -97,7 +97,7 @@ export default function StoreGuideModal({ isOpen, onClose }: Props) {
           <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3 flex items-start gap-3 mt-4">
             <Info size={16} className="text-zinc-500 shrink-0 mt-0.5" />
             <p className="text-xs text-zinc-600 leading-relaxed">
-              <strong>Withdrawals:</strong> Once your total profit reaches GHS 100.00, you can withdraw your earnings directly to your momo wallet.
+              <strong>Withdrawals:</strong> Once your total profit reaches GHS 50.00, you can withdraw your earnings directly to your momo wallet.
             </p>
           </div>
 

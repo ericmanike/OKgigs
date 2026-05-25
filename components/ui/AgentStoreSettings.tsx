@@ -223,16 +223,16 @@ export default function AgentStoreSettings() {
                         </div>
                         <button 
                             onClick={() => setIsWithdrawModalOpen(true)}
-                            disabled={totalProfit < 100 || withdrawing}
+                            disabled={totalProfit < 50 || withdrawing}
                             className={clsx(
                                 "px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-500 transition-colors flex items-center gap-2 self-center w-full justify-center",
-                                (totalProfit < 100 || withdrawing) && "opacity-50 cursor-not-allowed"
+                                (totalProfit < 50 || withdrawing) && "opacity-50 cursor-not-allowed"
                             )}
                         >
                             {withdrawing ? <Loader2 className="animate-spin" size={16} /> : <DownloadCloud size={13} />}
                             Withdraw
                         </button>
-                      {totalProfit < 100 ? <span className="text-xs text-red-500">Minimum withdrawal amount is GHS100.00</span> : <span className="text-xs text-green-500">You can withdraw now</span>}
+                      {totalProfit < 50 ? <span className="text-xs text-red-500">Minimum withdrawal amount is GHS50.00</span> : <span className="text-xs text-green-500">You can withdraw now</span>}
                     </CardContent>
                 </Card>
             </div>

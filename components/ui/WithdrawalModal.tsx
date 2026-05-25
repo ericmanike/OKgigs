@@ -26,8 +26,8 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
         setError(null);
 
         const val = parseFloat(amount);
-        if (isNaN(val) || !val || val < 100) {
-            setError("Minimum withdrawal amount is GH₵ 100.00.");
+        if (isNaN(val) || !val || val < 50) {
+            setError("Minimum withdrawal amount is GH₵ 50.00.");
             return;
         }
 
@@ -108,7 +108,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                                 className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none font-bold text-2xl"
                                 placeholder="0.00"
                                 required
-                                min={100}
+                                min={50}
                                 max={maxAmount}
                             />
                         </div>
